@@ -3,441 +3,561 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surat Lamaran Kerja — Generator Resmi</title>
+    <title>Generator Surat Lamaran Kerja Resmi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Merriweather:wght@400;700&display=swap');
-
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
+        
         :root {
             --accent: #0f766e;
-            --accent-light: #ccfbf1;
-            --accent-dark: #134e4a;
-            --surface: #f8fafc;
+            --accent-lt: #ccfbf1;
+            --accent-dk: #134e4a;
+            --surface: #f1f5f9;
             --card: #ffffff;
             --text: #1e293b;
             --muted: #64748b;
             --border: #e2e8f0;
+            --danger: #ef4444;
+            --warn: #f59e0b;
         }
 
-        * { box-sizing: border-box; }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
             background: var(--surface);
             color: var(--text);
-            margin: 0;
+            overflow-x: hidden;
         }
 
-        /* ========== A4 PREVIEW ========== */
+        /* ===== ANIMASI LATAR ===== */
+        .bg-dots {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background-image: radial-gradient(circle, #cbd5e1 0.8px, transparent 0.8px);
+            background-size: 28px 28px;
+            opacity: 0.35;
+        }
+
+        /* ===== KERTAS A4 ===== */
         .a4-paper {
             width: 210mm;
             min-height: 297mm;
             background: #fff;
-            box-shadow: 0 8px 40px rgba(15,23,42,.08), 0 1px 3px rgba(15,23,42,.06);
+            box-shadow: 0 10px 50px rgba(15,23,42,.08), 0 1px 4px rgba(15,23,42,.04);
             margin: 0 auto;
             padding: 20mm 22mm 18mm 22mm;
-            font-family: 'Merriweather', 'Times New Roman', serif;
+            font-family: 'Merriweather', 'Times New Roman', Georgia, serif;
             font-size: 11.5pt;
             line-height: 1.72;
             color: #1a1a1a;
             position: relative;
         }
 
-        .a4-paper .sans { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* ===== STYLING INTERNAL SURAT ===== */
+        .s-tgl { text-align: right; margin-bottom: 24px; }
+        .s-prh { margin-bottom: 26px; }
+        .s-tuj { margin-bottom: 28px; line-height: 1.6; }
+        .s-isi { text-align: justify; }
+        .s-isi p { margin-bottom: 10px; }
+        .dd-blk { margin: 14px 0 22px; line-height: 1.88; }
+        .dd-r { display: flex; }
+        .dd-k { width: 178px; flex-shrink: 0; }
+        .dd-t { width: 14px; text-align: center; flex-shrink: 0; }
+        .dd-v { flex: 1; }
+        .dd-va { flex: 1; max-width: 360px; }
+        .lp-list { margin: 8px 0 14px 24px; line-height: 1.82; }
+
+        /* TTD — FIX ABSOLUT: lebar tetap, posisi stabil */
+        .ttd-w { margin-top: 60px; display: flex; }
+        .ttd-w.ar { justify-content: flex-end; }
+        .ttd-w.al { justify-content: flex-start; }
+        .ttd-c { width: 250px; }
+        .ttd-c .ts { text-align: center; }
+        .ttd-c .tsp { height: 78px; }
+        .ttd-c .tn {
+            text-align: center; font-weight: 700;
+            text-decoration: underline; text-underline-offset: 3px;
+        }
+        .ttd-c .tk {
+            text-align: center; margin-top: 2px;
+            font-style: italic; font-size: 10.5pt; color: #555;
+        }
+
+        /* Watermark */
+        .wm-layer {
+            position: absolute; inset: 0; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0.04; font-size: 72pt; font-weight: 800;
+            color: #000; transform: rotate(-35deg); letter-spacing: 8px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
 
         @media print {
             .no-print { display: none !important; }
-            body { background: #fff !important; margin: 0; padding: 0; }
-            .preview-wrapper, .preview-outer { box-shadow: none !important; padding: 0 !important; margin: 0 !important; background: #fff !important; border-radius: 0 !important; }
-            .a4-paper { width: 210mm !important; min-height: 297mm !important; margin: 0 !important; padding: 18mm 20mm !important; box-shadow: none !important; }
+            body { background: #fff !important; }
+            .bg-dots { display: none !important; }
+            .pv-outer, .pv-wrap {
+                box-shadow: none !important; padding: 0 !important;
+                margin: 0 !important; background: #fff !important;
+                border-radius: 0 !important; border: none !important;
+                overflow: visible !important; max-height: none !important;
+            }
+            .a4-paper {
+                width: 210mm !important; min-height: 297mm !important;
+                margin: 0 !important; padding: 18mm 20mm !important;
+                box-shadow: none !important;
+            }
+            .dd-va { max-width: none !important; }
+            .wm-layer { display: none !important; }
             @page { size: A4 portrait; margin: 0; }
         }
 
-        /* ========== FORM STYLES ========== */
-        .field-input {
-            width: 100%;
-            padding: 12px 18px;
-            border: 1.5px solid var(--border);
-            border-radius: 14px;
-            font-family: inherit;
-            font-size: 14px;
-            color: var(--text);
-            background: #fff;
-            transition: border-color .2s, box-shadow .2s;
-            outline: none;
+        /* ===== FORM ===== */
+        .fi {
+            width: 100%; padding: 11px 16px;
+            border: 1.5px solid var(--border); border-radius: 12px;
+            font-family: inherit; font-size: 13px; color: var(--text);
+            background: #fff; transition: border-color .2s, box-shadow .2s; outline: none;
         }
-        .field-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(15,118,110,.1);
+        .fi:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15,118,110,.08); }
+        .fi.err { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(239,68,68,.08); }
+        .fi::placeholder { color: #94a3b8; }
+        textarea.fi { resize: vertical; min-height: 72px; line-height: 1.55; }
+        select.fi {
+            cursor: pointer; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
         }
-        .field-input.error {
-            border-color: #ef4444;
-            box-shadow: 0 0 0 3px rgba(239,68,68,.1);
+        .fl {
+            display: block; font-size: 10.5px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: .05em;
+            color: var(--muted); margin-bottom: 5px;
         }
-        .field-input::placeholder { color: #94a3b8; }
-        textarea.field-input { resize: vertical; min-height: 80px; line-height: 1.6; }
-        select.field-input { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+        .fl .req { color: var(--danger); }
+        .fe { font-size: 10px; color: var(--danger); margin-top: 3px; display: none; }
+        .fe.sh { display: block; }
 
-        .field-label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            color: var(--muted);
-            margin-bottom: 6px;
+        /* ===== TOAST ===== */
+        .t-box {
+            position: fixed; top: 72px; right: 18px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 8px; pointer-events: none;
         }
-        .field-error {
-            font-size: 11px;
-            color: #ef4444;
-            margin-top: 4px;
-            display: none;
+        .t-i {
+            padding: 12px 18px; border-radius: 12px; font-size: 12.5px;
+            font-weight: 500; color: #fff; box-shadow: 0 8px 28px rgba(0,0,0,.15);
+            display: flex; align-items: center; gap: 8px;
+            animation: tIn .3s ease-out; max-width: 340px; pointer-events: auto;
         }
-        .field-error.show { display: block; }
+        .t-i.ok { background: #059669; }
+        .t-i.nf { background: #0284c7; }
+        .t-i.wr { background: #d97706; }
+        .t-i.bd { background: #dc2626; }
+        .t-i.ot { animation: tOt .25s ease-in forwards; }
+        @keyframes tIn { from { opacity:0; transform:translateX(50px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes tOt { to { opacity:0; transform:translateX(50px) scale(.95); } }
 
-        /* ========== TOAST ========== */
-        .toast-container {
-            position: fixed; top: 80px; right: 24px; z-index: 9999;
-            display: flex; flex-direction: column; gap: 10px;
+        /* ===== MISC UI ===== */
+        .tp-c {
+            padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px;
+            cursor: pointer; transition: all .2s; background: #fff; text-align: center;
         }
-        .toast {
-            padding: 14px 22px;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: 500;
-            color: #fff;
-            box-shadow: 0 8px 30px rgba(0,0,0,.15);
-            display: flex; align-items: center; gap: 10px;
-            animation: toastIn .35s ease-out;
-            max-width: 360px;
-        }
-        .toast.success { background: #059669; }
-        .toast.info { background: #0284c7; }
-        .toast.warn { background: #d97706; }
-        .toast.error { background: #dc2626; }
-        .toast.out { animation: toastOut .3s ease-in forwards; }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes toastOut { to { opacity: 0; transform: translateX(60px); } }
+        .tp-c:hover { border-color: var(--accent); background: var(--accent-lt); }
+        .tp-c.on { border-color: var(--accent); background: var(--accent-lt); box-shadow: 0 0 0 3px rgba(15,118,110,.1); }
 
-        /* ========== SURAT INTERNAL ========== */
-        .surat-tanggal { text-align: right; margin-bottom: 22px; }
-        .surat-perihal { margin-bottom: 26px; }
-        .surat-tujuan { margin-bottom: 26px; line-height: 1.6; }
-        .surat-isi { text-align: justify; }
-        .surat-isi p { margin-bottom: 10px; }
-
-        .data-diri-block {
-            margin: 14px 0 20px 0;
-            line-height: 1.8;
-        }
-        .data-diri-block .dd-row { display: flex; }
-        .data-diri-block .dd-label { width: 180px; flex-shrink: 0; font-weight: 400; }
-        .data-diri-block .dd-colon { width: 16px; text-align: center; flex-shrink: 0; }
-        .data-diri-block .dd-value { flex: 1; }
-
-        .ttd-area { margin-top: 56px; display: flex; }
-        .ttd-area.right { justify-content: flex-end; }
-        .ttd-area.left { justify-content: flex-start; }
-        .ttd-inner { text-align: center; width: 44%; }
-        .ttd-spacer { height: 72px; }
-
-        /* ========== TEMPLATE CARDS ========== */
-        .tpl-card {
-            padding: 12px 16px;
-            border: 1.5px solid var(--border);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all .2s;
-            background: #fff;
-        }
-        .tpl-card:hover { border-color: var(--accent); background: var(--accent-light); }
-        .tpl-card.active { border-color: var(--accent); background: var(--accent-light); box-shadow: 0 0 0 3px rgba(15,118,110,.12); }
-
-        /* ========== SECTION TOGGLE ========== */
-        .section-toggle {
+        .sh-hd {
             display: flex; align-items: center; justify-content: space-between;
-            cursor: pointer; user-select: none;
-            padding: 10px 0; border-bottom: 1px solid var(--border);
+            cursor: pointer; user-select: none; padding: 8px 0; border-bottom: 1px solid var(--border);
         }
-        .section-toggle .chevron { transition: transform .25s; }
-        .section-toggle.open .chevron { transform: rotate(180deg); }
-        .section-body { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
-        .section-body.open { max-height: 2000px; }
+        .sh-hd .cv { transition: transform .25s; font-size: 9px; color: #94a3b8; }
+        .sh-hd.op .cv { transform: rotate(180deg); }
+        .sh-bd { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+        .sh-bd.op { max-height: 3000px; }
 
-        /* ========== WORD COUNTER ========== */
-        .word-badge {
-            display: inline-flex; align-items: center; gap: 5px;
-            font-size: 11px; color: var(--muted);
-            background: #f1f5f9; padding: 3px 10px; border-radius: 20px;
+        .wc-b {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 10px; color: var(--muted);
+            background: #f1f5f9; padding: 2px 8px; border-radius: 20px;
         }
 
-        /* ========== SCROLLBAR ========== */
-        .form-scroll::-webkit-scrollbar { width: 5px; }
-        .form-scroll::-webkit-scrollbar-track { background: transparent; }
-        .form-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .fsc::-webkit-scrollbar { width: 4px; }
+        .fsc::-webkit-scrollbar-track { background: transparent; }
+        .fsc::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        /* ========== BTN PULSE ========== */
-        @keyframes softPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(15,118,110,.3); } 50% { box-shadow: 0 0 0 6px rgba(15,118,110,0); } }
-        .btn-pulse { animation: softPulse 2.5s infinite; }
+        @keyframes sPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(15,118,110,.3); } 50% { box-shadow: 0 0 0 5px rgba(15,118,110,0); } }
+        .bp { animation: sPulse 2.5s infinite; }
+
+        /* Shortcuts badge */
+        .kb {
+            font-size: 9px; background: #f1f5f9; color: #94a3b8;
+            padding: 1px 5px; border-radius: 4px; font-family: monospace;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Status bar */
+        .stat-bar {
+            display: flex; align-items: center; gap: 12px;
+            padding: 8px 16px; background: #f8fafc; border-top: 1px solid var(--border);
+            font-size: 10.5px; color: var(--muted);
+        }
+        .stat-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #22c55e; animation: dotBlink 2s infinite;
+        }
+        .stat-dot.idle { background: #94a3b8; animation: none; }
+        @keyframes dotBlink { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
 
         @media (max-width: 1024px) {
-            .a4-paper { transform-origin: top center; font-size: 10pt; }
+            .a4-paper { font-size: 10pt; }
+            .hide-sm { display: none !important; }
         }
     </style>
 </head>
 <body>
 
-<!-- TOAST CONTAINER -->
-<div class="toast-container" id="toastContainer"></div>
+<div class="bg-dots"></div>
+<div class="t-box" id="tBox"></div>
 
-<!-- ========== NAVBAR ========== -->
+<!-- ===== NAVBAR ===== -->
 <nav class="bg-slate-950 text-white sticky top-0 z-50 no-print">
-    <div class="max-w-[1600px] mx-auto px-4 md:px-6 py-3.5 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-x-3 min-w-0">
-            <div class="w-10 h-10 rounded-xl bg-teal-600/20 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-paper-plane text-teal-400 text-lg"></i>
+    <div class="max-w-[1560px] mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-9 h-9 rounded-lg bg-teal-500/15 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-paper-plane text-teal-400 text-sm"></i>
             </div>
             <div class="min-w-0">
-                <h1 class="text-lg font-bold tracking-tight truncate">Generator Surat Lamaran</h1>
-                <p class="text-[10px] text-slate-500 -mt-0.5 tracking-wide uppercase">Bahasa Indonesia Resmi v8.2</p>
+                <h1 class="text-[15px] font-bold tracking-tight truncate">Generator Surat Lamaran</h1>
+                <p class="text-[8px] text-slate-500 -mt-0.5 tracking-widest uppercase">Bahasa Indonesia Baku v10.0</p>
             </div>
         </div>
-        
-        <div class="flex items-center gap-2 flex-shrink-0">
-            <button onclick="loadDraft()" title="Muat Draft" class="hidden sm:flex items-center gap-x-1.5 px-4 h-9 bg-white/8 hover:bg-white/14 rounded-xl text-xs font-medium transition">
-                <i class="fa-solid fa-folder-open"></i><span class="hidden md:inline">Muat</span>
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button onclick="loadDraft()" title="Muat Draft (Ctrl+M)" class="hide-sm flex items-center gap-1.5 px-3 h-8 bg-white/8 hover:bg-white/14 rounded-lg text-[10.5px] font-medium transition">
+                <i class="fa-solid fa-folder-open"></i>Muat
             </button>
-            <button onclick="saveDraft()" title="Simpan Draft" class="hidden sm:flex items-center gap-x-1.5 px-4 h-9 bg-white/8 hover:bg-white/14 rounded-xl text-xs font-medium transition">
-                <i class="fa-solid fa-floppy-disk"></i><span class="hidden md:inline">Simpan</span>
+            <button onclick="saveDraft()" title="Simpan Draft (Ctrl+S)" class="hide-sm flex items-center gap-1.5 px-3 h-8 bg-white/8 hover:bg-white/14 rounded-lg text-[10.5px] font-medium transition">
+                <i class="fa-solid fa-floppy-disk"></i>Simpan
             </button>
-            <div class="w-px h-6 bg-white/10 mx-1 hidden sm:block"></div>
-            <button onclick="saveAsImage()" title="Unduh PNG" class="flex items-center gap-x-1.5 px-4 h-9 bg-violet-600 hover:bg-violet-700 rounded-xl text-xs font-semibold transition">
-                <i class="fa-solid fa-image"></i><span class="hidden sm:inline">PNG</span>
+            <div class="w-px h-5 bg-white/10 mx-0.5 hide-sm"></div>
+            <button onclick="copyText()" title="Salin Teks Surat" class="hide-sm flex items-center gap-1.5 px-3 h-8 bg-white/8 hover:bg-white/14 rounded-lg text-[10.5px] font-medium transition">
+                <i class="fa-solid fa-copy"></i>Salin
             </button>
-            <button onclick="generatePDF()" title="Cetak PDF" class="flex items-center gap-x-1.5 px-4 h-9 bg-teal-600 hover:bg-teal-700 rounded-xl text-xs font-semibold transition btn-pulse">
-                <i class="fa-solid fa-file-pdf"></i><span class="hidden sm:inline">PDF</span>
+            <button onclick="expImg()" title="Unduh PNG" class="flex items-center gap-1.5 px-3.5 h-8 bg-violet-600 hover:bg-violet-700 rounded-lg text-[10.5px] font-semibold transition">
+                <i class="fa-solid fa-image"></i><span class="hide-sm">PNG</span>
             </button>
-            <button onclick="printLetter()" title="Cetak" class="flex items-center gap-x-1.5 px-4 h-9 bg-white text-slate-900 hover:bg-slate-100 rounded-xl text-xs font-semibold transition">
-                <i class="fa-solid fa-print"></i><span class="hidden sm:inline">Cetak</span>
+            <button onclick="expPDF()" title="Cetak PDF (Ctrl+P)" class="flex items-center gap-1.5 px-3.5 h-8 bg-teal-600 hover:bg-teal-700 rounded-lg text-[10.5px] font-semibold transition bp">
+                <i class="fa-solid fa-file-pdf"></i><span class="hide-sm">PDF</span>
             </button>
-            <button onclick="confirmReset()" title="Reset" class="flex items-center justify-center w-9 h-9 text-red-400 hover:text-red-300 hover:bg-white/8 rounded-xl transition">
-                <i class="fa-solid fa-rotate-left"></i>
+            <button onclick="doPrint()" title="Cetak" class="flex items-center gap-1.5 px-3.5 h-8 bg-white text-slate-900 hover:bg-slate-100 rounded-lg text-[10.5px] font-semibold transition">
+                <i class="fa-solid fa-print"></i><span class="hide-sm">Cetak</span>
+            </button>
+            <button onclick="confirmReset()" title="Reset Semua" class="flex items-center justify-center w-8 h-8 text-red-400 hover:text-red-300 hover:bg-white/8 rounded-lg transition">
+                <i class="fa-solid fa-rotate-left text-xs"></i>
             </button>
         </div>
     </div>
 </nav>
 
-<!-- ========== MAIN ========== -->
-<div class="max-w-[1600px] mx-auto px-4 md:px-6 py-6">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
+<!-- ===== MAIN ===== -->
+<div class="max-w-[1560px] mx-auto px-4 md:px-6 py-5">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
         <!-- ===== FORM PANEL ===== -->
         <div class="lg:col-span-5 no-print">
-            <div class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                <!-- Form Header -->
-                <div class="px-6 pt-6 pb-4 border-b border-slate-100">
-                    <h2 class="text-xl font-bold text-slate-800">Isi Surat Lamaran</h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Lengkapi setiap kolom. Perubahan langsung terlihat di pratinjau.</p>
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden flex flex-col" style="max-height:calc(100vh - 100px);">
+                <!-- Header -->
+                <div class="px-5 pt-5 pb-3 border-b border-slate-100 flex-shrink-0">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-[17px] font-bold text-slate-800">Isi Surat Lamaran</h2>
+                            <p class="text-[10.5px] text-slate-400 mt-0.5">Perubahan langsung tercermin di pratinjau.</p>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="kb">Ctrl+S</span>
+                            <span class="text-[9px] text-slate-400">simpan</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-scroll px-6 pb-6 overflow-y-auto" style="max-height: calc(100vh - 160px);">
+                <!-- Scrollable body -->
+                <div class="fsc px-5 pb-5 overflow-y-auto flex-1">
 
-                    <!-- Template Cepat -->
-                    <div class="mt-5 mb-6">
-                        <label class="field-label"><i class="fa-solid fa-bolt mr-1 text-amber-500"></i>Template Cepat</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="tpl-card active" data-tpl="fresh" onclick="applyTemplate('fresh', this)">
-                                <div class="text-xs font-bold text-slate-700">Lulusan Baru</div>
-                                <div class="text-[10px] text-slate-400 mt-0.5">SMK / SMA / S1</div>
+                    <!-- Template -->
+                    <div class="mt-4 mb-5">
+                        <label class="fl"><i class="fa-solid fa-bolt mr-1 text-amber-500"></i>Template Cepat</label>
+                        <div class="grid grid-cols-4 gap-1.5">
+                            <div class="tp-c on" onclick="useTpl('fresh',this)">
+                                <div class="text-[10px] font-bold text-slate-700">Lulusan Baru</div>
+                                <div class="text-[8px] text-slate-400">SMK/SMA/S1</div>
                             </div>
-                            <div class="tpl-card" data-tpl="exp" onclick="applyTemplate('exp', this)">
-                                <div class="text-xs font-bold text-slate-700">Berpengalaman</div>
-                                <div class="text-[10px] text-slate-400 mt-0.5">Sudah pernah bekerja</div>
+                            <div class="tp-c" onclick="useTpl('exp',this)">
+                                <div class="text-[10px] font-bold text-slate-700">Berpengalaman</div>
+                                <div class="text-[8px] text-slate-400">Sudah bekerja</div>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- ====== SECTION: DATA DIRI ====== -->
-                    <div class="mb-2">
-                        <div class="section-toggle open" onclick="toggleSection(this)">
-                            <span class="text-sm font-bold text-slate-700"><i class="fa-solid fa-user-pen mr-2 text-teal-600"></i>Data Diri Pelamar</span>
-                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 chevron"></i>
-                        </div>
-                        <div class="section-body open">
-                            <div class="pt-4 space-y-4">
-                                <div>
-                                    <label class="field-label" for="f_nama">Nama Lengkap <span class="text-red-400">*</span></label>
-                                    <input id="f_nama" type="text" class="field-input" placeholder="Sesuai KTP" oninput="liveUpdate()" value="Muhammad Hafis">
-                                    <div class="field-error" id="err_nama">Nama wajib diisi</div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="field-label" for="f_tempat">Tempat Lahir <span class="text-red-400">*</span></label>
-                                        <input id="f_tempat" type="text" class="field-input" placeholder="Kota" oninput="liveUpdate()" value="Pekalongan">
-                                    </div>
-                                    <div>
-                                        <label class="field-label" for="f_tgllahir">Tanggal Lahir <span class="text-red-400">*</span></label>
-                                        <input id="f_tgllahir" type="date" class="field-input" oninput="liveUpdate()" value="2005-05-15">
-                                    </div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="field-label" for="f_jk">Jenis Kelamin</label>
-                                        <select id="f_jk" class="field-input" onchange="liveUpdate()">
-                                            <option value="Laki-laki" selected>Laki-laki</option>
-                                            <option value="Perempuan">Perempuan</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="field-label" for="f_status">Status</label>
-                                        <select id="f_status" class="field-input" onchange="liveUpdate()">
-                                            <option value="Belum Menikah" selected>Belum Menikah</option>
-                                            <option value="Menikah">Menikah</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="field-label" for="f_alamat">Alamat Lengkap <span class="text-red-400">*</span></label>
-                                    <input id="f_alamat" type="text" class="field-input" placeholder="Desa/Kelurahan, Kecamatan, Kabupaten/Kota" oninput="liveUpdate()" value="Paninggaran, Kec. Petungkriyono, Kab. Pekalongan, Jawa Tengah">
-                                </div>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="field-label" for="f_telp">No. Telepon/HP <span class="text-red-400">*</span></label>
-                                        <input id="f_telp" type="tel" class="field-input" placeholder="08xx-xxxx-xxxx" oninput="liveUpdate()" value="0856-1234-5678">
-                                    </div>
-                                    <div>
-                                        <label class="field-label" for="f_email">Alamat Email <span class="text-red-400">*</span></label>
-                                        <input id="f_email" type="email" class="field-input" placeholder="nama@email.com" oninput="liveUpdate()" value="hafis@email.com">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="field-label" for="f_pendidikan">Pendidikan Terakhir <span class="text-red-400">*</span></label>
-                                    <input id="f_pendidikan" type="text" class="field-input" placeholder="Nama Sekolah, Jurusan, Tahun Lulus" oninput="liveUpdate()" value="SMK Nurul Ummah Paninggaran, Jurusan Teknik Jaringan Komputer dan Telekomunikasi, Tahun 2026">
-                                </div>
+                            <div class="tp-c" onclick="useTpl('magang',this)">
+                                <div class="text-[10px] font-bold text-slate-700">Magang</div>
+                                <div class="text-[8px] text-slate-400">PKL/Internship</div>
+                            </div>
+                            <div class="tp-c" onclick="useTpl('pns',this)">
+                                <div class="text-[10px] font-bold text-slate-700">CPNS/PPPK</div>
+                                <div class="text-[8px] text-slate-400">Formasi resmi</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ====== SECTION: TUJUAN SURAT ====== -->
-                    <div class="mb-2">
-                        <div class="section-toggle open" onclick="toggleSection(this)">
-                            <span class="text-sm font-bold text-slate-700"><i class="fa-solid fa-building mr-2 text-teal-600"></i>Tujuan Surat</span>
-                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 chevron"></i>
+                    <!-- ===== DATA DIRI ===== -->
+                    <div class="mb-1">
+                        <div class="sh-hd op" onclick="togSec(this)">
+                            <span class="text-[12.5px] font-bold text-slate-700"><i class="fa-solid fa-user-pen mr-1.5 text-teal-600 text-[11px]"></i>Data Diri Pelamar</span>
+                            <i class="fa-solid fa-chevron-down cv"></i>
                         </div>
-                        <div class="section-body open">
-                            <div class="pt-4 space-y-4">
+                        <div class="sh-bd op"><div class="pt-3 space-y-3">
+                            <div>
+                                <label class="fl" for="f_nama">Nama Lengkap <span class="req">*</span></label>
+                                <input id="f_nama" class="fi" placeholder="Sesuai KTP" oninput="lv()" value="Muhammad Hafis">
+                                <div class="fe" id="e_nama">Nama lengkap wajib diisi</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2.5">
                                 <div>
-                                    <label class="field-label" for="f_tgl">Tempat dan Tanggal Surat</label>
-                                    <div class="flex gap-2">
-                                        <input id="f_tempat_surat" type="text" class="field-input" style="width:40%" placeholder="Kota" oninput="liveUpdate()" value="Pekalongan">
-                                        <div class="flex items-center text-slate-400 text-sm font-medium px-2">,</div>
-                                        <input id="f_tgl" type="date" class="field-input" style="flex:1" oninput="liveUpdate()" value="2026-04-20">
-                                    </div>
+                                    <label class="fl" for="f_tmpt">Tempat Lahir <span class="req">*</span></label>
+                                    <input id="f_tmpt" class="fi" placeholder="Kota" oninput="lv()" value="Pekalongan">
                                 </div>
                                 <div>
-                                    <label class="field-label" for="f_tujuan">Alamat Tujuan <span class="text-red-400">*</span></label>
-                                    <textarea id="f_tujuan" class="field-input" rows="4" placeholder="Yth. ...&#10;PT. ...&#10;Alamat ..." oninput="liveUpdate()">Yth. Bapak/Ibu Manager HRD
+                                    <label class="fl" for="f_tglL">Tanggal Lahir <span class="req">*</span></label>
+                                    <input id="f_tglL" type="date" class="fi" oninput="lv()" value="2005-05-15">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2.5">
+                                <div>
+                                    <label class="fl" for="f_jk">Jenis Kelamin</label>
+                                    <select id="f_jk" class="fi" onchange="lv()">
+                                        <option value="Laki-laki" selected>Laki-laki</option>
+                                        <option value="Perempuan">Perempuan</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="fl" for="f_stat">Status</label>
+                                    <select id="f_stat" class="fi" onchange="lv()">
+                                        <option value="Belum Menikah" selected>Belum Menikah</option>
+                                        <option value="Menikah">Menikah</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="fl" for="f_agm">Agama</label>
+                                    <select id="f_agm" class="fi" onchange="lv()">
+                                        <option value="Islam" selected>Islam</option>
+                                        <option value="Kristen">Kristen</option>
+                                        <option value="Katolik">Katolik</option>
+                                        <option value="Hindu">Hindu</option>
+                                        <option value="Buddha">Buddha</option>
+                                        <option value="Konghucu">Konghucu</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="fl" for="f_almt">Alamat Lengkap <span class="req">*</span></label>
+                                <input id="f_almt" class="fi" placeholder="Desa/Kel., Kec., Kab./Kota, Prov." oninput="lv()" value="Paninggaran, Kec. Petungkriyono, Kab. Pekalongan, Jawa Tengah">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div>
+                                    <label class="fl" for="f_tlp">No. Telepon/HP <span class="req">*</span></label>
+                                    <input id="f_tlp" class="fi" placeholder="08xx-xxxx-xxxx" oninput="lv()" value="0856-1234-5678">
+                                </div>
+                                <div>
+                                    <label class="fl" for="f_eml">Alamat Email <span class="req">*</span></label>
+                                    <input id="f_eml" type="email" class="fi" placeholder="nama@email.com" oninput="lv()" value="hafis@email.com">
+                                    <div class="fe" id="e_eml">Format email tidak valid</div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="fl" for="f_pend">Pendidikan Terakhir <span class="req">*</span></label>
+                                <input id="f_pend" class="fi" placeholder="Nama Instansi, Jurusan, Tahun Lulus" oninput="lv()" value="SMK Nurul Ummah Paninggaran, Jurusan Teknik Jaringan Komputer dan Telekomunikasi, Tahun 2026">
+                            </div>
+                        </div></div>
+                    </div>
+
+                    <!-- ===== TUJUAN SURAT ===== -->
+                    <div class="mb-1">
+                        <div class="sh-hd op" onclick="togSec(this)">
+                            <span class="text-[12.5px] font-bold text-slate-700"><i class="fa-solid fa-building mr-1.5 text-teal-600 text-[11px]"></i>Tujuan Surat</span>
+                            <i class="fa-solid fa-chevron-down cv"></i>
+                        </div>
+                        <div class="sh-bd op"><div class="pt-3 space-y-3">
+                            <div>
+                                <label class="fl">Tempat dan Tanggal Surat</label>
+                                <div class="flex gap-2 items-center">
+                                    <input id="f_kota" class="fi" style="width:36%" placeholder="Kota" oninput="lv()" value="Pekalongan">
+                                    <span class="text-slate-300 text-sm font-bold">,</span>
+                                    <input id="f_tglS" type="date" class="fi" style="flex:1" oninput="lv()" value="2026-04-20">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="fl" for="f_tuj">Alamat Tujuan <span class="req">*</span></label>
+                                <textarea id="f_tuj" class="fi" rows="4" placeholder="Yth. ...\nPT. ...\nAlamat ..." oninput="lv()">Yth. Bapak/Ibu Manager HRD
 PT. Teknologi Digital Indonesia
 Jl. Jend. Sudirman Kav. 52-53
 Jakarta Selatan 12190</textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div>
+                                    <label class="fl" for="f_pos">Posisi yang Dilamar <span class="req">*</span></label>
+                                    <input id="f_pos" class="fi" placeholder="Nama posisi jabatan" oninput="lv()" value="IT Support">
                                 </div>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="field-label" for="f_posisi">Posisi yang Dilamar <span class="text-red-400">*</span></label>
-                                        <input id="f_posisi" type="text" class="field-input" placeholder="Nama posisi" oninput="liveUpdate()" value="IT Support">
-                                    </div>
-                                    <div>
-                                        <label class="field-label" for="f_sumber">Sumber Info</label>
-                                        <input id="f_sumber" type="text" class="field-input" placeholder="Website / IG / Rekomendasi" oninput="liveUpdate()" value="website resmi perusahaan">
-                                    </div>
+                                <div>
+                                    <label class="fl" for="f_sum">Sumber Informasi</label>
+                                    <input id="f_sum" class="fi" placeholder="Website / Media Sosial" oninput="lv()" value="website resmi perusahaan">
                                 </div>
                             </div>
-                        </div>
+                            <div>
+                                <label class="fl" for="f_nmr">Nomor Surat (opsional)</label>
+                                <input id="f_nmr" class="fi" placeholder="Contoh: 001/SP/XII/2026" oninput="lv()" value="">
+                            </div>
+                        </div></div>
                     </div>
 
-                    <!-- ====== SECTION: ISI SURAT ====== -->
-                    <div class="mb-2">
-                        <div class="section-toggle open" onclick="toggleSection(this)">
-                            <span class="text-sm font-bold text-slate-700"><i class="fa-solid fa-pen-fancy mr-2 text-teal-600"></i>Isi Surat</span>
-                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 chevron"></i>
+                    <!-- ===== ISI SURAT ===== -->
+                    <div class="mb-1">
+                        <div class="sh-hd op" onclick="togSec(this)">
+                            <span class="text-[12.5px] font-bold text-slate-700"><i class="fa-solid fa-pen-fancy mr-1.5 text-teal-600 text-[11px]"></i>Isi Surat</span>
+                            <i class="fa-solid fa-chevron-down cv"></i>
                         </div>
-                        <div class="section-body open">
-                            <div class="pt-4 space-y-4">
-                                <div>
-                                    <label class="field-label" for="f_pengalaman">Pengalaman / Keahlian Relevan</label>
-                                    <textarea id="f_pengalaman" class="field-input" rows="3" placeholder="Deskripsikan singkat pengalaman atau keahlian Anda" oninput="liveUpdate()">Selama masa studi, saya memperoleh keahlian dalam jaringan komputer, troubleshooting perangkat keras dan perangkat lunak, serta administrasi sistem. Saya juga aktif mengikuti praktik kerja lapangan di bidang IT selama tiga bulan.</textarea>
-                                </div>
-                                <div>
-                                    <label class="field-label" for="f_lampiran">Daftar Lampiran</label>
-                                    <textarea id="f_lampiran" class="field-input" rows="4" placeholder="1. ...&#10;2. ..." oninput="liveUpdate()">1. Daftar Riwayat Hidup (Curriculum Vitae)
+                        <div class="sh-bd op"><div class="pt-3 space-y-3">
+                            <div>
+                                <label class="fl" for="f_peng">Pengalaman / Keahlian Relevan</label>
+                                <textarea id="f_peng" class="fi" rows="4" placeholder="Jelaskan singkat keahlian atau pengalaman Anda" oninput="lv()">Selama masa pendidikan, saya memperoleh pengetahuan dan keterampilan di bidang jaringan komputer, pemeliharaan perangkat keras dan perangkat lunak, serta administrasi sistem. Saya juga aktif mengikuti Praktik Kerja Lapangan selama tiga bulan yang memperkuat kompetensi teknis saya.</textarea>
+                            </div>
+                            <div>
+                                <label class="fl" for="f_mot">Motivasi Tambahan (opsional)</label>
+                                <textarea id="f_mot" class="fi" rows="2" placeholder="Alasan kuat Anda melamar di perusahaan ini" oninput="lv()">Saya memiliki minat yang besar untuk berkembang di bidang teknologi informasi dan percaya bahwa perusahaan ini merupakan tempat yang tepat untuk mengembangkan karier saya.</textarea>
+                            </div>
+                            <div>
+                                <label class="fl" for="f_lamp">Daftar Lampiran</label>
+                                <textarea id="f_lamp" class="fi" rows="5" placeholder="1. ...\n2. ..." oninput="lv()">1. Daftar Riwayat Hidup (Curriculum Vitae)
 2. Fotokopi Ijazah Terakhir
 3. Fotokopi Transkrip Nilai
 4. Fotokopi Sertifikat Pendukung
 5. Pas Foto Terbaru Ukuran 4×6 (2 lembar)</textarea>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div class="word-badge" id="wordCount"><i class="fa-solid fa-font"></i> <span>0 kata</span></div>
-                                </div>
                             </div>
-                        </div>
+                            <div class="flex items-center gap-3">
+                                <div class="wc-b" id="wcB"><i class="fa-solid fa-font" style="font-size:8px"></i><span>0 kata</span></div>
+                                <div class="wc-b" id="ccB"><i class="fa-solid fa-text-width" style="font-size:8px"></i><span>0 karakter</span></div>
+                            </div>
+                        </div></div>
                     </div>
 
-                    <!-- ====== SECTION: TANDA TANGAN ====== -->
-                    <div class="mb-2">
-                        <div class="section-toggle open" onclick="toggleSection(this)">
-                            <span class="text-sm font-bold text-slate-700"><i class="fa-solid fa-signature mr-2 text-teal-600"></i>Tanda Tangan</span>
-                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 chevron"></i>
+                    <!-- ===== TANDA TANGAN ===== -->
+                    <div class="mb-1">
+                        <div class="sh-hd op" onclick="togSec(this)">
+                            <span class="text-[12.5px] font-bold text-slate-700"><i class="fa-solid fa-signature mr-1.5 text-teal-600 text-[11px]"></i>Tanda Tangan</span>
+                            <i class="fa-solid fa-chevron-down cv"></i>
                         </div>
-                        <div class="section-body open">
-                            <div class="pt-4 space-y-4">
+                        <div class="sh-bd op"><div class="pt-3 space-y-3">
+                            <div class="grid grid-cols-2 gap-2.5">
                                 <div>
-                                    <label class="field-label" for="f_ttd_pos">Posisi Tanda Tangan</label>
-                                    <select id="f_ttd_pos" class="field-input" onchange="liveUpdate()">
-                                        <option value="right" selected>Kanan Bawah (Standar)</option>
+                                    <label class="fl" for="f_tdp">Posisi Tanda Tangan</label>
+                                    <select id="f_tdp" class="fi" onchange="lv()">
+                                        <option value="right" selected>Kanan Bawah</option>
                                         <option value="left">Kiri Bawah</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="field-label" for="f_ttd_text">Teks Tambahan di Bawah Nama</label>
-                                    <input id="f_ttd_text" type="text" class="field-input" placeholder="Contoh: Pelamar" oninput="liveUpdate()" value="Hormat saya,">
+                                    <label class="fl" for="f_tds">Salam Penutup</label>
+                                    <select id="f_tds" class="fi" onchange="lv()">
+                                        <option value="Hormat saya," selected>Hormat saya,</option>
+                                        <option value="Hormat kami,">Hormat kami,</option>
+                                    </select>
                                 </div>
                             </div>
+                            <div>
+                                <label class="fl" for="f_tdt">Nama Terang (opsional)</label>
+                                <input id="f_tdt" class="fi" placeholder="Jika berbeda dari nama pelamar" oninput="lv()" value="">
+                            </div>
+                            <div>
+                                <label class="fl" for="f_tdk">Keterangan di Bawah Nama (opsional)</label>
+                                <input id="f_tdk" class="fi" placeholder="Pelamar / Calon Karyawan" oninput="lv()" value="Pelamar">
+                            </div>
+                        </div></div>
+                    </div>
+
+                    <!-- ===== PENGATURAN ===== -->
+                    <div class="mb-1">
+                        <div class="sh-hd" onclick="togSec(this)">
+                            <span class="text-[12.5px] font-bold text-slate-700"><i class="fa-solid fa-sliders mr-1.5 text-slate-400 text-[11px]"></i>Pengaturan Lanjutan</span>
+                            <i class="fa-solid fa-chevron-down cv"></i>
                         </div>
+                        <div class="sh-bd"><div class="pt-3 space-y-3">
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div>
+                                    <label class="fl" for="f_fs">Ukuran Font Surat</label>
+                                    <select id="f_fs" class="fi" onchange="lv()">
+                                        <option value="10.5pt">10.5pt (Kecil)</option>
+                                        <option value="11pt">11pt (Sedang)</option>
+                                        <option value="11.5pt" selected>11.5pt (Standar)</option>
+                                        <option value="12pt">12pt (Besar)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="fl" for="f_lh">Jarak Baris</label>
+                                    <select id="f_lh" class="fi" onchange="lv()">
+                                        <option value="1.55">1.55 (Rapat)</option>
+                                        <option value="1.65">1.65 (Normal)</option>
+                                        <option value="1.72" selected>1.72 (Standar)</option>
+                                        <option value="1.85">1.85 (Longgar)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="fl" for="f_wm">Teks Watermark (opsional)</label>
+                                <input id="f_wm" class="fi" placeholder="Kosongkan jika tidak perlu" oninput="lv()" value="">
+                            </div>
+                        </div></div>
                     </div>
 
-                    <!-- Info singkat -->
-                    <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                        <p class="text-xs text-amber-800 leading-relaxed"><i class="fa-solid fa-circle-info mr-1"></i><strong>Tips:</strong> Gunakan bahasa Indonesia baku. Hindari singkatan yang tidak baku. Pastikan semua data sudah benar sebelum menyimpan atau mencetak.</p>
+                    <!-- Tips -->
+                    <div class="mt-5 mb-2 p-3.5 bg-amber-50 border border-amber-200/80 rounded-xl">
+                        <p class="text-[10.5px] text-amber-800 leading-relaxed">
+                            <i class="fa-solid fa-circle-info mr-1"></i><strong>Tips:</strong> Gunakan bahasa Indonesia baku sesuai EYD V. Hindari singkatan tidak baku. Periksa kelengkapan data sebelum mengekspor.
+                        </p>
                     </div>
+                    <div class="mb-2 p-3.5 bg-teal-50 border border-teal-200/80 rounded-xl">
+                        <p class="text-[10.5px] text-teal-800 leading-relaxed">
+                            <i class="fa-regular fa-keyboard mr-1"></i><strong>Pintasan:</strong>
+                            <span class="kb">Ctrl+S</span> Simpan &nbsp;
+                            <span class="kb">Ctrl+M</span> Muat &nbsp;
+                            <span class="kb">Ctrl+P</span> Cetak &nbsp;
+                            <span class="kb">Ctrl+Shift+C</span> Salin Teks
+                        </p>
+                    </div>
+                </div>
 
+                <!-- Status Bar -->
+                <div class="stat-bar flex-shrink-0">
+                    <div class="stat-dot" id="stDot"></div>
+                    <span id="stText">Siap</span>
+                    <span style="margin-left:auto" id="stTime"></span>
                 </div>
             </div>
         </div>
 
         <!-- ===== PREVIEW PANEL ===== -->
         <div class="lg:col-span-7">
-            <div class="preview-outer sticky top-[68px]">
-                <!-- Preview Header -->
-                <div class="flex items-center justify-between mb-3 px-1 no-print">
-                    <h3 class="text-sm font-semibold text-slate-600 flex items-center gap-2">
-                        <i class="fa-solid fa-eye text-teal-600"></i> Pratinjau Langsung
+            <div class="pv-outer sticky top-[64px]">
+                <div class="flex items-center justify-between mb-2.5 px-0.5 no-print">
+                    <h3 class="text-[12.5px] font-semibold text-slate-600 flex items-center gap-1.5">
+                        <i class="fa-solid fa-eye text-teal-600 text-[11px]"></i>Pratinjau Langsung
                     </h3>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] bg-teal-50 text-teal-700 px-3 py-1 rounded-full font-semibold tracking-wide">A4 210×297mm</span>
-                        <button onclick="zoomPreview(-1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xs text-slate-500 transition"><i class="fa-solid fa-minus"></i></button>
-                        <span class="text-[10px] text-slate-400 font-mono w-8 text-center" id="zoomLevel">100%</span>
-                        <button onclick="zoomPreview(1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xs text-slate-500 transition"><i class="fa-solid fa-plus"></i></button>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-[8.5px] bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-bold tracking-wide">A4 210×297mm</span>
+                        <button onclick="doZoom(-1)" class="w-6 h-6 rounded-md bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] text-slate-500 transition"><i class="fa-solid fa-minus"></i></button>
+                        <span class="text-[9px] text-slate-400 font-mono w-7 text-center" id="zLv">100%</span>
+                        <button onclick="doZoom(1)" class="w-6 h-6 rounded-md bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] text-slate-500 transition"><i class="fa-solid fa-plus"></i></button>
+                        <button onclick="doZoom(0)" class="w-6 h-6 rounded-md bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] text-slate-500 transition" title="Reset Zoom"><i class="fa-solid fa-expand"></i></button>
                     </div>
                 </div>
-
-                <!-- Paper Container -->
-                <div class="preview-wrapper bg-slate-200/60 border border-slate-200 rounded-2xl p-5 overflow-auto" style="max-height: calc(100vh - 120px);">
-                    <div id="suratWrapper" style="transform-origin: top center; transition: transform .2s;">
+                <div class="pv-wrap bg-slate-200/40 border border-slate-200 rounded-2xl p-4 overflow-auto" style="max-height:calc(100vh - 120px);">
+                    <div id="sWrp" style="transform-origin:top center;transition:transform .2s;">
                         <div id="surat" class="a4-paper">
-                            <div id="suratContent"></div>
+                            <div id="sC"></div>
                         </div>
                     </div>
                 </div>
@@ -447,372 +567,487 @@ Jakarta Selatan 12190</textarea>
 </div>
 
 <script>
-    /* ============================================
-       UTILITAS BAHASA INDONESIA
-       ============================================ */
-    const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+/* ==============================================
+   KONSTANTA & UTILITAS DASAR
+   ============================================== */
+const BLN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 
-    function formatTanggal(dateStr) {
-        if (!dateStr) return '...';
-        const d = new Date(dateStr);
-        if (isNaN(d)) return dateStr;
-        return `${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`;
+function fmtTgl(s) {
+    if (!s) return '...';
+    const d = new Date(s);
+    return isNaN(d) ? s : `${d.getDate()} ${BLN[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function kap(s) {
+    return s ? s.replace(/\b\w/g, c => c.toUpperCase()) : '';
+}
+
+function v(id) {
+    return (document.getElementById(id)?.value || '').trim();
+}
+
+function hitungKata(t) {
+    return t.trim().split(/\s+/).filter(w => w.length > 0).length;
+}
+
+function hitungKarakter(t) {
+    return t.trim().length;
+}
+
+/* ==============================================
+   TEMPLATE DATA
+   ============================================== */
+const TPL = {
+    fresh: {
+        f_peng: 'Selama masa pendidikan, saya memperoleh pengetahuan dan keterampilan di bidang yang saya tekuni. Saya juga aktif mengikuti kegiatan Praktik Kerja Lapangan serta organisasi sekolah yang membantu mengembangkan kemampuan komunikasi, kerja sama tim, dan tanggung jawab.',
+        f_mot: 'Saya memiliki semangat yang tinggi untuk belajar dan siap berkontribusi secara positif bagi perusahaan.',
+        f_stat: 'Belum Menikah'
+    },
+    exp: {
+        f_peng: 'Saya memiliki pengalaman kerja selama lebih dari satu tahun di bidang yang relevan dengan posisi yang saya lamar. Saya mampu bekerja secara mandiri maupun dalam tim, mengelola waktu dengan baik, dan beradaptasi terhadap lingkungan kerja baru dengan cepat.',
+        f_mot: 'Saya yakin pengalaman dan kompetensi yang saya miliki dapat memberikan nilai tambah bagi perusahaan.',
+        f_stat: 'Menikah'
+    },
+    magang: {
+        f_peng: 'Saya merupakan mahasiswa yang sedang menempuh pendidikan dan bermaksud mengikuti program magang untuk mengembangkan kompetensi praktis. Saya memiliki dasar pengetahuan yang kuat di bidang terkait serta antusiasme tinggi untuk belajar langsung di lingkungan kerja profesional.',
+        f_mot: 'Program magang ini merupakan kesempatan berharga bagi saya untuk mengaplikasikan ilmu yang telah dipelajari di bangku kuliah.',
+        f_stat: 'Belum Menikah'
+    },
+    pns: {
+        f_peng: 'Saya memenuhi kualifikasi pendidikan dan kompetensi yang dipersyaratkan sesuai dengan formasi yang dibuka. Saya memiliki integritas, dedikasi tinggi, serta komitmen untuk mengabdi kepada negara dan masyarakat.',
+        f_mot: 'Saya bermaksud mengabdikan diri secara penuh dalam rangka mendukung terwujudnya good governance dan pelayanan publik yang berkualitas.',
+        f_stat: 'Belum Menikah'
     }
+};
 
-    function kapitalisasi(str) {
-        if (!str) return '';
-        return str.replace(/\b\w/g, c => c.toUpperCase());
-    }
+function useTpl(k, el) {
+    document.querySelectorAll('.tp-c').forEach(c => c.classList.remove('on'));
+    el.classList.add('on');
+    const t = TPL[k];
+    if (t.f_peng) document.getElementById('f_peng').value = t.f_peng;
+    if (t.f_mot) document.getElementById('f_mot').value = t.f_mot;
+    if (t.f_stat) document.getElementById('f_stat').value = t.f_stat;
+    lv();
+    toast('Template diterapkan: ' + el.querySelector('div').textContent, 'ok');
+}
 
-    function hitungKata(text) {
-        return text.trim().split(/\s+/).filter(w => w.length > 0).length;
-    }
+/* ==============================================
+   TOAST NOTIFICATION
+   ============================================== */
+function toast(msg, type = 'nf') {
+    const ic = { ok: 'fa-circle-check', nf: 'fa-circle-info', wr: 'fa-triangle-exclamation', bd: 'fa-circle-xmark' };
+    const d = document.createElement('div');
+    d.className = 't-i ' + type;
+    d.innerHTML = `<i class="fa-solid ${ic[type] || ic.nf}"></i><span>${msg}</span>`;
+    document.getElementById('tBox').appendChild(d);
+    setTimeout(() => {
+        d.classList.add('ot');
+        setTimeout(() => d.remove(), 260);
+    }, 3200);
+}
 
-    /* ============================================
-       TEMPLATE DATA
-       ============================================ */
-    const templates = {
-        fresh: {
-            f_pengalaman: 'Selama masa pendidikan, saya memperoleh pengetahuan dan keterampilan di bidang yang saya tekuni. Saya juga aktif mengikuti kegiatan praktik kerja lapangan serta organisasi sekolah yang membantu mengembangkan kemampuan komunikasi, kerja sama tim, dan tanggung jawab.',
-            f_status: 'Belum Menikah'
-        },
-        exp: {
-            f_pengalaman: 'Saya memiliki pengalaman kerja selama lebih dari satu tahun di bidang yang relevan dengan posisi yang saya lamar. Saya mampu bekerja secara mandiri maupun dalam tim, mengelola waktu dengan baik, dan beradaptasi terhadap lingkungan kerja baru.',
-            f_status: 'Menikah'
+/* ==============================================
+   SECTION TOGGLE
+   ============================================== */
+function togSec(el) {
+    el.classList.toggle('op');
+    el.nextElementSibling.classList.toggle('op');
+}
+
+/* ==============================================
+   ZOOM PREVIEW
+   ============================================== */
+let zm = 100;
+function doZoom(dir) {
+    if (dir === 0) { zm = 100; }
+    else { zm = Math.max(50, Math.min(150, zm + dir * 10)); }
+    document.getElementById('sWrp').style.transform = `scale(${zm / 100})`;
+    document.getElementById('zLv').textContent = zm + '%';
+}
+
+/* ==============================================
+   VALIDASI FORM
+   ============================================== */
+function validate() {
+    let ok = true;
+    const wajib = [
+        { id: 'f_nama', err: 'e_nama' },
+        { id: 'f_tmpt' }, { id: 'f_tglL' },
+        { id: 'f_almt' }, { id: 'f_tlp' },
+        { id: 'f_eml', err: 'e_eml' },
+        { id: 'f_pend' }, { id: 'f_tuj' }, { id: 'f_pos' }
+    ];
+    wajib.forEach(r => {
+        const el = document.getElementById(r.id);
+        if (!el.value.trim()) {
+            el.classList.add('err');
+            if (r.err) document.getElementById(r.err)?.classList.add('sh');
+            ok = false;
+        } else {
+            el.classList.remove('err');
+            if (r.err) document.getElementById(r.err)?.classList.remove('sh');
         }
-    };
-
-    function applyTemplate(key, el) {
-        document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        const t = templates[key];
-        if (t.f_pengalaman) document.getElementById('f_pengalaman').value = t.f_pengalaman;
-        if (t.f_status) document.getElementById('f_status').value = t.f_status;
-        liveUpdate();
-        toast('Template berhasil diterapkan', 'success');
+    });
+    /* Validasi format email */
+    const emEl = document.getElementById('f_eml');
+    if (emEl.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emEl.value.trim())) {
+        emEl.classList.add('err');
+        document.getElementById('e_eml')?.classList.add('sh');
+        ok = false;
     }
+    return ok;
+}
 
-    /* ============================================
-       TOAST NOTIFICATION
-       ============================================ */
-    function toast(msg, type = 'info') {
-        const container = document.getElementById('toastContainer');
-        const icons = { success: 'fa-circle-check', info: 'fa-circle-info', warn: 'fa-triangle-exclamation', error: 'fa-circle-xmark' };
-        const div = document.createElement('div');
-        div.className = `toast ${type}`;
-        div.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i><span>${msg}</span>`;
-        container.appendChild(div);
-        setTimeout(() => { div.classList.add('out'); setTimeout(() => div.remove(), 300); }, 3000);
-    }
+/* ==============================================
+   STATUS BAR
+   ============================================== */
+function setStatus(text, idle = false) {
+    const dot = document.getElementById('stDot');
+    const txt = document.getElementById('stText');
+    dot.className = 'stat-dot' + (idle ? ' idle' : '');
+    txt.textContent = text;
+}
 
-    /* ============================================
-       SECTION TOGGLE
-       ============================================ */
-    function toggleSection(el) {
-        el.classList.toggle('open');
-        const body = el.nextElementSibling;
-        body.classList.toggle('open');
-    }
+function updateClock() {
+    const now = new Date();
+    document.getElementById('stTime').textContent =
+        now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+setInterval(updateClock, 1000);
+updateClock();
 
-    /* ============================================
-       ZOOM PREVIEW
-       ============================================ */
-    let currentZoom = 100;
-    function zoomPreview(dir) {
-        currentZoom = Math.max(50, Math.min(150, currentZoom + dir * 10));
-        document.getElementById('suratWrapper').style.transform = `scale(${currentZoom / 100})`;
-        document.getElementById('zoomLevel').textContent = currentZoom + '%';
-    }
+/* ==============================================
+   INTI: RENDER PRATINJAU SURAT
+   ============================================== */
+function lv() {
+    const nama = kap(v('f_nama')) || '________________________';
+    const tmpt = kap(v('f_tmpt')) || '_____';
+    const tglL = fmtTgl(v('f_tglL')) || '_____';
+    const jk = v('f_jk') || 'Laki-laki';
+    const stat = v('f_stat') || 'Belum Menikah';
+    const agm = v('f_agm') || 'Islam';
+    const almt = kap(v('f_almt')) || '________________________';
+    const tlp = v('f_tlp') || '_____';
+    const eml = v('f_eml') || '_____';
+    const pend = kap(v('f_pend')) || '________________________';
+    const kota = kap(v('f_kota')) || '_____';
+    const tglS = fmtTgl(v('f_tglS')) || '_____';
+    const tujRaw = v('f_tuj') || 'Yth. Bapak/Ibu\nPT. _______________\n_________________';
+    const pos = kap(v('f_pos')) || '_______________';
+    const sum = v('f_sum') || 'informasi yang tersedia';
+    const nmr = v('f_nmr');
+    const peng = v('f_peng') || '________________________';
+    const mot = v('f_mot');
+    const lampRaw = v('f_lamp') || '1. Daftar Riwayat Hidup';
+    const tdp = v('f_tdp') || 'right';
+    const tds = v('f_tds') || 'Hormat saya,';
+    const tdt = kap(v('f_tdt'));
+    const tdk = kap(v('f_tdk'));
+    const fs = v('f_fs') || '11.5pt';
+    const lh = v('f_lh') || '1.72';
+    const wm = v('f_wm');
 
-    /* ============================================
-       VALIDASI
-       ============================================ */
-    function validateFields() {
-        let valid = true;
-        const required = [
-            { id: 'f_nama', err: 'err_nama' },
-            { id: 'f_tempat', err: null },
-            { id: 'f_tgllahir', err: null },
-            { id: 'f_alamat', err: null },
-            { id: 'f_telp', err: null },
-            { id: 'f_email', err: null },
-            { id: 'f_pendidikan', err: null },
-            { id: 'f_tujuan', err: null },
-            { id: 'f_posisi', err: null }
-        ];
-        required.forEach(r => {
-            const el = document.getElementById(r.id);
-            if (!el.value.trim()) {
-                el.classList.add('error');
-                if (r.err) document.getElementById(r.err).classList.add('show');
-                valid = false;
-            } else {
-                el.classList.remove('error');
-                if (r.err) document.getElementById(r.err).classList.remove('show');
-            }
-        });
-        // Validasi email sederhana
-        const emailEl = document.getElementById('f_email');
-        if (emailEl.value && !emailEl.value.includes('@')) {
-            emailEl.classList.add('error');
-            valid = false;
-        }
-        return valid;
-    }
+    /* Hitung statistik */
+    const semua = [nama, tmpt, almt, pend, tujRaw, peng, mot, lampRaw].join(' ');
+    document.querySelector('#wcB span').textContent = hitungKata(semua) + ' kata';
+    document.querySelector('#ccB span').textContent = hitungKarakter(semua) + ' karakter';
 
-    /* ============================================
-       UPDATE PRATINJAU (INTI)
-       ============================================ */
-    function liveUpdate() {
-        const v = id => (document.getElementById(id)?.value || '').trim();
+    /* Parse tujuan: baris kedua = nama perusahaan */
+    const tujLines = tujRaw.split('\n').filter(l => l.trim());
+    const tujHTML = tujLines.map(l => `<div>${l || '&nbsp;'}</div>`).join('');
+    const nmPt = tujLines.length >= 2
+        ? kap(tujLines[1].replace(/^PT\.?\s*/i, '').trim())
+        : 'perusahaan Bapak/Ibu';
 
-        const nama           = kapitalisasi(v('f_nama')) || '________________________';
-        const tempatLahir    = kapitalisasi(v('f_tempat')) || '_____';
-        const tglLahir       = formatTanggal(v('f_tgllahir')) || '_____';
-        const jk             = v('f_jk') || 'Laki-laki';
-        const status         = v('f_status') || 'Belum Menikah';
-        const alamat         = kapitalisasi(v('f_alamat')) || '________________________';
-        const telp           = v('f_telp') || '_____';
-        const email          = v('f_email') || '_____';
-        const pendidikan     = kapitalisasi(v('f_pendidikan')) || '________________________';
-        const tempatSurat    = kapitalisasi(v('f_tempat_surat')) || '_____';
-        const tglSurat       = formatTanggal(v('f_tgl')) || '_____';
-        const tujuan         = v('f_tujuan') || 'Yth. Bapak/Ibu\nPT. _______________\n_________________';
-        const posisi         = kapitalisasi(v('f_posisi')) || '_______________';
-        const sumber         = v('f_sumber') || 'informasi yang tersedia';
-        const pengalaman     = v('f_pengalaman') || '________________________';
-        const lampiranRaw    = v('f_lampiran') || '1. Daftar Riwayat Hidup';
-        const ttdPos         = v('f_ttd_pos') || 'right';
-        const ttdText        = kapitalisasi(v('f_ttd_text')) || 'Hormat saya,';
+    /* Format lampiran */
+    const lampHTML = lampRaw.split('\n')
+        .filter(l => l.trim())
+        .map(l => `<div>${l.trim()}</div>`)
+        .join('');
 
-        // Hitung kata total
-        const totalText = [nama, tempatLahir, alamat, pendidikan, tujuan, pengalaman, lampiranRaw].join(' ');
-        const wc = hitungKata(totalText);
-        document.querySelector('#wordCount span').textContent = wc + ' kata';
+    /* Nama ttd: nama terang jika diisi, selain itu nama pelamar */
+    const ttdNama = tdt || nama;
 
-        // Format lampiran
-        const lampiranHTML = lampiranRaw.split('\n').filter(l => l.trim()).map(l =>
-            `<div style="display:flex;gap:6px;"><span>${l.trim().charAt(0) === '-' ? '' : ''}</span><span>${l.trim()}</span></div>`
-        ).join('');
+    /* Nomor surat (opsional) */
+    const nmrHTML = nmr ? `<div style="margin-bottom:22px;"><strong>Lampiran</strong>&nbsp;&nbsp;&nbsp;: ${lampRaw.split('\n').filter(l=>l.trim()).length} berkas</div><div style="margin-bottom:22px;"><strong>Perihal</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Lamaran Pekerjaan sebagai ${pos}</div><div style="margin-bottom:22px;"><strong>Nomor</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ${nmr}</div>` : `<div class="s-prh"><strong>Perihal</strong>&nbsp;&nbsp;&nbsp;: Lamaran Pekerjaan sebagai ${pos}</div>`;
 
-        // Format tujuan (preservasi baris baru)
-        const tujuanHTML = tujuan.split('\n').map(l => `<span>${l || '&nbsp;'}</span>`).join('<br>');
+    /* Watermark */
+    const wmHTML = wm ? `<div class="wm-layer">${wm}</div>` : '';
 
-        // Tanggal lengkap surat
-        const tanggalLengkap = `${tempatSurat}, ${tglSurat}`;
+    /* Susun HTML surat lengkap */
+    const h = `
+ ${wmHTML}
+<div class="s-tgl">${kota}, ${tglS}</div>
 
-        // Tentukan salam pembuka berdasarkan jenis kelamin di tujuan (default formal)
-        const salamPembuka = 'Dengan hormat,';
+ ${nmrHTML}
 
-        /* ----- SUSUN HTML SURAT ----- */
-        const html = `
-            <div class="surat-tanggal">${tanggalLengkap}</div>
+<div class="s-tuj">${tujHTML}</div>
 
-            <div class="surat-perihal">
-                <span style="font-weight:700;">Perihal</span>&nbsp;&nbsp;: Lamaran Pekerjaan sebagai ${posisi}
-            </div>
+<div style="margin-bottom:18px;">Dengan hormat,</div>
 
-            <div class="surat-tujuan">${tujuanHTML}</div>
+<div class="s-isi">
+    <p>Berdasarkan informasi yang saya peroleh dari ${sum} bahwa ${nmPt} sedang membuka kesempatan bagi tenaga kerja untuk mengisi posisi <strong>${pos}</strong>, maka dengan ini saya bermaksud mengajukan lamaran pekerjaan pada posisi tersebut.</p>
 
-            <div style="margin-bottom:18px;">${salamPembuka}</div>
+    <p>Sebagai bahan pertimbangan, berikut saya sampaikan data diri saya:</p>
 
-            <div class="surat-isi">
-                <p>Berdasarkan informasi yang saya peroleh dari ${sumber} bahwa ${tujuan.split('\n')[1]?.trim() || 'perusahaan Bapak/Ibu'} sedang membuka kesempatan bagi tenaga kerja untuk mengisi posisi <strong>${posisi}</strong>, maka dengan ini saya bermaksud mengajukan lamaran pekerjaan pada posisi tersebut.</p>
+    <div class="dd-blk">
+        <div class="dd-r"><span class="dd-k">Nama Lengkap</span><span class="dd-t">:</span><span class="dd-v">${nama}</span></div>
+        <div class="dd-r"><span class="dd-k">Tempat, Tanggal Lahir</span><span class="dd-t">:</span><span class="dd-v">${tmpt}, ${tglL}</span></div>
+        <div class="dd-r"><span class="dd-k">Jenis Kelamin</span><span class="dd-t">:</span><span class="dd-v">${jk}</span></div>
+        <div class="dd-r"><span class="dd-k">Status</span><span class="dd-t">:</span><span class="dd-v">${stat}</span></div>
+        <div class="dd-r"><span class="dd-k">Agama</span><span class="dd-t">:</span><span class="dd-v">${agm}</span></div>
+        <div class="dd-r"><span class="dd-k">Alamat</span><span class="dd-t">:</span><span class="dd-va">${almt}</span></div>
+        <div class="dd-r"><span class="dd-k">No. Telepon/HP</span><span class="dd-t">:</span><span class="dd-v">${tlp}</span></div>
+        <div class="dd-r"><span class="dd-k">Alamat Email</span><span class="dd-t">:</span><span class="dd-v">${eml}</span></div>
+        <div class="dd-r"><span class="dd-k">Pendidikan Terakhir</span><span class="dd-t">:</span><span class="dd-v">${pend}</span></div>
+    </div>
 
-                <p>Sebagai bahan pertimbangan, berikut saya sampaikan data diri saya:</p>
+    <p>${peng}</p>
 
-                <div class="data-diri-block">
-                    <div class="dd-row"><span class="dd-label">Nama Lengkap</span><span class="dd-colon">:</span><span class="dd-value">${nama}</span></div>
-                    <div class="dd-row"><span class="dd-label">Jenis Kelamin</span><span class="dd-colon">:</span><span class="dd-value">${jk}</span></div>
-                    <div class="dd-row"><span class="dd-label">Tempat, Tanggal Lahir</span><span class="dd-colon">:</span><span class="dd-value">${tempatLahir}, ${tglLahir}</span></div>
-                    <div class="dd-row"><span class="dd-label">Status</span><span class="dd-colon">:</span><span class="dd-value">${status}</span></div>
-                    <div class="dd-row"><span class="dd-label">Alamat</span><span class="dd-colon">:</span><span class="dd-value">${alamat}</span></div>
-                    <div class="dd-row"><span class="dd-label">No. Telepon/HP</span><span class="dd-colon">:</span><span class="dd-value">${telp}</span></div>
-                    <div class="dd-row"><span class="dd-label">Alamat Email</span><span class="dd-colon">:</span><span class="dd-value">${email}</span></div>
-                    <div class="dd-row"><span class="dd-label">Pendidikan Terakhir</span><span class="dd-colon">:</span><span class="dd-value">${pendidikan}</span></div>
-                </div>
+    ${mot ? `<p>${mot}</p>` : ''}
 
-                <p>${pengalaman}</p>
+    <p>Bersama surat lamaran ini, saya lampirkan kelengkapan berkas sebagai berikut:</p>
+    <div class="lp-list">${lampHTML}</div>
 
-                <p>Bersama surat lamaran ini, saya lampirkan kelengkapan berkas sebagai berikut:</p>
-                <div style="padding-left:24px; margin: 8px 0 12px 0; line-height:1.8;">
-                    ${lampiranHTML}
-                </div>
+    <p>Besar harapan saya agar Bapak/Ibu berkenan mempertimbangkan lamaran ini dan memberikan kesempatan kepada saya untuk mengikuti tahapan seleksi selanjutnya. Saya siap menghadiri wawancara pada waktu dan tempat yang ditentukan.</p>
 
-                <p>Besar harapan saya agar Bapak/Ibu berkenan mempertimbangkan lamaran ini dan memberikan kesempatan kepada saya untuk mengikuti tahapan seleksi selanjutnya. Saya siap untuk menghadiri wawancara pada waktu yang ditentukan.</p>
+    <p>Demikian surat lamaran ini saya buat dengan sebenar-benarnya. Atas perhatian serta kesempatan yang diberikan, saya ucapkan terima kasih.</p>
+</div>
 
-                <p>Demikian surat lamaran ini saya buat dengan sebenar-benarnya. Atas perhatian dan kesempatan yang diberikan, saya ucapkan terima kasih.</p>
-            </div>
+<div class="ttd-w ${tdp === 'left' ? 'al' : 'ar'}">
+    <div class="ttd-c">
+        <div class="ts">${tds}</div>
+        <div class="tsp"></div>
+        <div class="tn">${ttdNama}</div>
+        ${tdk ? `<div class="tk">${tdk}</div>` : ''}
+    </div>
+</div>`;
 
-            <div class="ttd-area ${ttdPos}">
-                <div class="ttd-inner">
-                    <p>${ttdText},</p>
-                    <div class="ttd-spacer"></div>
-                    <p style="font-weight:700; text-decoration:underline;">${nama}</p>
-                </div>
-            </div>
-        `;
+    document.getElementById('sC').innerHTML = h;
 
-        document.getElementById('suratContent').innerHTML = html;
-    }
+    /* Terapkan pengaturan font & line-height ke kertas */
+    const suratEl = document.getElementById('surat');
+    suratEl.style.fontSize = fs;
+    suratEl.style.lineHeight = lh;
 
-    /* ============================================
-       AKSI TOOLBAR
-       ============================================ */
-    function printLetter() {
-        if (!validateFields()) {
-            toast('Lengkapi kolom yang bertanda bintang (*) sebelum mencetak', 'warn');
-            return;
-        }
-        liveUpdate();
-        window.print();
-    }
+    /* Update status bar */
+    setStatus('Perubahan tersimpan di pratinjau', false);
+    clearTimeout(lv._timer);
+    lv._timer = setTimeout(() => setStatus('Siap', true), 2000);
+}
+lv._timer = null;
 
-    function generatePDF() {
-        if (!validateFields()) {
-            toast('Lengkapi kolom yang bertanda bintang (*) terlebih dahulu', 'warn');
-            return;
-        }
-        liveUpdate();
-        toast('Dialog cetak akan terbuka. Pilih "Save as PDF" sebagai printer.\nMargins: None • Centang "Background graphics"', 'info', 5000);
-        setTimeout(() => window.print(), 600);
-    }
+/* ==============================================
+   AKSI TOOLBAR
+   ============================================== */
+function doPrint() {
+    if (!validate()) { toast('Lengkapi kolom wajib (bertanda *) sebelum mencetak', 'wr'); return; }
+    lv();
+    window.print();
+}
 
-    function saveAsImage() {
-        if (!validateFields()) {
-            toast('Lengkapi kolom yang wajib diisi terlebih dahulu', 'warn');
-            return;
-        }
-        toast('Memproses gambar beresolusi tinggi...', 'info');
-        const surat = document.getElementById('surat');
-        // Reset zoom saat capture
-        const origTransform = document.getElementById('suratWrapper').style.transform;
-        document.getElementById('suratWrapper').style.transform = 'scale(1)';
+function expPDF() {
+    if (!validate()) { toast('Lengkapi kolom wajib terlebih dahulu', 'wr'); return; }
+    lv();
+    toast('Dialog cetak terbuka — pilih "Save as PDF". Pastikan: Margins=None, centang "Background graphics"', 'nf');
+    setTimeout(() => window.print(), 700);
+}
 
-        html2canvas(surat, {
+function expImg() {
+    if (!validate()) { toast('Lengkapi kolom wajib terlebih dahulu', 'wr'); return; }
+    toast('Memproses gambar beresolusi tinggi...', 'nf');
+    setStatus('Membuat gambar PNG...', false);
+    const origT = document.getElementById('sWrp').style.transform;
+    document.getElementById('sWrp').style.transform = 'scale(1)';
+    /* Beri jeda agar render stabil */
+    setTimeout(() => {
+        html2canvas(document.getElementById('surat'), {
             scale: 3,
             backgroundColor: '#ffffff',
             useCORS: true,
             logging: false
         }).then(canvas => {
-            document.getElementById('suratWrapper').style.transform = origTransform;
-            const link = document.createElement('a');
-            const safeName = document.getElementById('f_nama').value.replace(/[^a-zA-Z0-9]/g, '_') || 'Surat';
-            link.download = `Surat_Lamaran_${safeName}.png`;
-            link.href = canvas.toDataURL('image/png', 1.0);
-            link.click();
-            toast('Gambar PNG berhasil diunduh', 'success');
+            document.getElementById('sWrp').style.transform = origT;
+            const a = document.createElement('a');
+            a.download = `Surat_Lamaran_${(v('f_nama') || 'draft').replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+            a.href = canvas.toDataURL('image/png', 1.0);
+            a.click();
+            toast('Gambar PNG berhasil diunduh', 'ok');
+            setStatus('Siap', true);
         }).catch(() => {
-            document.getElementById('suratWrapper').style.transform = origTransform;
-            toast('Gagal membuat gambar. Coba lagi.', 'error');
+            document.getElementById('sWrp').style.transform = origT;
+            toast('Gagal membuat gambar. Coba lagi.', 'bd');
+            setStatus('Gagal membuat gambar', true);
         });
+    }, 250);
+}
+
+function copyText() {
+    const suratEl = document.getElementById('sC');
+    const text = suratEl.innerText || suratEl.textContent;
+    if (!text.trim()) { toast('Tidak ada teks untuk disalin', 'wr'); return; }
+    navigator.clipboard.writeText(text).then(() => {
+        toast('Teks surat berhasil disalin ke clipboard', 'ok');
+    }).catch(() => {
+        /* Fallback untuk browser lama */
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;left:-9999px;';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        toast('Teks surat berhasil disalin', 'ok');
+    });
+}
+
+/* ==============================================
+   DRAFT: localStorage
+   ============================================== */
+const SK = 'slamaran_draft_v10';
+const FIDS = [
+    'f_nama','f_tmpt','f_tglL','f_jk','f_stat','f_agm','f_almt',
+    'f_tlp','f_eml','f_pend','f_kota','f_tglS','f_tuj','f_pos',
+    'f_sum','f_nmr','f_peng','f_mot','f_lamp','f_tdp','f_tds',
+    'f_tdt','f_tdk','f_fs','f_lh','f_wm'
+];
+
+function saveDraft() {
+    const d = {};
+    FIDS.forEach(id => d[id] = document.getElementById(id).value);
+    d._t = new Date().toISOString();
+    try {
+        localStorage.setItem(SK, JSON.stringify(d));
+        toast('Draft berhasil disimpan ke peramban', 'ok');
+        setStatus('Draft tersimpan', true);
+    } catch (e) {
+        toast('Gagal menyimpan — penyimpanan peramban penuh', 'bd');
     }
+}
 
-    /* ============================================
-       DRAFT (localStorage)
-       ============================================ */
-    const STORAGE_KEY = 'surat_lamaran_draft_v8';
-
-    function getFormFields() {
-        const ids = ['f_nama','f_tempat','f_tgllahir','f_jk','f_status','f_alamat','f_telp','f_email','f_pendidikan','f_tempat_surat','f_tgl','f_tujuan','f_posisi','f_sumber','f_pengalaman','f_lampiran','f_ttd_pos','f_ttd_text'];
-        const data = {};
-        ids.forEach(id => { data[id] = document.getElementById(id).value; });
-        return data;
-    }
-
-    function setFormFields(data) {
-        Object.keys(data).forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.value = data[id];
+function loadDraft() {
+    try {
+        const r = localStorage.getItem(SK);
+        if (!r) { toast('Belum ada draft yang tersimpan', 'wr'); return; }
+        const d = JSON.parse(r);
+        FIDS.forEach(id => {
+            if (d[id] !== undefined) document.getElementById(id).value = d[id];
         });
+        lv();
+        const t = d._t ? new Date(d._t).toLocaleString('id-ID') : 'waktu tidak diketahui';
+        toast(`Draft dari ${t} berhasil dimuat`, 'ok');
+        setStatus('Draft dimuat', true);
+    } catch (e) {
+        toast('Gagal memuat draft — data rusak', 'bd');
     }
+}
 
-    function saveDraft() {
-        const data = getFormFields();
-        data._savedAt = new Date().toISOString();
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            toast('Draft berhasil disimpan ke peramban', 'success');
-        } catch (e) {
-            toast('Gagal menyimpan draft. Penyimpanan penuh.', 'error');
-        }
+/* ==============================================
+   MODAL KONFIRMASI RESET
+   ============================================== */
+function confirmReset() {
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9998;display:flex;align-items:center;justify-content:center;animation:tIn .2s ease-out;backdrop-filter:blur(3px);';
+    const bx = document.createElement('div');
+    bx.style.cssText = 'background:#fff;border-radius:18px;padding:26px 28px;max-width:360px;width:92%;box-shadow:0 20px 50px rgba(0,0,0,.2);text-align:center;';
+    bx.innerHTML = `
+        <div style="width:48px;height:48px;border-radius:14px;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+            <i class="fa-solid fa-rotate-left" style="color:#dc2626;font-size:20px;"></i>
+        </div>
+        <h3 style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 5px;">Reset Semua Isi Surat?</h3>
+        <p style="font-size:12px;color:#64748b;margin:0 0 20px;line-height:1.55;">Semua data yang telah diisi akan dihapus dan tidak dapat dikembalikan.</p>
+        <div style="display:flex;gap:8px;">
+            <button id="_rc" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;font-family:inherit;transition:background .15s;">Batal</button>
+            <button id="_ro" style="flex:1;padding:9px;border-radius:10px;border:none;background:#dc2626;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s;">Ya, Reset</button>
+        </div>`;
+    ov.appendChild(bx);
+    document.body.appendChild(ov);
+
+    /* Hover effect */
+    bx.querySelector('#_rc').onmouseenter = function(){ this.style.background='#f8fafc'; };
+    bx.querySelector('#_rc').onmouseleave = function(){ this.style.background='#fff'; };
+    bx.querySelector('#_ro').onmouseenter = function(){ this.style.background='#b91c1c'; };
+    bx.querySelector('#_ro').onmouseleave = function(){ this.style.background='#dc2626'; };
+
+    ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+    bx.querySelector('#_rc').onclick = () => ov.remove();
+    bx.querySelector('#_ro').onclick = () => {
+        ov.remove();
+        const clearIds = ['f_nama','f_tmpt','f_almt','f_tlp','f_eml','f_pend','f_kota','f_tuj','f_pos','f_sum','f_nmr','f_peng','f_mot','f_lamp','f_tdt','f_tdk','f_wm'];
+        clearIds.forEach(id => document.getElementById(id).value = '');
+        document.getElementById('f_jk').value = 'Laki-laki';
+        document.getElementById('f_stat').value = 'Belum Menikah';
+        document.getElementById('f_agm').value = 'Islam';
+        document.getElementById('f_tdp').value = 'right';
+        document.getElementById('f_tds').value = 'Hormat saya,';
+        document.getElementById('f_fs').value = '11.5pt';
+        document.getElementById('f_lh').value = '1.72';
+        document.querySelectorAll('.tp-c').forEach(c => c.classList.remove('on'));
+        lv();
+        toast('Semua kolom telah dikosongkan', 'nf');
+        setStatus('Form direset', true);
+    };
+}
+
+/* ==============================================
+   PINTASAN KEYBOARD
+   ============================================== */
+document.addEventListener('keydown', e => {
+    /* Ctrl+S = Simpan Draft */
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveDraft();
     }
-
-    function loadDraft() {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (!raw) { toast('Tidak ada draft yang tersimpan', 'warn'); return; }
-            const data = JSON.parse(raw);
-            setFormFields(data);
-            liveUpdate();
-            const saved = data._savedAt ? new Date(data._savedAt).toLocaleString('id-ID') : 'tidak diketahui';
-            toast(`Draft dari ${saved} berhasil dimuat`, 'success');
-        } catch (e) {
-            toast('Gagal memuat draft. Data rusak.', 'error');
-        }
+    /* Ctrl+M = Muat Draft */
+    if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
+        e.preventDefault();
+        loadDraft();
     }
-
-    function confirmReset() {
-        /* Custom confirm via modal sederhana */
-        const overlay = document.createElement('div');
-        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;animation:toastIn .2s ease-out;';
-        const box = document.createElement('div');
-        box.style.cssText = 'background:#fff;border-radius:20px;padding:28px 32px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);text-align:center;';
-        box.innerHTML = `
-            <div style="width:52px;height:52px;border-radius:16px;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-                <i class="fa-solid fa-rotate-left" style="color:#dc2626;font-size:22px;"></i>
-            </div>
-            <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 6px;">Reset Semua Isi Surat?</h3>
-            <p style="font-size:13px;color:#64748b;margin:0 0 22px;">Tindakan ini tidak dapat dibatalkan. Semua kolom akan dikosongkan.</p>
-            <div style="display:flex;gap:10px;">
-                <button id="resetCancel" style="flex:1;padding:10px;border-radius:12px;border:1.5px solid #e2e8f0;background:#fff;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;">Batal</button>
-                <button id="resetConfirm" style="flex:1;padding:10px;border-radius:12px;border:none;background:#dc2626;color:#fff;font-size:13px;font-weight:600;cursor:pointer;">Ya, Reset</button>
-            </div>
-        `;
-        overlay.appendChild(box);
-        document.body.appendChild(overlay);
-        overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
-        box.querySelector('#resetCancel').onclick = () => overlay.remove();
-        box.querySelector('#resetConfirm').onclick = () => {
-            overlay.remove();
-            const ids = ['f_nama','f_tempat','f_tgllahir','f_alamat','f_telp','f_email','f_pendidikan','f_tempat_surat','f_tgl','f_tujuan','f_posisi','f_sumber','f_pengalaman','f_lampiran','f_ttd_text'];
-            ids.forEach(id => { document.getElementById(id).value = ''; });
-            document.getElementById('f_jk').value = 'Laki-laki';
-            document.getElementById('f_status').value = 'Belum Menikah';
-            document.getElementById('f_ttd_pos').value = 'right';
-            document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('active'));
-            liveUpdate();
-            toast('Semua kolom telah dikosongkan', 'info');
-        };
+    /* Ctrl+P = Cetak PDF */
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault();
+        expPDF();
     }
+    /* Ctrl+Shift+C = Salin Teks */
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+        e.preventDefault();
+        copyText();
+    }
+    /* Escape = Tutup modal jika ada */
+    if (e.key === 'Escape') {
+        const modal = document.querySelector('[style*="z-index:9998"]');
+        if (modal) modal.remove();
+    }
+});
 
-    /* ============================================
-       INISIALISASI
-       ============================================ */
-    window.addEventListener('DOMContentLoaded', () => {
-        liveUpdate();
+/* ==============================================
+   INISIALISASI
+   ============================================== */
+window.addEventListener('DOMContentLoaded', () => {
+    lv();
 
-        // Auto-load draft jika ada
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (raw) {
-                const data = JSON.parse(raw);
-                if (data._savedAt) {
-                    // Tampilkan indikator kecil bahwa draft tersedia
-                    setTimeout(() => toast('Draft tersimpan ditemukan. Klik "Muat" untuk memuatnya.', 'info'), 800);
-                }
-            }
-        } catch(e) {}
-
-        // Hapus error styling saat user mulai mengetik
-        document.querySelectorAll('.field-input').forEach(el => {
-            el.addEventListener('input', () => {
-                el.classList.remove('error');
-                const errEl = el.parentElement.querySelector('.field-error');
-                if (errEl) errEl.classList.remove('show');
-            });
+    /* Hapus error saat user mulai mengetik */
+    document.querySelectorAll('.fi').forEach(el => {
+        el.addEventListener('input', () => {
+            el.classList.remove('err');
+            const fe = el.parentElement.querySelector('.fe');
+            if (fe) fe.classList.remove('sh');
+        });
+        /* Fokus: update status */
+        el.addEventListener('focus', () => setStatus('Mengedit...', false));
+        el.addEventListener('blur', () => {
+            clearTimeout(lv._blurTimer);
+            lv._blurTimer = setTimeout(() => setStatus('Siap', true), 1500);
         });
     });
+
+    /* Deteksi draft tersimpan */
+    try {
+        if (localStorage.getItem(SK)) {
+            setTimeout(() => toast('Draft tersimpan ditemukan. Klik "Muat" untuk memuat.', 'nf'), 1000);
+        }
+    } catch (e) {}
+});
 </script>
 </body>
 </html>
