@@ -39,7 +39,7 @@
         .dark-mode .tp-c.on { border-color: var(--accent); background: rgba(15,118,110,.15); }
         .dark-mode .stat-bar { background: #0f172a; border-color: #334155; }
         .dark-mode .sh-hd { border-color: var(--border); }
-        .dark-mode .pv-outer .pv-wrap { background: rgba(30,41,59,.5); border-color: #334155; }
+        .dark-mode .pv-wrap { background: rgba(30,41,59,.5); border-color: #334155; }
         .dark-mode .wc-b { background: #1e293b; }
         .dark-mode .kb { background: #1e293b; border-color: #334155; color: #64748b; }
 
@@ -59,8 +59,10 @@
         }
         .dark-mode .bg-dots { opacity: 0.12; }
 
+        /* ===== KERTAS A4 — MIN-HEIGHT, BISA MERENTANG ===== */
         .a4-paper {
-            width: 210mm; height: 297mm;
+            width: 210mm;
+            min-height: 297mm;
             background: #fff;
             box-shadow: 0 10px 50px rgba(15,23,42,.08), 0 1px 4px rgba(15,23,42,.04);
             margin: 0 auto;
@@ -70,7 +72,18 @@
             line-height: 1.72;
             color: #1a1a1a;
             position: relative;
-            overflow: hidden;
+            /* Tidak ada overflow:hidden — konten boleh merentang */
+        }
+
+        /* Garis batas halaman A4 (hanya visual di pratinjau) */
+        .a4-page-guide {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 297mm;
+            border: 1px dashed rgba(203,213,225,0.5);
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 1;
         }
 
         .a4-paper.ff-libre { font-family: 'Libre Baskerville', 'Times New Roman', Georgia, serif; }
@@ -107,6 +120,7 @@
             opacity: 0.04; font-size: 72pt; font-weight: 800;
             color: #000; transform: rotate(-35deg); letter-spacing: 8px;
             font-family: 'Plus Jakarta Sans', sans-serif;
+            z-index: 0;
         }
 
         .pg-num {
@@ -114,6 +128,19 @@
             text-align: center; font-size: 9pt; color: #999;
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
+
+        /* Indikator melebihi 1 halaman */
+        .overflow-badge {
+            display: none;
+            position: absolute;
+            bottom: 8mm; left: 22mm; right: 22mm;
+            background: #fef2f2; border: 1px solid #fecaca;
+            color: #dc2626; font-size: 9pt; font-weight: 600;
+            padding: 6px 12px; border-radius: 8px; text-align: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            z-index: 2;
+        }
+        .overflow-badge.show { display: block; }
 
         .fi {
             width: 100%; padding: 11px 16px;
@@ -211,10 +238,13 @@
         .q-badge.mid { background: #dbeafe; color: #1e40af; }
         .q-badge.hi { background: #d1fae5; color: #065f46; }
 
+        /* ===== CETAK: HALAMAN POTONG OTOMATIS DI BATAS A4 ===== */
         @media print {
             .no-print { display: none !important; }
             .print-indicator { display: none !important; }
             .t-box { display: none !important; }
+            .a4-page-guide { display: none !important; }
+            .overflow-badge { display: none !important; }
             body { background: #fff !important; }
             .bg-dots { display: none !important; }
             .pv-outer, .pv-wrap {
@@ -224,14 +254,20 @@
                 overflow: visible !important; max-height: none !important;
             }
             .a4-paper {
-                width: 210mm !important; height: 297mm !important;
-                margin: 0 !important; padding: 18mm 20mm !important;
-                box-shadow: none !important; page-break-after: avoid;
+                width: 210mm !important;
+                min-height: 297mm !important;
+                margin: 0 !important;
+                padding: 18mm 20mm !important;
+                box-shadow: none !important;
+                page-break-inside: auto;
             }
             .dd-va { max-width: none !important; }
             .wm-layer { display: none !important; }
             .pg-num { display: none !important; }
-            @page { size: A4 portrait; margin: 0; }
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
         }
 
         @media (max-width: 1024px) {
@@ -259,7 +295,7 @@
             </div>
             <div class="min-w-0">
                 <h1 class="text-[15px] font-bold tracking-tight truncate">Generator Surat Lamaran</h1>
-                <p class="text-[8px] text-slate-500 -mt-0.5 tracking-widest uppercase">Bahasa Indonesia Baku v11.1</p>
+                <p class="text-[8px] text-slate-500 -mt-0.5 tracking-widest uppercase">Bahasa Indonesia Baku v11.2</p>
             </div>
         </div>
         <div class="flex items-center gap-1.5 flex-shrink-0">
@@ -530,7 +566,6 @@ Jakarta Selatan 12190</textarea>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="grid grid-cols-2 gap-2.5">
                                 <div>
                                     <label class="fl" for="f_fs">Ukuran Font Surat</label>
@@ -551,7 +586,6 @@ Jakarta Selatan 12190</textarea>
                                     </select>
                                 </div>
                             </div>
-
                             <div>
                                 <label class="fl">Kualitas PDF</label>
                                 <div class="grid grid-cols-3 gap-1.5">
@@ -569,7 +603,6 @@ Jakarta Selatan 12190</textarea>
                                     </div>
                                 </div>
                             </div>
-
                             <div>
                                 <label class="fl" for="f_margin">Margin Cetakan PDF</label>
                                 <select id="f_margin" class="fi" onchange="lv()">
@@ -577,7 +610,6 @@ Jakarta Selatan 12190</textarea>
                                     <option value="default">Default Peramban</option>
                                 </select>
                             </div>
-
                             <div>
                                 <label class="fl" for="f_wm">Teks Watermark (opsional)</label>
                                 <input id="f_wm" class="fi" placeholder="Kosongkan jika tidak perlu" oninput="lv()" value="">
@@ -602,7 +634,6 @@ Jakarta Selatan 12190</textarea>
                                     </select>
                                 </div>
                             </div>
-
                             <div class="space-y-2.5 pt-1">
                                 <div class="tg-wrap" onclick="togglePgNum(this)">
                                     <div class="tg-track" id="tgPgNum"></div>
@@ -649,7 +680,7 @@ Jakarta Selatan 12190</textarea>
                         <i class="fa-solid fa-eye text-teal-600 text-[11px]"></i>Pratinjau Langsung
                     </h3>
                     <div class="flex items-center gap-1.5">
-                        <span class="text-[8.5px] bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-bold tracking-wide">A4 210 x 297 mm</span>
+                        <span id="pageInfo" class="text-[8.5px] bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-bold tracking-wide">A4 — 1 Halaman</span>
                         <button onclick="doZoom(-1)" class="w-6 h-6 rounded-md bg-[var(--card)] hover:bg-slate-100 border border-[var(--border)] flex items-center justify-center text-[10px] text-[var(--muted)] transition"><i class="fa-solid fa-minus"></i></button>
                         <span class="text-[9px] text-[var(--muted)] font-mono w-7 text-center" id="zLv">100%</span>
                         <button onclick="doZoom(1)" class="w-6 h-6 rounded-md bg-[var(--card)] hover:bg-slate-100 border border-[var(--border)] flex items-center justify-center text-[10px] text-[var(--muted)] transition"><i class="fa-solid fa-plus"></i></button>
@@ -659,7 +690,11 @@ Jakarta Selatan 12190</textarea>
                 <div class="pv-wrap bg-slate-200/40 border border-[var(--border)] rounded-2xl p-4 overflow-auto" style="max-height:calc(100vh - 120px);">
                     <div id="sWrp" style="transform-origin:top center;transition:transform .2s;">
                         <div id="surat" class="a4-paper ff-merri">
-                            <div id="sC"></div>
+                            <div class="a4-page-guide no-print"></div>
+                            <div id="sC" style="position:relative;z-index:2;"></div>
+                            <div class="overflow-badge no-print" id="overflowBadge">
+                                <i class="fa-solid fa-layer-group" style="margin-right:4px"></i>Konten melebihi 1 halaman A4 — akan lanjut ke halaman berikutnya saat dicetak
+                            </div>
                             <div id="pgNum" class="pg-num" style="display:none"></div>
                         </div>
                     </div>
@@ -670,9 +705,6 @@ Jakarta Selatan 12190</textarea>
 </div>
 
 <script>
-/* ==============================================
-   KONSTANTA & UTILITAS
-   ============================================== */
 var BLN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 
 function fmtTgl(s) {
@@ -685,7 +717,6 @@ function v(id) { var el = document.getElementById(id); return (el ? el.value : '
 function hitungKata(t) { return t.trim().split(/\s+/).filter(function(w) { return w.length > 0; }).length; }
 function hitungKarakter(t) { return t.trim().length; }
 
-/* State global */
 var curFont = 'ff-merri';
 var curQuality = 'mid';
 var showPgNum = false;
@@ -693,9 +724,6 @@ var autoSaveOn = true;
 var autoSaveTimer = null;
 var _printing = false;
 
-/* ==============================================
-   TEMPLATE DATA
-   ============================================== */
 var TPL = {
     fresh: {
         f_peng: 'Selama masa pendidikan, saya memperoleh pengetahuan dan keterampilan di bidang yang saya tekuni. Saya juga aktif mengikuti kegiatan Praktik Kerja Lapangan serta organisasi sekolah yang membantu mengembangkan kemampuan komunikasi, kerja sama tim, dan tanggung jawab.',
@@ -732,9 +760,6 @@ function useTpl(k, el) {
     toast('Template diterapkan: ' + el.querySelector('div').textContent, 'ok');
 }
 
-/* ==============================================
-   TOAST — DIBLOKIR SAAT MODE CETAK
-   ============================================== */
 function toast(msg, type) {
     if (_printing) return;
     var ic = { ok:'fa-circle-check', nf:'fa-circle-info', wr:'fa-triangle-exclamation', bd:'fa-circle-xmark' };
@@ -749,17 +774,11 @@ function toast(msg, type) {
     }, 3200);
 }
 
-/* ==============================================
-   SECTION TOGGLE
-   ============================================== */
 function togSec(el) {
     el.classList.toggle('op');
     el.nextElementSibling.classList.toggle('op');
 }
 
-/* ==============================================
-   ZOOM
-   ============================================== */
 var zm = 100;
 function doZoom(dir) {
     if (dir === 0) zm = 100;
@@ -768,15 +787,10 @@ function doZoom(dir) {
     document.getElementById('zLv').textContent = zm + '%';
 }
 
-/* ==============================================
-   FONT & QUALITY SETTER (PERBAIKAN BUG: nama fungsi valid)
-   ============================================== */
 function setFont(cls, el) {
     curFont = cls;
     var surat = document.getElementById('surat');
-    /* Hapus class font lama, tambahkan yang baru */
     surat.className = surat.className.replace(/ff-\w+/g, '').trim() + ' ' + cls;
-    /* Toggle active state di grup font */
     var row = el.parentElement;
     var items = row.querySelectorAll('.tp-c');
     for (var i = 0; i < items.length; i++) items[i].classList.remove('on');
@@ -792,9 +806,6 @@ function setQuality(q, el) {
     el.classList.add('on');
 }
 
-/* ==============================================
-   TOGGLES
-   ============================================== */
 function togglePgNum(wrap) {
     var track = wrap.querySelector('.tg-track');
     showPgNum = !showPgNum;
@@ -833,9 +844,6 @@ function startAutoSave() {
 }
 function stopAutoSave() { if (autoSaveTimer) { clearInterval(autoSaveTimer); autoSaveTimer = null; } }
 
-/* ==============================================
-   DARK MODE
-   ============================================== */
 function toggleDark() {
     document.body.classList.toggle('dark-mode');
     var isDark = document.body.classList.contains('dark-mode');
@@ -845,9 +853,6 @@ function toggleDark() {
     toast(isDark ? 'Mode gelap diaktifkan' : 'Mode terang diaktifkan', 'nf');
 }
 
-/* ==============================================
-   VALIDASI
-   ============================================== */
 function validate() {
     var ok = true;
     var wajib = [
@@ -877,9 +882,6 @@ function validate() {
     return ok;
 }
 
-/* ==============================================
-   STATUS BAR
-   ============================================== */
 function setStatus(text, idle) {
     var dot = document.getElementById('stDot');
     var txt = document.getElementById('stText');
@@ -894,15 +896,38 @@ setInterval(updateClock, 1000);
 updateClock();
 
 /* ==============================================
-   RENDER PRATINJAU SURAT (INTI APLIKASI)
+   CEK KONTEN MELEBIHI 1 HALAMAN A4
    ============================================== */
+function checkPageOverflow() {
+    var surat = document.getElementById('surat');
+    var guide = surat.querySelector('.a4-page-guide');
+    if (!guide) return;
+    var guideH = guide.offsetHeight;
+    var contentH = surat.scrollHeight;
+    var badge = document.getElementById('overflowBadge');
+    var info = document.getElementById('pageInfo');
+    if (contentH > guideH + 2) {
+        badge.classList.add('show');
+        var estPages = Math.ceil(contentH / guideH);
+        info.textContent = 'A4 — ' + estPages + ' Halaman';
+        info.style.background = '#fef2f2';
+        info.style.color = '#dc2626';
+    } else {
+        badge.classList.remove('show');
+        info.textContent = 'A4 — 1 Halaman';
+        info.style.background = '';
+        info.style.color = '';
+    }
+}
+
 var lvTimer = null;
 
 function lv() {
     try {
         renderSurat();
+        /* Cek overflow setelah render */
+        setTimeout(checkPageOverflow, 50);
     } catch(e) {
-        /* Fallback: tampilkan pesan error di pratinjau agar user tahu */
         var sc = document.getElementById('sC');
         if (sc) sc.innerHTML = '<div style="padding:40px 20px;color:#dc2626;font-family:sans-serif;font-size:14px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:8px;"></i><strong>Error Render:</strong> ' + e.message + '<br><br><span style="color:#64748b;font-size:12px;">Coba muat ulang halaman atau reset form.</span></div>';
         console.error('Render error:', e);
@@ -939,14 +964,12 @@ function renderSurat() {
     var wmOp = v('f_wmOp') || '0.04';
     var wmSz = v('f_wmSz') || '72pt';
 
-    /* Statistik kata/karakter */
     var semua = [nama, tmpt, almt, pend, tujRaw, peng, mot, lampRaw].join(' ');
     var wcEl = document.querySelector('#wcB span');
     var ccEl = document.querySelector('#ccB span');
     if (wcEl) wcEl.textContent = hitungKata(semua) + ' kata';
     if (ccEl) ccEl.textContent = hitungKarakter(semua) + ' karakter';
 
-    /* Parse alamat tujuan */
     var tujLines = tujRaw.split('\n').filter(function(l) { return l.trim(); });
     var tujHTML = '';
     for (var i = 0; i < tujLines.length; i++) {
@@ -956,7 +979,6 @@ function renderSurat() {
         ? kap(tujLines[1].replace(/^PT\.?\s*/i, '').trim())
         : 'perusahaan Bapak/Ibu';
 
-    /* Format lampiran */
     var lampLines = lampRaw.split('\n').filter(function(l) { return l.trim(); });
     var lampCount = lampLines.length;
     var lampHTML = '';
@@ -964,10 +986,8 @@ function renderSurat() {
         lampHTML += '<div>' + lampLines[j].trim() + '</div>';
     }
 
-    /* Nama tanda tangan */
     var ttdNama = tdt || nama;
 
-    /* Nomor surat opsional */
     var nmrHTML = '';
     if (nmr) {
         nmrHTML = '<div style="margin-bottom:22px;"><strong>Lampiran</strong>&nbsp;&nbsp;&nbsp;: ' + lampCount + ' berkas</div>'
@@ -977,21 +997,17 @@ function renderSurat() {
         nmrHTML = '<div class="s-prh"><strong>Perihal</strong>&nbsp;&nbsp;&nbsp;: Lamaran Pekerjaan sebagai ' + pos + '</div>';
     }
 
-    /* Watermark */
     var wmHTML = wm ? '<div class="wm-layer" style="opacity:' + wmOp + ';font-size:' + wmSz + '">' + wm + '</div>' : '';
 
-    /* Nomor halaman */
     var pgEl = document.getElementById('pgNum');
     if (pgEl) {
         pgEl.textContent = 'Halaman 1';
         pgEl.style.display = showPgNum ? 'block' : 'none';
     }
 
-    /* Susun HTML surat */
     var h = ''
         + wmHTML
         + '<div class="s-tgl">' + kota + ', ' + tglS + '</div>'
-        + '<div style="margin-top:-10px"></div>'
         + nmrHTML
         + '<div class="s-tuj">' + tujHTML + '</div>'
         + '<div style="margin-bottom:18px;">Dengan hormat,</div>'
@@ -1027,20 +1043,15 @@ function renderSurat() {
 
     document.getElementById('sC').innerHTML = h;
 
-    /* Terapkan pengaturan font dan line-height */
     var suratEl = document.getElementById('surat');
     suratEl.style.fontSize = fs;
     suratEl.style.lineHeight = lh;
 
-    /* Update status bar */
     setStatus('Perubahan tersimpan di pratinjau', false);
     if (lvTimer) clearTimeout(lvTimer);
     lvTimer = setTimeout(function() { setStatus('Siap', true); }, 2000);
 }
 
-/* ==============================================
-   AKSI TOOLBAR — TANPA TOAST SEBELUM CETAK
-   ============================================== */
 function showPrintIndicator(text, sub) {
     var el = document.getElementById('printInd');
     el.querySelector('.pi-text').textContent = text;
@@ -1107,12 +1118,8 @@ function copyText() {
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(function() {
             toast('Teks surat berhasil disalin ke clipboard', 'ok');
-        }).catch(function() {
-            fallbackCopy(text);
-        });
-    } else {
-        fallbackCopy(text);
-    }
+        }).catch(function() { fallbackCopy(text); });
+    } else { fallbackCopy(text); }
 }
 function fallbackCopy(text) {
     var ta = document.createElement('textarea');
@@ -1125,9 +1132,6 @@ function fallbackCopy(text) {
     document.body.removeChild(ta);
 }
 
-/* ==============================================
-   DRAFT localStorage
-   ============================================== */
 var SK = 'slamaran_draft_v11';
 var FIDS = [
     'f_nama','f_tmpt','f_tglL','f_jk','f_stat','f_agm','f_almt',
@@ -1159,12 +1163,10 @@ function loadDraft() {
         for (var i = 0; i < FIDS.length; i++) {
             if (d[FIDS[i]] !== undefined) document.getElementById(FIDS[i]).value = d[FIDS[i]];
         }
-        /* Restore font */
         if (d._font) {
             curFont = d._font;
             var surat = document.getElementById('surat');
             surat.className = surat.className.replace(/ff-\w+/g, '').trim() + ' ' + curFont;
-            /* Update UI selector */
             var fontBtns = document.querySelectorAll('[onclick*="setFont"]');
             for (var fi = 0; fi < fontBtns.length; fi++) {
                 var m = fontBtns[fi].getAttribute('onclick').match(/'([^']+)'/);
@@ -1176,7 +1178,6 @@ function loadDraft() {
                 }
             }
         }
-        /* Restore quality */
         if (d._quality) {
             curQuality = d._quality;
             var qBtns = document.querySelectorAll('[onclick*="setQuality"]');
@@ -1190,13 +1191,11 @@ function loadDraft() {
                 }
             }
         }
-        /* Restore page number toggle */
         if (d._pgNum !== undefined) {
             showPgNum = d._pgNum;
             var tg = document.getElementById('tgPgNum');
             if (showPgNum) tg.classList.add('on'); else tg.classList.remove('on');
         }
-        /* Restore dark mode */
         if (d._dark) {
             document.body.classList.add('dark-mode');
             document.getElementById('btnDark').innerHTML = '<i class="fa-solid fa-sun text-xs"></i>';
@@ -1208,9 +1207,6 @@ function loadDraft() {
     } catch(e) { toast('Gagal memuat draft — data rusak', 'bd'); }
 }
 
-/* ==============================================
-   MODAL RESET
-   ============================================== */
 function confirmReset() {
     var ov = document.createElement('div');
     ov.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9998;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);';
@@ -1248,13 +1244,9 @@ function confirmReset() {
     };
 }
 
-/* ==============================================
-   PINTASAN KEYBOARD
-   ============================================== */
 document.addEventListener('keydown', function(e) {
     var tag = e.target.tagName;
     var isInput = tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA';
-
     if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveDraft(); }
     if ((e.ctrlKey || e.metaKey) && e.key === 'm') { e.preventDefault(); loadDraft(); }
     if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); expPDF(); }
@@ -1267,14 +1259,8 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-/* ==============================================
-   INISIALISASI
-   ============================================== */
 window.addEventListener('DOMContentLoaded', function() {
-    /* Render pertama kali */
     lv();
-
-    /* Hapus error saat user mulai mengetik */
     var allInputs = document.querySelectorAll('.fi');
     for (var i = 0; i < allInputs.length; i++) {
         (function(el) {
@@ -1289,15 +1275,11 @@ window.addEventListener('DOMContentLoaded', function() {
             });
         })(allInputs[i]);
     }
-
-    /* Deteksi draft tersimpan */
     try {
         if (localStorage.getItem(SK)) {
             setTimeout(function() { toast('Draft tersimpan ditemukan. Klik "Muat" untuk memuat.', 'nf'); }, 1200);
         }
     } catch(e) {}
-
-    /* Mulai auto-save jika aktif */
     if (autoSaveOn) {
         document.getElementById('stAuto').style.display = 'inline';
         startAutoSave();
