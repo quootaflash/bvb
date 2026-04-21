@@ -123,7 +123,7 @@ class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-emerald
 placeholder="Pendidikan Terakhir" 
 class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-emerald-500 outline-none mt-4" oninput="updatePreview()">
 
-<!-- Tanggal & Kota Lamaran (baru) -->
+<!-- Tanggal & Kota Lamaran -->
 <div class="grid grid-cols-2 gap-4 mt-4">
 <input id="kota_lamaran" type="text" value="Pekalongan" placeholder="Kota Lamaran" 
 class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-emerald-500 outline-none" oninput="updatePreview()">
@@ -145,7 +145,7 @@ class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-emerald
 </div>
 </div>
 
-<!-- Nama Perusahaan (baru - untuk referensi isi email) -->
+<!-- Nama Perusahaan -->
 <div>
 <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-2">Nama Perusahaan</h3>
 <input id="perusahaan" type="text" value="PT. Contoh Indonesia" placeholder="Nama Perusahaan Tujuan" 
@@ -156,9 +156,20 @@ class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-emerald
 <div>
 <h3 class="uppercase text-xs tracking-widest font-medium text-slate-500 mb-4">Isi Email Lamaran</h3>
 <textarea id="isi_surat" rows="9" class="w-full px-5 py-4 border border-slate-200 rounded-3xl focus:border-emerald-500 outline-none" oninput="updatePreview()">
-Berdasarkan informasi lowongan pekerjaan yang saya lihat di website perusahaan, saya dengan hormat mengajukan lamaran untuk posisi IT Support.
+Yth. ${document.getElementById('hrd').value},
 
-Saya adalah fresh graduate Teknik Jaringan Komputer dan Telekomunikasi dengan kemampuan di bidang administrasi jaringan, troubleshooting hardware/software, serta Microsoft Office. Saya siap memberikan kontribusi terbaik bagi kemajuan perusahaan.</textarea>
+Perkenalkan, saya ${document.getElementById('nama').value}. Saya bermaksud melamar posisi ${document.getElementById('subjek').value.replace('Lamaran Pekerjaan ', '')} yang saya temukan melalui website perusahaan.
+
+Saya merupakan lulusan ${document.getElementById('pendidikan').value} dengan kemampuan di bidang administrasi jaringan, troubleshooting hardware/software, serta Microsoft Office. Saya siap berkontribusi dan berkembang bersama perusahaan.
+
+Sebagai bahan pertimbangan, saya lampirkan CV dan dokumen pendukung lainnya.
+
+Besar harapan saya untuk dapat mengikuti proses seleksi lebih lanjut. Terima kasih atas perhatian Bapak/Ibu.
+
+Hormat saya,
+${document.getElementById('nama').value}
+${document.getElementById('telepon').value}
+</textarea>
 </div>
 
 <!-- Lampiran -->
@@ -191,29 +202,29 @@ Saya adalah fresh graduate Teknik Jaringan Komputer dan Telekomunikasi dengan ke
 
 <script>
   function updatePreview() {
-    const nama = document.getElementById('nama').value || "Nama Lengkap";
+    const nama = document.getElementById('nama').value || "Muhammad Hafis";
     const perusahaan = document.getElementById('perusahaan').value || "Perusahaan";
-    const posisi = document.getElementById('subjek').value || "Posisi yang Dilamar";
-    const hrd = document.getElementById('hrd').value || "HRD";
-    const telepon = document.getElementById('telepon').value;
-    const emailUser = document.getElementById('email').value;
-    const isi = document.getElementById('isi_surat').value.replace(/\n/g, '<br>');
-    const lampiranText = document.getElementById('lampiran').value.replace(/\n/g, '<br>');
-    
-    const contentHTML = `
-      <div class="email-header mb-4">
-        <p class="mb-2">Yth. ${hrd},</p>
-        <p class="mb-4">Perkenalkan, saya <b>${nama}</b>. Saya bermaksud melamar posisi <b>${posisi}</b> yang saya temukan melalui website perusahaan.</p>
-        <p class="mb-4">Saya merupakan lulusan dari pendidikan terakhir dan memiliki kemampuan di bidang administrasi jaringan, troubleshooting hardware/software, serta Microsoft Office. Saya siap berkontribusi dan berkembang bersama perusahaan.</p>
-        <p class="mb-4">Sebagai bahan pertimbangan, saya lampirkan CV dan dokumen pendukung lainnya.</p>
-        <p class="mb-4">Besar harapan saya untuk dapat mengikuti proses seleksi lebih lanjut. Terima kasih atas perhatian Bapak/Ibu.</p>
-        <p class="font-semibold mb-4">Hormat saya,</p>
-        <p class="font-semibold mb-2">${nama}</p>
-        <p>${telepon}</p>
-      </div>
-    `;
+    const posisi = document.getElementById('subjek').value.replace('Lamaran Pekerjaan ', '') || "Posisi";
+    const hrd = document.getElementById('hrd').value || "Manager HRD";
+    const telepon = document.getElementById('telepon').value || "0856-1234-5678";
 
-    document.getElementById('email-content').innerHTML = contentHTML;
+    const emailHTML = `
+Yth. ${hrd},
+
+Perkenalkan, saya ${nama}. Saya bermaksud melamar posisi ${posisi} yang saya temukan melalui website perusahaan.
+
+Saya merupakan lulusan ${document.getElementById('pendidikan').value} dengan kemampuan di bidang administrasi jaringan, troubleshooting hardware/software, serta Microsoft Office. Saya siap berkontribusi dan berkembang bersama perusahaan.
+
+Sebagai bahan pertimbangan, saya lampirkan CV dan dokumen pendukung lainnya.
+
+Besar harapan saya untuk dapat mengikuti proses seleksi lebih lanjut. Terima kasih atas perhatian Bapak/Ibu.
+
+Hormat saya,<br>
+${nama}<br>
+${telepon}
+`;
+
+    document.getElementById('email-content').innerHTML = emailHTML;
   }
 
   function copyEmailToClipboard() {
