@@ -42,6 +42,10 @@
         .dark-mode .pv-wrap { background: rgba(30,41,59,.5); border-color: #334155; }
         .dark-mode .wc-b { background: #1e293b; }
         .dark-mode .kb { background: #1e293b; border-color: #334155; color: #64748b; }
+        .dark-mode .tip-box-amber { background: #451a03; border-color: #78350f; }
+        .dark-mode .tip-box-amber p { color: #fbbf24; }
+        .dark-mode .tip-box-teal { background: #042f2e; border-color: #115e59; }
+        .dark-mode .tip-box-teal p { color: #5eead4; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -59,7 +63,7 @@
         }
         .dark-mode .bg-dots { opacity: 0.12; }
 
-        /* ===== KERTAS A4 — MIN-HEIGHT, BISA MERENTANG ===== */
+        /* ===== KERTAS A4 ===== */
         .a4-paper {
             width: 210mm;
             min-height: 297mm;
@@ -72,15 +76,14 @@
             line-height: 1.72;
             color: #1a1a1a;
             position: relative;
-            /* Tidak ada overflow:hidden — konten boleh merentang */
         }
 
-        /* Garis batas halaman A4 (hanya visual di pratinjau) */
+        /* Garis batas halaman — HANYA pratinjau, BUKAN cetak/PNG */
         .a4-page-guide {
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 297mm;
-            border: 1px dashed rgba(203,213,225,0.5);
+            border: 1px dashed rgba(148,163,184,0.4);
             border-radius: 2px;
             pointer-events: none;
             z-index: 1;
@@ -119,8 +122,7 @@
             display: flex; align-items: center; justify-content: center;
             opacity: 0.04; font-size: 72pt; font-weight: 800;
             color: #000; transform: rotate(-35deg); letter-spacing: 8px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            z-index: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif; z-index: 0;
         }
 
         .pg-num {
@@ -129,7 +131,10 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        /* Indikator melebihi 1 halaman */
+        /* ===== ELEMEN VISUAL PRATINJAU — CLASS KHUSUS UNTUK DISEMBUNYIKAN SAAT PNG/CETAK ===== */
+        .preview-only {
+            pointer-events: none;
+        }
         .overflow-badge {
             display: none;
             position: absolute;
@@ -137,11 +142,11 @@
             background: #fef2f2; border: 1px solid #fecaca;
             color: #dc2626; font-size: 9pt; font-weight: 600;
             padding: 6px 12px; border-radius: 8px; text-align: center;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            z-index: 2;
+            font-family: 'Plus Jakarta Sans', sans-serif; z-index: 2;
         }
         .overflow-badge.show { display: block; }
 
+        /* ===== FORM ===== */
         .fi {
             width: 100%; padding: 11px 16px;
             border: 1.5px solid var(--border); border-radius: 12px;
@@ -162,6 +167,7 @@
         .fe { font-size: 10px; color: var(--danger); margin-top: 3px; display: none; }
         .fe.sh { display: block; }
 
+        /* ===== PRINT INDICATOR ===== */
         .print-indicator {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             z-index: 99999; background: rgba(15,23,42,.85);
@@ -175,6 +181,7 @@
         .print-indicator .pi-text { color: #e2e8f0; font-size: 13px; font-weight: 600; }
         .print-indicator .pi-sub { color: #94a3b8; font-size: 11px; }
 
+        /* ===== TOAST ===== */
         .t-box {
             position: fixed; top: 72px; right: 18px; z-index: 9998;
             display: flex; flex-direction: column; gap: 8px; pointer-events: none;
@@ -193,6 +200,7 @@
         @keyframes tIn { from { opacity:0; transform:translateX(50px); } to { opacity:1; transform:translateX(0); } }
         @keyframes tOt { to { opacity:0; transform:translateX(50px) scale(.95); } }
 
+        /* ===== MISC ===== */
         .tp-c {
             padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px;
             cursor: pointer; transition: all .2s; background: var(--card); text-align: center;
@@ -238,9 +246,12 @@
         .q-badge.mid { background: #dbeafe; color: #1e40af; }
         .q-badge.hi { background: #d1fae5; color: #065f46; }
 
-        /* ===== CETAK: HALAMAN POTONG OTOMATIS DI BATAS A4 ===== */
+        .tip-box-amber { transition: background .3s, border-color .3s; }
+        .tip-box-teal { transition: background .3s, border-color .3s; }
+
+        /* ===== CETAK: SEMUA ELEMEN VISUAL PRATINJAU DIBERSIHKAN ===== */
         @media print {
-            .no-print { display: none !important; }
+            .no-print, .preview-only { display: none !important; }
             .print-indicator { display: none !important; }
             .t-box { display: none !important; }
             .a4-page-guide { display: none !important; }
@@ -254,20 +265,14 @@
                 overflow: visible !important; max-height: none !important;
             }
             .a4-paper {
-                width: 210mm !important;
-                min-height: 297mm !important;
-                margin: 0 !important;
-                padding: 18mm 20mm !important;
-                box-shadow: none !important;
-                page-break-inside: auto;
+                width: 210mm !important; min-height: 297mm !important;
+                margin: 0 !important; padding: 18mm 20mm !important;
+                box-shadow: none !important; page-break-inside: auto;
             }
             .dd-va { max-width: none !important; }
             .wm-layer { display: none !important; }
             .pg-num { display: none !important; }
-            @page {
-                size: A4 portrait;
-                margin: 0;
-            }
+            @page { size: A4 portrait; margin: 0; }
         }
 
         @media (max-width: 1024px) {
@@ -287,6 +292,7 @@
     <div class="pi-sub">Pilih "Save as PDF" di dialog cetak</div>
 </div>
 
+<!-- ===== NAVBAR ===== -->
 <nav class="bg-slate-950 text-white sticky top-0 z-50 no-print">
     <div class="max-w-[1560px] mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-2">
         <div class="flex items-center gap-2.5 min-w-0">
@@ -295,7 +301,7 @@
             </div>
             <div class="min-w-0">
                 <h1 class="text-[15px] font-bold tracking-tight truncate">Generator Surat Lamaran</h1>
-                <p class="text-[8px] text-slate-500 -mt-0.5 tracking-widest uppercase">Bahasa Indonesia Baku v11.2</p>
+                <p class="text-[8px] text-slate-500 -mt-0.5 tracking-widest uppercase">Bahasa Indonesia Baku v11.3</p>
             </div>
         </div>
         <div class="flex items-center gap-1.5 flex-shrink-0">
@@ -328,9 +334,11 @@
     </div>
 </nav>
 
+<!-- ===== MAIN ===== -->
 <div class="max-w-[1560px] mx-auto px-4 md:px-6 py-5">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
+        <!-- ===== FORM PANEL ===== -->
         <div class="lg:col-span-5 no-print">
             <div class="bg-[var(--card)] rounded-2xl shadow-lg border border-[var(--border)] overflow-hidden flex flex-col" style="max-height:calc(100vh - 100px);">
                 <div class="px-5 pt-5 pb-3 border-b border-[var(--border)] flex-shrink-0">
@@ -348,6 +356,7 @@
 
                 <div class="fsc px-5 pb-5 overflow-y-auto flex-1">
 
+                    <!-- Template -->
                     <div class="mt-4 mb-5">
                         <label class="fl"><i class="fa-solid fa-bolt mr-1 text-amber-500"></i>Template Cepat</label>
                         <div class="grid grid-cols-4 gap-1.5">
@@ -370,6 +379,7 @@
                         </div>
                     </div>
 
+                    <!-- DATA DIRI -->
                     <div class="mb-1">
                         <div class="sh-hd op" onclick="togSec(this)">
                             <span class="text-[12.5px] font-bold text-[var(--text)]"><i class="fa-solid fa-user-pen mr-1.5 text-teal-600 text-[11px]"></i>Data Diri Pelamar</span>
@@ -440,6 +450,7 @@
                         </div></div>
                     </div>
 
+                    <!-- TUJUAN SURAT -->
                     <div class="mb-1">
                         <div class="sh-hd op" onclick="togSec(this)">
                             <span class="text-[12.5px] font-bold text-[var(--text)]"><i class="fa-solid fa-building mr-1.5 text-teal-600 text-[11px]"></i>Tujuan Surat</span>
@@ -478,6 +489,7 @@ Jakarta Selatan 12190</textarea>
                         </div></div>
                     </div>
 
+                    <!-- ISI SURAT -->
                     <div class="mb-1">
                         <div class="sh-hd op" onclick="togSec(this)">
                             <span class="text-[12.5px] font-bold text-[var(--text)]"><i class="fa-solid fa-pen-fancy mr-1.5 text-teal-600 text-[11px]"></i>Isi Surat</span>
@@ -507,6 +519,7 @@ Jakarta Selatan 12190</textarea>
                         </div></div>
                     </div>
 
+                    <!-- TANDA TANGAN -->
                     <div class="mb-1">
                         <div class="sh-hd op" onclick="togSec(this)">
                             <span class="text-[12.5px] font-bold text-[var(--text)]"><i class="fa-solid fa-signature mr-1.5 text-teal-600 text-[11px]"></i>Tanda Tangan</span>
@@ -540,6 +553,7 @@ Jakarta Selatan 12190</textarea>
                         </div></div>
                     </div>
 
+                    <!-- PENGATURAN LANJUTAN -->
                     <div class="mb-1">
                         <div class="sh-hd" onclick="togSec(this)">
                             <span class="text-[12.5px] font-bold text-[var(--text)]"><i class="fa-solid fa-sliders mr-1.5 text-slate-400 text-[11px]"></i>Pengaturan Lanjutan</span>
@@ -647,12 +661,13 @@ Jakarta Selatan 12190</textarea>
                         </div></div>
                     </div>
 
-                    <div class="mt-5 mb-2 p-3.5 bg-amber-50 border border-amber-200/80 rounded-xl">
+                    <!-- Tips -->
+                    <div class="mt-5 mb-2 p-3.5 bg-amber-50 border border-amber-200/80 rounded-xl tip-box-amber">
                         <p class="text-[10.5px] text-amber-800 leading-relaxed">
                             <i class="fa-solid fa-circle-info mr-1"></i><strong>Tips:</strong> Gunakan bahasa Indonesia baku sesuai EYD V. Hindari singkatan tidak baku. Periksa kelengkapan data sebelum mengekspor.
                         </p>
                     </div>
-                    <div class="mb-2 p-3.5 bg-teal-50 border border-teal-200/80 rounded-xl">
+                    <div class="mb-2 p-3.5 bg-teal-50 border border-teal-200/80 rounded-xl tip-box-teal">
                         <p class="text-[10.5px] text-teal-800 leading-relaxed">
                             <i class="fa-regular fa-keyboard mr-1"></i><strong>Pintasan:</strong>
                             <span class="kb">Ctrl+S</span> Simpan &nbsp;
@@ -664,6 +679,7 @@ Jakarta Selatan 12190</textarea>
                     </div>
                 </div>
 
+                <!-- Status Bar -->
                 <div class="stat-bar flex-shrink-0">
                     <div class="stat-dot idle" id="stDot"></div>
                     <span id="stText">Siap</span>
@@ -673,6 +689,7 @@ Jakarta Selatan 12190</textarea>
             </div>
         </div>
 
+        <!-- ===== PREVIEW PANEL ===== -->
         <div class="lg:col-span-7">
             <div class="pv-outer sticky top-[64px]">
                 <div class="flex items-center justify-between mb-2.5 px-0.5 no-print">
@@ -690,9 +707,10 @@ Jakarta Selatan 12190</textarea>
                 <div class="pv-wrap bg-slate-200/40 border border-[var(--border)] rounded-2xl p-4 overflow-auto" style="max-height:calc(100vh - 120px);">
                     <div id="sWrp" style="transform-origin:top center;transition:transform .2s;">
                         <div id="surat" class="a4-paper ff-merri">
-                            <div class="a4-page-guide no-print"></div>
+                            <!-- Elemen visual pratinjau: class preview-only untuk disembunyikan saat PNG/cetak -->
+                            <div class="a4-page-guide preview-only"></div>
                             <div id="sC" style="position:relative;z-index:2;"></div>
-                            <div class="overflow-badge no-print" id="overflowBadge">
+                            <div class="overflow-badge preview-only" id="overflowBadge">
                                 <i class="fa-solid fa-layer-group" style="margin-right:4px"></i>Konten melebihi 1 halaman A4 — akan lanjut ke halaman berikutnya saat dicetak
                             </div>
                             <div id="pgNum" class="pg-num" style="display:none"></div>
@@ -705,6 +723,9 @@ Jakarta Selatan 12190</textarea>
 </div>
 
 <script>
+/* ==============================================
+   KONSTANTA & UTILITAS
+   ============================================== */
 var BLN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 
 function fmtTgl(s) {
@@ -713,223 +734,283 @@ function fmtTgl(s) {
     return isNaN(d) ? s : d.getDate() + ' ' + BLN[d.getMonth()] + ' ' + d.getFullYear();
 }
 function kap(s) { return s ? s.replace(/\b\w/g, function(c) { return c.toUpperCase(); }) : ''; }
-function v(id) { var el = document.getElementById(id); return (el ? el.value : '').trim(); }
+function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
 function hitungKata(t) { return t.trim().split(/\s+/).filter(function(w) { return w.length > 0; }).length; }
 function hitungKarakter(t) { return t.trim().length; }
 
+/* ===== STATE GLOBAL ===== */
 var curFont = 'ff-merri';
 var curQuality = 'mid';
 var showPgNum = false;
 var autoSaveOn = true;
 var autoSaveTimer = null;
 var _printing = false;
+var lvTimer = null;
+var checkTimer = null;
 
+/* ==============================================
+   TEMPLATE DATA
+   ============================================== */
 var TPL = {
-    fresh: {
-        f_peng: 'Selama masa pendidikan, saya memperoleh pengetahuan dan keterampilan di bidang yang saya tekuni. Saya juga aktif mengikuti kegiatan Praktik Kerja Lapangan serta organisasi sekolah yang membantu mengembangkan kemampuan komunikasi, kerja sama tim, dan tanggung jawab.',
-        f_mot: 'Saya memiliki semangat yang tinggi untuk belajar dan siap berkontribusi secara positif bagi perusahaan.',
-        f_stat: 'Belum Menikah'
-    },
-    exp: {
-        f_peng: 'Saya memiliki pengalaman kerja selama lebih dari satu tahun di bidang yang relevan dengan posisi yang saya lamar. Saya mampu bekerja secara mandiri maupun dalam tim, mengelola waktu dengan baik, dan beradaptasi terhadap lingkungan kerja baru dengan cepat.',
-        f_mot: 'Saya yakin pengalaman dan kompetensi yang saya miliki dapat memberikan nilai tambah bagi perusahaan.',
-        f_stat: 'Menikah'
-    },
-    magang: {
-        f_peng: 'Saya merupakan mahasiswa yang sedang menempuh pendidikan dan bermaksud mengikuti program magang untuk mengembangkan kompetensi praktis. Saya memiliki dasar pengetahuan yang kuat di bidang terkait serta antusiasme tinggi untuk belajar langsung di lingkungan kerja profesional.',
-        f_mot: 'Program magang ini merupakan kesempatan berharga bagi saya untuk mengaplikasikan ilmu yang telah dipelajari di bangku kuliah.',
-        f_stat: 'Belum Menikah'
-    },
-    pns: {
-        f_peng: 'Saya memenuhi kualifikasi pendidikan dan kompetensi yang dipersyaratkan sesuai dengan formasi yang dibuka. Saya memiliki integritas, dedikasi tinggi, serta komitmen untuk mengabdi kepada negara dan masyarakat.',
-        f_mot: 'Saya bermaksud mengabdikan diri secara penuh dalam rangka mendukung terwujudnya good governance dan pelayanan publik yang berkualitas.',
-        f_stat: 'Belum Menikah'
-    }
+    fresh: { f_peng: 'Selama masa pendidikan, saya memperoleh pengetahuan dan keterampilan di bidang yang saya tekuni. Saya juga aktif mengikuti kegiatan Praktik Kerja Lapangan serta organisasi sekolah yang membantu mengembangkan kemampuan komunikasi, kerja sama tim, dan tanggung jawab.', f_mot: 'Saya memiliki semangat yang tinggi untuk belajar dan siap berkontribusi secara positif bagi perusahaan.', f_stat: 'Belum Menikah' },
+    exp: { f_peng: 'Saya memiliki pengalaman kerja selama lebih dari satu tahun di bidang yang relevan dengan posisi yang saya lamar. Saya mampu bekerja secara mandiri maupun dalam tim, mengelola waktu dengan baik, dan beradaptasi terhadap lingkungan kerja baru dengan cepat.', f_mot: 'Saya yakin pengalaman dan kompetensi yang saya miliki dapat memberikan nilai tambah bagi perusahaan.', f_stat: 'Menikah' },
+    magang: { f_peng: 'Saya merupakan mahasiswa yang sedang menempuh pendidikan dan bermaksud mengikuti program magang untuk mengembangkan kompetensi praktis. Saya memiliki dasar pengetahuan yang kuat di bidang terkait serta antusiasme tinggi untuk belajar langsung di lingkungan kerja profesional.', f_mot: 'Program magang ini merupakan kesempatan berharga bagi saya untuk mengaplikasikan ilmu yang telah dipelajari di bangku kuliah.', f_stat: 'Belum Menikah' },
+    pns: { f_peng: 'Saya memenuhi kualifikasi pendidikan dan kompetensi yang dipersyaratkan sesuai dengan formasi yang dibuka. Saya memiliki integritas, dedikasi tinggi, serta komitmen untuk mengabdi kepada negara dan masyarakat.', f_mot: 'Saya bermaksud mengabdikan diri secara penuh dalam rangka mendukung terwujudnya good governance dan pelayanan publik yang berkualitas.', f_stat: 'Belum Menikah' }
 };
 
 function useTpl(k, el) {
-    var row = el.parentElement;
-    var items = row.querySelectorAll('.tp-c');
-    for (var i = 0; i < items.length; i++) items[i].classList.remove('on');
-    el.classList.add('on');
-    var t = TPL[k];
-    if (t.f_peng) document.getElementById('f_peng').value = t.f_peng;
-    if (t.f_mot) document.getElementById('f_mot').value = t.f_mot;
-    if (t.f_stat) document.getElementById('f_stat').value = t.f_stat;
-    lv();
-    toast('Template diterapkan: ' + el.querySelector('div').textContent, 'ok');
+    try {
+        var row = el.parentElement;
+        if (!row) return;
+        var items = row.querySelectorAll('.tp-c');
+        for (var i = 0; i < items.length; i++) items[i].classList.remove('on');
+        el.classList.add('on');
+        var t = TPL[k];
+        if (!t) return;
+        if (t.f_peng) document.getElementById('f_peng').value = t.f_peng;
+        if (t.f_mot) document.getElementById('f_mot').value = t.f_mot;
+        if (t.f_stat) document.getElementById('f_stat').value = t.f_stat;
+        lv();
+        toast('Template diterapkan: ' + (el.querySelector('div') ? el.querySelector('div').textContent : ''), 'ok');
+    } catch(e) { console.error('useTpl error:', e); }
 }
 
+/* ==============================================
+   TOAST — DIBLOKIR SAAT MODE CETAK
+   ============================================== */
 function toast(msg, type) {
-    if (_printing) return;
-    var ic = { ok:'fa-circle-check', nf:'fa-circle-info', wr:'fa-triangle-exclamation', bd:'fa-circle-xmark' };
-    var d = document.createElement('div');
-    d.className = 't-i ' + (type || 'nf');
-    d.innerHTML = '<i class="fa-solid ' + (ic[type] || ic.nf) + '"></i><span>' + msg + '</span>';
-    var box = document.getElementById('tBox');
-    if (box) box.appendChild(d);
-    setTimeout(function() {
-        d.classList.add('ot');
-        setTimeout(function() { if (d.parentNode) d.parentNode.removeChild(d); }, 260);
-    }, 3200);
+    try {
+        if (_printing) return;
+        var ic = { ok:'fa-circle-check', nf:'fa-circle-info', wr:'fa-triangle-exclamation', bd:'fa-circle-xmark' };
+        var d = document.createElement('div');
+        d.className = 't-i ' + (type || 'nf');
+        d.innerHTML = '<i class="fa-solid ' + (ic[type] || ic.nf) + '"></i><span>' + msg + '</span>';
+        var box = document.getElementById('tBox');
+        if (box) box.appendChild(d);
+        setTimeout(function() {
+            if (d.parentNode) d.parentNode.removeChild(d);
+        }, 3500);
+    } catch(e) { /* Jangan biarkan toast error menghentikan alur */ }
 }
 
+/* ==============================================
+   SECTION TOGGLE
+   ============================================== */
 function togSec(el) {
-    el.classList.toggle('op');
-    el.nextElementSibling.classList.toggle('op');
+    try {
+        el.classList.toggle('op');
+        var bd = el.nextElementSibling;
+        if (bd) bd.classList.toggle('op');
+    } catch(e) {}
 }
 
+/* ==============================================
+   ZOOM
+   ============================================== */
 var zm = 100;
 function doZoom(dir) {
-    if (dir === 0) zm = 100;
-    else zm = Math.max(40, Math.min(160, zm + dir * 10));
-    document.getElementById('sWrp').style.transform = 'scale(' + (zm / 100) + ')';
-    document.getElementById('zLv').textContent = zm + '%';
+    try {
+        if (dir === 0) zm = 100;
+        else zm = Math.max(40, Math.min(160, zm + dir * 10));
+        var wrp = document.getElementById('sWrp');
+        if (wrp) wrp.style.transform = 'scale(' + (zm / 100) + ')';
+        var lbl = document.getElementById('zLv');
+        if (lbl) lbl.textContent = zm + '%';
+    } catch(e) {}
 }
 
+/* ==============================================
+   FONT & QUALITY
+   ============================================== */
 function setFont(cls, el) {
-    curFont = cls;
-    var surat = document.getElementById('surat');
-    surat.className = surat.className.replace(/ff-\w+/g, '').trim() + ' ' + cls;
-    var row = el.parentElement;
-    var items = row.querySelectorAll('.tp-c');
-    for (var i = 0; i < items.length; i++) items[i].classList.remove('on');
-    el.classList.add('on');
-    lv();
+    try {
+        curFont = cls;
+        var surat = document.getElementById('surat');
+        if (!surat) return;
+        surat.className = surat.className.replace(/ff-\w+/g, '').trim() + ' ' + cls;
+        var row = el.parentElement;
+        if (!row) return;
+        var items = row.querySelectorAll('.tp-c');
+        for (var i = 0; i < items.length; i++) items[i].classList.remove('on');
+        el.classList.add('on');
+        lv();
+    } catch(e) { console.error('setFont error:', e); }
 }
 
 function setQuality(q, el) {
-    curQuality = q;
-    var row = el.parentElement;
-    var items = row.querySelectorAll('.tp-c');
-    for (var i = 0; i < items.length; i++) items[i].classList.remove('on');
-    el.classList.add('on');
+    try {
+        curQuality = q;
+        var row = el.parentElement;
+        if (!row) return;
+        var items = row.querySelectorAll('.tp-c');
+        for (var i = 0; i < items.length; i++) items[i].classList.remove('on');
+        el.classList.add('on');
+    } catch(e) {}
 }
 
+/* ==============================================
+   TOGGLES
+   ============================================== */
 function togglePgNum(wrap) {
-    var track = wrap.querySelector('.tg-track');
-    showPgNum = !showPgNum;
-    if (showPgNum) track.classList.add('on'); else track.classList.remove('on');
-    document.getElementById('pgNum').style.display = showPgNum ? 'block' : 'none';
-    lv();
+    try {
+        var track = wrap.querySelector('.tg-track');
+        showPgNum = !showPgNum;
+        if (track) { if (showPgNum) track.classList.add('on'); else track.classList.remove('on'); }
+        var pg = document.getElementById('pgNum');
+        if (pg) pg.style.display = showPgNum ? 'block' : 'none';
+        lv();
+    } catch(e) {}
 }
 
 function toggleAutoSave(wrap) {
-    var track = wrap.querySelector('.tg-track');
-    autoSaveOn = !autoSaveOn;
-    if (autoSaveOn) track.classList.add('on'); else track.classList.remove('on');
-    document.getElementById('stAuto').style.display = autoSaveOn ? 'inline' : 'none';
-    if (autoSaveOn) startAutoSave(); else stopAutoSave();
-    toast(autoSaveOn ? 'Auto-save diaktifkan (30 detik)' : 'Auto-save dinonaktifkan', 'nf');
+    try {
+        var track = wrap.querySelector('.tg-track');
+        autoSaveOn = !autoSaveOn;
+        if (track) { if (autoSaveOn) track.classList.add('on'); else track.classList.remove('on'); }
+        var st = document.getElementById('stAuto');
+        if (st) st.style.display = autoSaveOn ? 'inline' : 'none';
+        if (autoSaveOn) startAutoSave(); else stopAutoSave();
+        toast(autoSaveOn ? 'Auto-save diaktifkan (30 detik)' : 'Auto-save dinonaktifkan', 'nf');
+    } catch(e) {}
 }
 
 function startAutoSave() {
     stopAutoSave();
     autoSaveTimer = setInterval(function() {
-        if (autoSaveOn) {
-            try {
-                var d = {};
-                for (var i = 0; i < FIDS.length; i++) d[FIDS[i]] = document.getElementById(FIDS[i]).value;
-                d._t = new Date().toISOString();
-                d._font = curFont;
-                d._quality = curQuality;
-                d._pgNum = showPgNum;
-                d._dark = document.body.classList.contains('dark-mode');
-                localStorage.setItem(SK, JSON.stringify(d));
-                setStatus('Auto-saved', false);
-                setTimeout(function() { setStatus('Siap', true); }, 1500);
-            } catch(e) {}
-        }
+        if (!autoSaveOn || _printing) return;
+        try {
+            var d = {};
+            for (var i = 0; i < FIDS.length; i++) {
+                var el = document.getElementById(FIDS[i]);
+                if (el) d[FIDS[i]] = el.value;
+            }
+            d._t = new Date().toISOString();
+            d._font = curFont;
+            d._quality = curQuality;
+            d._pgNum = showPgNum;
+            d._dark = document.body.classList.contains('dark-mode');
+            localStorage.setItem(SK, JSON.stringify(d));
+            setStatus('Auto-saved', false);
+            setTimeout(function() { setStatus('Siap', true); }, 1500);
+        } catch(e) {}
     }, 30000);
 }
-function stopAutoSave() { if (autoSaveTimer) { clearInterval(autoSaveTimer); autoSaveTimer = null; } }
+function stopAutoSave() {
+    if (autoSaveTimer) { clearInterval(autoSaveTimer); autoSaveTimer = null; }
+}
 
+/* ==============================================
+   DARK MODE
+   ============================================== */
 function toggleDark() {
-    document.body.classList.toggle('dark-mode');
-    var isDark = document.body.classList.contains('dark-mode');
-    document.getElementById('btnDark').innerHTML = isDark
-        ? '<i class="fa-solid fa-sun text-xs"></i>'
-        : '<i class="fa-solid fa-moon text-xs"></i>';
-    toast(isDark ? 'Mode gelap diaktifkan' : 'Mode terang diaktifkan', 'nf');
+    try {
+        document.body.classList.toggle('dark-mode');
+        var isDark = document.body.classList.contains('dark-mode');
+        var btn = document.getElementById('btnDark');
+        if (btn) btn.innerHTML = isDark ? '<i class="fa-solid fa-sun text-xs"></i>' : '<i class="fa-solid fa-moon text-xs"></i>';
+        toast(isDark ? 'Mode gelap diaktifkan' : 'Mode terang diaktifkan', 'nf');
+    } catch(e) {}
 }
 
+/* ==============================================
+   VALIDASI
+   ============================================== */
 function validate() {
-    var ok = true;
-    var wajib = [
-        { id:'f_nama', err:'e_nama' }, { id:'f_tmpt' }, { id:'f_tglL' },
-        { id:'f_almt' }, { id:'f_tlp' },
-        { id:'f_eml', err:'e_eml' }, { id:'f_pend' },
-        { id:'f_tuj' }, { id:'f_pos' }
-    ];
-    for (var i = 0; i < wajib.length; i++) {
-        var r = wajib[i];
-        var el = document.getElementById(r.id);
-        if (!el.value.trim()) {
-            el.classList.add('err');
-            if (r.err) { var fe = document.getElementById(r.err); if (fe) fe.classList.add('sh'); }
-            ok = false;
-        } else {
-            el.classList.remove('err');
-            if (r.err) { var fe2 = document.getElementById(r.err); if (fe2) fe2.classList.remove('sh'); }
+    try {
+        var ok = true;
+        var wajib = [
+            { id:'f_nama', err:'e_nama' }, { id:'f_tmpt' }, { id:'f_tglL' },
+            { id:'f_almt' }, { id:'f_tlp' },
+            { id:'f_eml', err:'e_eml' }, { id:'f_pend' },
+            { id:'f_tuj' }, { id:'f_pos' }
+        ];
+        for (var i = 0; i < wajib.length; i++) {
+            var r = wajib[i];
+            var el = document.getElementById(r.id);
+            if (!el) continue;
+            if (!el.value.trim()) {
+                el.classList.add('err');
+                if (r.err) { var fe = document.getElementById(r.err); if (fe) fe.classList.add('sh'); }
+                ok = false;
+            } else {
+                el.classList.remove('err');
+                if (r.err) { var fe2 = document.getElementById(r.err); if (fe2) fe2.classList.remove('sh'); }
+            }
         }
-    }
-    var emEl = document.getElementById('f_eml');
-    if (emEl.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emEl.value.trim())) {
-        emEl.classList.add('err');
-        var fe3 = document.getElementById('e_eml'); if (fe3) fe3.classList.add('sh');
-        ok = false;
-    }
-    return ok;
+        var emEl = document.getElementById('f_eml');
+        if (emEl && emEl.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emEl.value.trim())) {
+            emEl.classList.add('err');
+            var fe3 = document.getElementById('e_eml'); if (fe3) fe3.classList.add('sh');
+            ok = false;
+        }
+        return ok;
+    } catch(e) { return false; }
 }
 
+/* ==============================================
+   STATUS BAR
+   ============================================== */
 function setStatus(text, idle) {
-    var dot = document.getElementById('stDot');
-    var txt = document.getElementById('stText');
-    dot.className = 'stat-dot' + (idle ? ' idle' : '');
-    txt.textContent = text;
+    try {
+        var dot = document.getElementById('stDot');
+        var txt = document.getElementById('stText');
+        if (dot) dot.className = 'stat-dot' + (idle ? ' idle' : '');
+        if (txt) txt.textContent = text;
+    } catch(e) {}
 }
 function updateClock() {
-    var el = document.getElementById('stTime');
-    if (el) el.textContent = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    try {
+        var el = document.getElementById('stTime');
+        if (el) el.textContent = new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    } catch(e) {}
 }
 setInterval(updateClock, 1000);
 updateClock();
 
 /* ==============================================
-   CEK KONTEN MELEBIHI 1 HALAMAN A4
+   CEK OVERFLOW HALAMAN
    ============================================== */
 function checkPageOverflow() {
-    var surat = document.getElementById('surat');
-    var guide = surat.querySelector('.a4-page-guide');
-    if (!guide) return;
-    var guideH = guide.offsetHeight;
-    var contentH = surat.scrollHeight;
-    var badge = document.getElementById('overflowBadge');
-    var info = document.getElementById('pageInfo');
-    if (contentH > guideH + 2) {
-        badge.classList.add('show');
-        var estPages = Math.ceil(contentH / guideH);
-        info.textContent = 'A4 — ' + estPages + ' Halaman';
-        info.style.background = '#fef2f2';
-        info.style.color = '#dc2626';
-    } else {
-        badge.classList.remove('show');
-        info.textContent = 'A4 — 1 Halaman';
-        info.style.background = '';
-        info.style.color = '';
-    }
+    try {
+        var surat = document.getElementById('surat');
+        var guide = surat ? surat.querySelector('.a4-page-guide') : null;
+        if (!surat || !guide) return;
+        var guideH = guide.offsetHeight;
+        if (guideH < 100) return; /* Jika belum terukur, skip */
+        var contentH = surat.scrollHeight;
+        var badge = document.getElementById('overflowBadge');
+        var info = document.getElementById('pageInfo');
+        if (contentH > guideH + 2) {
+            if (badge) badge.classList.add('show');
+            var estPages = Math.ceil(contentH / guideH);
+            if (info) {
+                info.textContent = 'A4 — ' + estPages + ' Halaman';
+                info.style.background = '#fef2f2';
+                info.style.color = '#dc2626';
+            }
+        } else {
+            if (badge) badge.classList.remove('show');
+            if (info) {
+                info.textContent = 'A4 — 1 Halaman';
+                info.style.background = '';
+                info.style.color = '';
+            }
+        }
+    } catch(e) {}
 }
 
-var lvTimer = null;
-
+/* ==============================================
+   RENDER PRATINJAU SURAT
+   ============================================== */
 function lv() {
     try {
         renderSurat();
-        /* Cek overflow setelah render */
-        setTimeout(checkPageOverflow, 50);
+        /* Cek overflow setelah render selesai */
+        if (checkTimer) clearTimeout(checkTimer);
+        checkTimer = setTimeout(checkPageOverflow, 80);
     } catch(e) {
         var sc = document.getElementById('sC');
-        if (sc) sc.innerHTML = '<div style="padding:40px 20px;color:#dc2626;font-family:sans-serif;font-size:14px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:8px;"></i><strong>Error Render:</strong> ' + e.message + '<br><br><span style="color:#64748b;font-size:12px;">Coba muat ulang halaman atau reset form.</span></div>';
+        if (sc) sc.innerHTML = '<div style="padding:40px 20px;color:#dc2626;font-family:sans-serif;font-size:14px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:8px;"></i><strong>Error Render:</strong> ' + e.message + '</div>';
         console.error('Render error:', e);
     }
 }
@@ -964,30 +1045,28 @@ function renderSurat() {
     var wmOp = v('f_wmOp') || '0.04';
     var wmSz = v('f_wmSz') || '72pt';
 
+    /* Statistik */
     var semua = [nama, tmpt, almt, pend, tujRaw, peng, mot, lampRaw].join(' ');
     var wcEl = document.querySelector('#wcB span');
     var ccEl = document.querySelector('#ccB span');
     if (wcEl) wcEl.textContent = hitungKata(semua) + ' kata';
     if (ccEl) ccEl.textContent = hitungKarakter(semua) + ' karakter';
 
+    /* Parse tujuan */
     var tujLines = tujRaw.split('\n').filter(function(l) { return l.trim(); });
     var tujHTML = '';
-    for (var i = 0; i < tujLines.length; i++) {
-        tujHTML += '<div>' + (tujLines[i] || '&nbsp;') + '</div>';
-    }
-    var nmPt = tujLines.length >= 2
-        ? kap(tujLines[1].replace(/^PT\.?\s*/i, '').trim())
-        : 'perusahaan Bapak/Ibu';
+    for (var i = 0; i < tujLines.length; i++) tujHTML += '<div>' + (tujLines[i] || '&nbsp;') + '</div>';
+    var nmPt = tujLines.length >= 2 ? kap(tujLines[1].replace(/^PT\.?\s*/i, '').trim()) : 'perusahaan Bapak/Ibu';
 
+    /* Parse lampiran */
     var lampLines = lampRaw.split('\n').filter(function(l) { return l.trim(); });
     var lampCount = lampLines.length;
     var lampHTML = '';
-    for (var j = 0; j < lampLines.length; j++) {
-        lampHTML += '<div>' + lampLines[j].trim() + '</div>';
-    }
+    for (var j = 0; j < lampLines.length; j++) lampHTML += '<div>' + lampLines[j].trim() + '</div>';
 
     var ttdNama = tdt || nama;
 
+    /* Nomor surat */
     var nmrHTML = '';
     if (nmr) {
         nmrHTML = '<div style="margin-bottom:22px;"><strong>Lampiran</strong>&nbsp;&nbsp;&nbsp;: ' + lampCount + ' berkas</div>'
@@ -997,16 +1076,15 @@ function renderSurat() {
         nmrHTML = '<div class="s-prh"><strong>Perihal</strong>&nbsp;&nbsp;&nbsp;: Lamaran Pekerjaan sebagai ' + pos + '</div>';
     }
 
+    /* Watermark */
     var wmHTML = wm ? '<div class="wm-layer" style="opacity:' + wmOp + ';font-size:' + wmSz + '">' + wm + '</div>' : '';
 
+    /* Nomor halaman */
     var pgEl = document.getElementById('pgNum');
-    if (pgEl) {
-        pgEl.textContent = 'Halaman 1';
-        pgEl.style.display = showPgNum ? 'block' : 'none';
-    }
+    if (pgEl) { pgEl.textContent = 'Halaman 1'; pgEl.style.display = showPgNum ? 'block' : 'none'; }
 
-    var h = ''
-        + wmHTML
+    /* Susun HTML */
+    var h = wmHTML
         + '<div class="s-tgl">' + kota + ', ' + tglS + '</div>'
         + nmrHTML
         + '<div class="s-tuj">' + tujHTML + '</div>'
@@ -1038,100 +1116,163 @@ function renderSurat() {
         + '<div class="tsp"></div>'
         + '<div class="tn">' + ttdNama + '</div>'
         + (tdk ? '<div class="tk">' + tdk + '</div>' : '')
-        + '</div>'
-        + '</div>';
+        + '</div></div>';
 
-    document.getElementById('sC').innerHTML = h;
+    var sc = document.getElementById('sC');
+    if (sc) sc.innerHTML = h;
 
+    /* Terapkan pengaturan */
     var suratEl = document.getElementById('surat');
-    suratEl.style.fontSize = fs;
-    suratEl.style.lineHeight = lh;
+    if (suratEl) {
+        suratEl.style.fontSize = fs;
+        suratEl.style.lineHeight = lh;
+    }
 
     setStatus('Perubahan tersimpan di pratinjau', false);
     if (lvTimer) clearTimeout(lvTimer);
     lvTimer = setTimeout(function() { setStatus('Siap', true); }, 2000);
 }
 
+/* ==============================================
+   HELPER: SEMBUNYIKAN ELEMEN VISUAL PRATINJAU
+   Digunakan sebelum html2canvas mengambil gambar
+   ============================================== */
+function hidePreviewElements() {
+    var els = document.querySelectorAll('.preview-only');
+    for (var i = 0; i < els.length; i++) els[i].style.display = 'none';
+}
+function showPreviewElements() {
+    var els = document.querySelectorAll('.preview-only');
+    for (var i = 0; i < els.length; i++) els[i].style.display = '';
+    /* Restore badge overflow jika sebelumnya aktif */
+    checkPageOverflow();
+}
+
+/* ==============================================
+   AKSI TOOLBAR
+   ============================================== */
 function showPrintIndicator(text, sub) {
-    var el = document.getElementById('printInd');
-    el.querySelector('.pi-text').textContent = text;
-    el.querySelector('.pi-sub').textContent = sub;
-    el.classList.add('show');
+    try {
+        var el = document.getElementById('printInd');
+        if (!el) return;
+        el.querySelector('.pi-text').textContent = text;
+        el.querySelector('.pi-sub').textContent = sub;
+        el.classList.add('show');
+    } catch(e) {}
 }
 function hidePrintIndicator() {
-    document.getElementById('printInd').classList.remove('show');
+    try {
+        var el = document.getElementById('printInd');
+        if (el) el.classList.remove('show');
+    } catch(e) {}
 }
 
 function doPrint() {
-    if (!validate()) { toast('Lengkapi kolom wajib (bertanda *) sebelum mencetak', 'wr'); return; }
-    _printing = true;
-    lv();
-    showPrintIndicator('Menyiapkan cetak...', 'Dialog cetak akan terbuka otomatis');
-    setTimeout(function() {
-        hidePrintIndicator();
-        window.print();
-        setTimeout(function() { _printing = false; }, 500);
-    }, 400);
+    try {
+        if (!validate()) { toast('Lengkapi kolom wajib (bertanda *) sebelum mencetak', 'wr'); return; }
+        _printing = true;
+        lv();
+        showPrintIndicator('Menyiapkan cetak...', 'Dialog cetak akan terbuka otomatis');
+        setTimeout(function() {
+            hidePrintIndicator();
+            window.print();
+            setTimeout(function() { _printing = false; }, 500);
+        }, 400);
+    } catch(e) { _printing = false; }
 }
 
 function expPDF() {
-    if (!validate()) { toast('Lengkapi kolom wajib terlebih dahulu', 'wr'); return; }
-    _printing = true;
-    lv();
-    showPrintIndicator('Membuka dialog PDF...', 'Pilih "Save as PDF" — Margins: None, centang "Background graphics"');
-    setTimeout(function() {
-        hidePrintIndicator();
-        window.print();
-        setTimeout(function() { _printing = false; }, 500);
-    }, 600);
+    try {
+        if (!validate()) { toast('Lengkapi kolom wajib terlebih dahulu', 'wr'); return; }
+        _printing = true;
+        lv();
+        showPrintIndicator('Membuka dialog PDF...', 'Pilih "Save as PDF" — Margins: None, centang "Background graphics"');
+        setTimeout(function() {
+            hidePrintIndicator();
+            window.print();
+            setTimeout(function() { _printing = false; }, 500);
+        }, 600);
+    } catch(e) { _printing = false; }
 }
 
 function expImg() {
-    if (!validate()) { toast('Lengkapi kolom wajib terlebih dahulu', 'wr'); return; }
-    toast('Memproses gambar beresolusi tinggi...', 'nf');
-    setStatus('Membuat gambar PNG...', false);
-    var origT = document.getElementById('sWrp').style.transform;
-    document.getElementById('sWrp').style.transform = 'scale(1)';
-    setTimeout(function() {
-        html2canvas(document.getElementById('surat'), {
-            scale: 3, backgroundColor: '#ffffff', useCORS: true, logging: false
-        }).then(function(canvas) {
-            document.getElementById('sWrp').style.transform = origT;
-            var a = document.createElement('a');
-            a.download = 'Surat_Lamaran_' + (v('f_nama') || 'draft').replace(/[^a-zA-Z0-9]/g, '_') + '.png';
-            a.href = canvas.toDataURL('image/png', 1.0);
-            a.click();
-            toast('Gambar PNG berhasil diunduh', 'ok');
-            setStatus('Siap', true);
-        }).catch(function() {
-            document.getElementById('sWrp').style.transform = origT;
-            toast('Gagal membuat gambar. Coba lagi.', 'bd');
-            setStatus('Gagal membuat gambar', true);
-        });
-    }, 300);
+    try {
+        if (!validate()) { toast('Lengkapi kolom wajib terlebih dahulu', 'wr'); return; }
+        toast('Memproses gambar beresolusi tinggi...', 'nf');
+        setStatus('Membuat gambar PNG...', false);
+
+        var wrp = document.getElementById('sWrp');
+        var origTransform = wrp ? wrp.style.transform : '';
+
+        /* Reset zoom ke 100% untuk hasil PNG konsisten */
+        if (wrp) wrp.style.transform = 'scale(1)';
+
+        /* Sembunyikan semua elemen visual pratinjau sebelum tangkap */
+        hidePreviewElements();
+
+        setTimeout(function() {
+            html2canvas(document.getElementById('surat'), {
+                scale: 3,
+                backgroundColor: '#ffffff',
+                useCORS: true,
+                logging: false
+            }).then(function(canvas) {
+                /* Kembalikan zoom dan tampilkan elemen pratinjau */
+                if (wrp) wrp.style.transform = origTransform;
+                showPreviewElements();
+
+                var a = document.createElement('a');
+                a.download = 'Surat_Lamaran_' + (v('f_nama') || 'draft').replace(/[^a-zA-Z0-9]/g, '_') + '.png';
+                a.href = canvas.toDataURL('image/png', 1.0);
+                a.click();
+                toast('Gambar PNG berhasil diunduh', 'ok');
+                setStatus('Siap', true);
+            }).catch(function(err) {
+                /* Pastikan selalu dikembalikan meskipun gagal */
+                if (wrp) wrp.style.transform = origTransform;
+                showPreviewElements();
+                toast('Gagal membuat gambar. Coba lagi.', 'bd');
+                setStatus('Gagal membuat gambar', true);
+                console.error('html2canvas error:', err);
+            });
+        }, 200); /* Jeda agar elemen tersembunyi sempat render */
+    } catch(e) {
+        _printing = false;
+        showPreviewElements();
+        toast('Terjadi kesalahan saat membuat gambar.', 'bd');
+        console.error('expImg error:', e);
+    }
 }
 
 function copyText() {
-    var suratEl = document.getElementById('sC');
-    var text = suratEl.innerText || suratEl.textContent;
-    if (!text.trim()) { toast('Tidak ada teks untuk disalin', 'wr'); return; }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function() {
-            toast('Teks surat berhasil disalin ke clipboard', 'ok');
-        }).catch(function() { fallbackCopy(text); });
-    } else { fallbackCopy(text); }
+    try {
+        var suratEl = document.getElementById('sC');
+        if (!suratEl) { toast('Tidak ada konten surat', 'wr'); return; }
+        var text = suratEl.innerText || suratEl.textContent;
+        if (!text.trim()) { toast('Tidak ada teks untuk disalin', 'wr'); return; }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function() {
+                toast('Teks surat berhasil disalin ke clipboard', 'ok');
+            }).catch(function() { fallbackCopy(text); });
+        } else { fallbackCopy(text); }
+    } catch(e) { toast('Gagal menyalin teks', 'bd'); }
 }
 function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.cssText = 'position:fixed;left:-9999px;';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); toast('Teks surat berhasil disalin', 'ok'); }
-    catch(e) { toast('Gagal menyalin teks', 'bd'); }
-    document.body.removeChild(ta);
+    try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;left:-9999px;';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); toast('Teks surat berhasil disalin', 'ok'); }
+        catch(e) { toast('Gagal menyalin teks', 'bd'); }
+        if (ta.parentNode) document.body.removeChild(ta);
+    } catch(e) {}
 }
 
+/* ==============================================
+   DRAFT localStorage
+   ============================================== */
 var SK = 'slamaran_draft_v11';
 var FIDS = [
     'f_nama','f_tmpt','f_tglL','f_jk','f_stat','f_agm','f_almt',
@@ -1141,14 +1282,17 @@ var FIDS = [
 ];
 
 function saveDraft() {
-    var d = {};
-    for (var i = 0; i < FIDS.length; i++) d[FIDS[i]] = document.getElementById(FIDS[i]).value;
-    d._t = new Date().toISOString();
-    d._font = curFont;
-    d._quality = curQuality;
-    d._pgNum = showPgNum;
-    d._dark = document.body.classList.contains('dark-mode');
     try {
+        var d = {};
+        for (var i = 0; i < FIDS.length; i++) {
+            var el = document.getElementById(FIDS[i]);
+            if (el) d[FIDS[i]] = el.value;
+        }
+        d._t = new Date().toISOString();
+        d._font = curFont;
+        d._quality = curQuality;
+        d._pgNum = showPgNum;
+        d._dark = document.body.classList.contains('dark-mode');
         localStorage.setItem(SK, JSON.stringify(d));
         toast('Draft berhasil disimpan ke peramban', 'ok');
         setStatus('Draft tersimpan', true);
@@ -1161,23 +1305,32 @@ function loadDraft() {
         if (!r) { toast('Belum ada draft yang tersimpan', 'wr'); return; }
         var d = JSON.parse(r);
         for (var i = 0; i < FIDS.length; i++) {
-            if (d[FIDS[i]] !== undefined) document.getElementById(FIDS[i]).value = d[FIDS[i]];
+            if (d[FIDS[i]] !== undefined) {
+                var el = document.getElementById(FIDS[i]);
+                if (el) el.value = d[FIDS[i]];
+            }
         }
+        /* Restore font */
         if (d._font) {
             curFont = d._font;
             var surat = document.getElementById('surat');
-            surat.className = surat.className.replace(/ff-\w+/g, '').trim() + ' ' + curFont;
-            var fontBtns = document.querySelectorAll('[onclick*="setFont"]');
-            for (var fi = 0; fi < fontBtns.length; fi++) {
-                var m = fontBtns[fi].getAttribute('onclick').match(/'([^']+)'/);
-                if (m && m[1] === curFont) {
-                    var row = fontBtns[fi].parentElement;
-                    var items = row.querySelectorAll('.tp-c');
-                    for (var ri = 0; ri < items.length; ri++) items[ri].classList.remove('on');
-                    fontBtns[fi].classList.add('on');
+            if (surat) {
+                surat.className = surat.className.replace(/ff-\w+/g, '').trim() + ' ' + curFont;
+                var fontBtns = document.querySelectorAll('[onclick*="setFont"]');
+                for (var fi = 0; fi < fontBtns.length; fi++) {
+                    var m = fontBtns[fi].getAttribute('onclick').match(/'([^']+)'/);
+                    if (m && m[1] === curFont) {
+                        var row = fontBtns[fi].parentElement;
+                        if (row) {
+                            var items = row.querySelectorAll('.tp-c');
+                            for (var ri = 0; ri < items.length; ri++) items[ri].classList.remove('on');
+                        }
+                        fontBtns[fi].classList.add('on');
+                    }
                 }
             }
         }
+        /* Restore quality */
         if (d._quality) {
             curQuality = d._quality;
             var qBtns = document.querySelectorAll('[onclick*="setQuality"]');
@@ -1185,20 +1338,25 @@ function loadDraft() {
                 var mq = qBtns[qi].getAttribute('onclick').match(/'([^']+)'/);
                 if (mq && mq[1] === curQuality) {
                     var qrow = qBtns[qi].parentElement;
-                    var qitems = qrow.querySelectorAll('.tp-c');
-                    for (var qri = 0; qri < qitems.length; qri++) qitems[qri].classList.remove('on');
+                    if (qrow) {
+                        var qitems = qrow.querySelectorAll('.tp-c');
+                        for (var qri = 0; qri < qitems.length; qri++) qitems[qri].classList.remove('on');
+                    }
                     qBtns[qi].classList.add('on');
                 }
             }
         }
+        /* Restore page number */
         if (d._pgNum !== undefined) {
             showPgNum = d._pgNum;
             var tg = document.getElementById('tgPgNum');
-            if (showPgNum) tg.classList.add('on'); else tg.classList.remove('on');
+            if (tg) { if (showPgNum) tg.classList.add('on'); else tg.classList.remove('on'); }
         }
+        /* Restore dark mode */
         if (d._dark) {
             document.body.classList.add('dark-mode');
-            document.getElementById('btnDark').innerHTML = '<i class="fa-solid fa-sun text-xs"></i>';
+            var btn = document.getElementById('btnDark');
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-sun text-xs"></i>';
         }
         lv();
         var t = d._t ? new Date(d._t).toLocaleString('id-ID') : 'waktu tidak diketahui';
@@ -1207,85 +1365,101 @@ function loadDraft() {
     } catch(e) { toast('Gagal memuat draft — data rusak', 'bd'); }
 }
 
+/* ==============================================
+   MODAL RESET
+   ============================================== */
 function confirmReset() {
-    var ov = document.createElement('div');
-    ov.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9998;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);';
-    ov.style.animation = 'tIn .2s ease-out';
-    var bx = document.createElement('div');
-    bx.style.cssText = 'background:#fff;border-radius:18px;padding:26px 28px;max-width:360px;width:92%;box-shadow:0 20px 50px rgba(0,0,0,.2);text-align:center;';
-    bx.innerHTML = '<div style="width:48px;height:48px;border-radius:14px;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><i class="fa-solid fa-rotate-left" style="color:#dc2626;font-size:20px;"></i></div>'
-        + '<h3 style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 5px;">Reset Semua Isi Surat?</h3>'
-        + '<p style="font-size:12px;color:#64748b;margin:0 0 20px;line-height:1.55;">Semua data yang telah diisi akan dihapus dan tidak dapat dikembalikan.</p>'
-        + '<div style="display:flex;gap:8px;">'
-        + '<button id="_rc" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;font-family:inherit;">Batal</button>'
-        + '<button id="_ro" style="flex:1;padding:9px;border-radius:10px;border:none;background:#dc2626;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Ya, Reset</button>'
-        + '</div>';
-    ov.appendChild(bx);
-    document.body.appendChild(ov);
-    ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
-    bx.querySelector('#_rc').onclick = function() { ov.remove(); };
-    bx.querySelector('#_ro').onclick = function() {
-        ov.remove();
-        var clearIds = ['f_nama','f_tmpt','f_almt','f_tlp','f_eml','f_pend','f_kota','f_tuj','f_pos','f_sum','f_nmr','f_peng','f_mot','f_lamp','f_tdt','f_tdk','f_wm'];
-        for (var i = 0; i < clearIds.length; i++) document.getElementById(clearIds[i]).value = '';
-        document.getElementById('f_jk').value = 'Laki-laki';
-        document.getElementById('f_stat').value = 'Belum Menikah';
-        document.getElementById('f_agm').value = 'Islam';
-        document.getElementById('f_tdp').value = 'right';
-        document.getElementById('f_tds').value = 'Hormat saya,';
-        document.getElementById('f_fs').value = '11.5pt';
-        document.getElementById('f_lh').value = '1.72';
-        document.getElementById('f_wmOp').value = '0.04';
-        document.getElementById('f_wmSz').value = '72pt';
-        document.getElementById('f_margin').value = 'none';
-        lv();
-        toast('Semua kolom telah dikosongkan', 'nf');
-        setStatus('Form direset', true);
-    };
+    try {
+        var ov = document.createElement('div');
+        ov.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9998;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);animation:tIn .2s ease-out;';
+        var bx = document.createElement('div');
+        bx.style.cssText = 'background:#fff;border-radius:18px;padding:26px 28px;max-width:360px;width:92%;box-shadow:0 20px 50px rgba(0,0,0,.2);text-align:center;';
+        bx.innerHTML = '<div style="width:48px;height:48px;border-radius:14px;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><i class="fa-solid fa-rotate-left" style="color:#dc2626;font-size:20px;"></i></div>'
+            + '<h3 style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 5px;">Reset Semua Isi Surat?</h3>'
+            + '<p style="font-size:12px;color:#64748b;margin:0 0 20px;line-height:1.55;">Semua data yang telah diisi akan dihapus dan tidak dapat dikembalikan.</p>'
+            + '<div style="display:flex;gap:8px;">'
+            + '<button id="_rc" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;font-family:inherit;">Batal</button>'
+            + '<button id="_ro" style="flex:1;padding:9px;border-radius:10px;border:none;background:#dc2626;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Ya, Reset</button>'
+            + '</div>';
+        ov.appendChild(bx);
+        document.body.appendChild(ov);
+
+        ov.addEventListener('click', function(e) { if (e.target === ov && ov.parentNode) ov.parentNode.removeChild(ov); });
+        bx.querySelector('#_rc').onclick = function() { if (ov.parentNode) ov.parentNode.removeChild(ov); };
+        bx.querySelector('#_ro').onclick = function() {
+            if (ov.parentNode) ov.parentNode.removeChild(ov);
+            var clearIds = ['f_nama','f_tmpt','f_almt','f_tlp','f_eml','f_pend','f_kota','f_tuj','f_pos','f_sum','f_nmr','f_peng','f_mot','f_lamp','f_tdt','f_tdk','f_wm'];
+            for (var i = 0; i < clearIds.length; i++) { var el = document.getElementById(clearIds[i]); if (el) el.value = ''; }
+            var resets = { f_jk:'Laki-laki', f_stat:'Belum Menikah', f_agm:'Islam', f_tdp:'right', f_tds:'Hormat saya,', f_fs:'11.5pt', f_lh:'1.72', f_wmOp:'0.04', f_wmSz:'72pt', f_margin:'none' };
+            for (var k in resets) { var el2 = document.getElementById(k); if (el2) el2.value = resets[k]; }
+            lv();
+            toast('Semua kolom telah dikosongkan', 'nf');
+            setStatus('Form direset', true);
+        };
+    } catch(e) { console.error('confirmReset error:', e); }
 }
 
+/* ==============================================
+   PINTASAN KEYBOARD
+   ============================================== */
 document.addEventListener('keydown', function(e) {
-    var tag = e.target.tagName;
-    var isInput = tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA';
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveDraft(); }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'm') { e.preventDefault(); loadDraft(); }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); expPDF(); }
-    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c')) { e.preventDefault(); copyText(); }
-    if (e.key === 'd' && !isInput && !e.ctrlKey && !e.metaKey && !e.altKey) { toggleDark(); }
-    if (e.key === 'Escape') {
-        var modal = document.querySelector('div[style*="z-index:9998"]');
-        if (modal) modal.remove();
-        hidePrintIndicator();
-    }
-});
-
-window.addEventListener('DOMContentLoaded', function() {
-    lv();
-    var allInputs = document.querySelectorAll('.fi');
-    for (var i = 0; i < allInputs.length; i++) {
-        (function(el) {
-            el.addEventListener('input', function() {
-                el.classList.remove('err');
-                var fe = el.parentElement.querySelector('.fe');
-                if (fe) fe.classList.remove('sh');
-            });
-            el.addEventListener('focus', function() { setStatus('Mengedit...', false); });
-            el.addEventListener('blur', function() {
-                setTimeout(function() { setStatus('Siap', true); }, 1500);
-            });
-        })(allInputs[i]);
-    }
     try {
-        if (localStorage.getItem(SK)) {
-            setTimeout(function() { toast('Draft tersimpan ditemukan. Klik "Muat" untuk memuat.', 'nf'); }, 1200);
+        var tag = e.target.tagName;
+        var isInput = tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA';
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveDraft(); }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'm') { e.preventDefault(); loadDraft(); }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); expPDF(); }
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c')) { e.preventDefault(); copyText(); }
+        if (e.key === 'd' && !isInput && !e.ctrlKey && !e.metaKey && !e.altKey) { toggleDark(); }
+        if (e.key === 'Escape') {
+            var modal = document.querySelector('div[style*="z-index:9998"]');
+            if (modal && modal.parentNode) modal.parentNode.removeChild(modal);
+            hidePrintIndicator();
         }
     } catch(e) {}
-    if (autoSaveOn) {
-        document.getElementById('stAuto').style.display = 'inline';
-        startAutoSave();
+});
+
+/* ==============================================
+   INISIALISASI
+   ============================================== */
+window.addEventListener('DOMContentLoaded', function() {
+    try {
+        lv();
+
+        var allInputs = document.querySelectorAll('.fi');
+        for (var i = 0; i < allInputs.length; i++) {
+            (function(el) {
+                el.addEventListener('input', function() {
+                    try { el.classList.remove('err'); var fe = el.parentElement.querySelector('.fe'); if (fe) fe.classList.remove('sh'); } catch(e) {}
+                });
+                el.addEventListener('focus', function() { setStatus('Mengedit...', false); });
+                el.addEventListener('blur', function() {
+                    var t = setTimeout(function() { setStatus('Siap', true); }, 1500);
+                });
+            })(allInputs[i]);
+        }
+
+        /* Deteksi draft */
+        try {
+            if (localStorage.getItem(SK)) {
+                setTimeout(function() { toast('Draft tersimpan ditemukan. Klik "Muat" untuk memuat.', 'nf'); }, 1200);
+            }
+        } catch(e) {}
+
+        /* Auto-save */
+        if (autoSaveOn) {
+            var st = document.getElementById('stAuto');
+            if (st) st.style.display = 'inline';
+            startAutoSave();
+        }
+    } catch(e) {
+        console.error('Init error:', e);
+        /* Pastikan render tetap jalan meskipun ada error di init */
+        try { renderSurat(); } catch(e2) {}
     }
 });
 
+/* Cleanup saat halaman ditutup */
 window.addEventListener('beforeunload', function() { stopAutoSave(); });
 </script>
 </body>
