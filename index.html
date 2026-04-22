@@ -2,15 +2,18 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <!-- Viewport Khusus Agar Tidak Di-zoom User & Fullscreen -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Sistem Seleksi Kandidat Konfigurasi</title>
+  
+  <title>HR Scanner Ultimate</title>
 
-  <!-- PWA Meta -->
+  <!-- PWA Meta Tags (Agar terlihat seperti APK) -->
   <meta name="theme-color" content="#1e293b">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="HR Scanner">
+  
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='30' fill='%231e293b'/><text x='50' y='68' font-size='45' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>HR</text></svg>">
 
   <!-- Tailwind CSS -->
@@ -33,149 +36,214 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-  <style>body{ -webkit-tap-highlight-color: transparent; } .scrollbar-hide::-webkit-scrollbar{display:none;}</style>
+  <style>
+    body { -webkit-tap-highlight-color: transparent; user-select: none; } /* Mencegah highlight biru & seleksi teks (Native feel) */
+    .page-transition { display: none; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; }
+    .page-transition.active { display: block; opacity: 1; transform: translateY(0); }
+    .scrollbar-hide::-webkit-scrollbar { display: none; } /* Hilangkan scrollbar */
+  </style>
 </head>
 <body class="bg-slate-900 text-slate-200 font-sans h-screen flex flex-col overflow-hidden">
 
-  <!-- HEADER -->
-  <header class="bg-slate-800 border-b border-slate-700 z-50 px-6 py-4 flex justify-between items-center shadow-lg">
+  <!-- HEADER FIXED (Native Header Style) -->
+  <header class="bg-slate-800 border-b border-slate-700 z-50 px-6 py-4 flex justify-between items-center shadow-lg sticky top-0">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center text-white font-bold border border-slate-600">
-        <i class="fas fa-cogs"></i>
+      <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-500 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20 border border-blue-400/20">
+        <i class="fas fa-fingerprint"></i>
       </div>
       <div>
-        <h1 class="text-lg font-bold text-white tracking-tight">Analisis Kompetensi</h1>
-        <p class="text-xs text-slate-400 font-medium">Engine Bobot Fleksibel</p>
+        <h1 class="text-lg font-bold text-white tracking-tight">HR Scanner</h1>
+        <p class="text-xs text-slate-400 font-medium">Ultimate Engine V17</p>
       </div>
     </div>
-    <div class="bg-slate-700 px-3 py-1 rounded border border-slate-600">
-      <span class="text-[10px] font-bold text-slate-300 tracking-wider">V16.0 CONFIG</span>
+    <div class="bg-slate-700 px-3 py-1 rounded-lg border border-slate-600">
+      <span class="text-[10px] font-bold text-slate-300 tracking-wider">PRO APK MODE</span>
     </div>
   </header>
 
-  <!-- MAIN -->
+  <!-- MAIN CONTENT (Native Scroll) -->
   <main class="flex-1 overflow-y-auto scrollbar-hide p-6 relative">
     <div class="max-w-4xl mx-auto space-y-6">
 
-      <!-- UPLOAD -->
-      <div class="bg-slate-800 rounded-xl border border-slate-700 p-1 shadow-lg relative">
-        <input type="file" id="pdfInput" accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
-        <div class="border-2 border-dashed border-slate-600 rounded-lg p-8 text-center" id="dropZone">
-          <div class="mb-3"><i class="fas fa-file-pdf text-4xl text-slate-400"></i></div>
-          <h3 class="text-white font-semibold mb-1">Unggah Dokumen CV</h3>
-          <p class="text-slate-400 text-sm" id="fileName">Format: PDF</p>
+      <!-- HALAMAN 1: UPLOAD (Default Active) -->
+      <div id="page-upload" class="page-transition active">
+        
+        <!-- UPLOAD CARD -->
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 p-1 shadow-xl relative overflow-hidden group">
+          <input type="file" id="pdfInput" accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+          <div class="border-2 border-dashed border-slate-600 rounded-xl p-10 text-center transition-all duration-300 group-hover:border-primary-500 group-hover:bg-slate-800/80" id="dropZone">
+            <div class="w-20 h-20 bg-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
+              <i class="fas fa-cloud-upload-alt text-3xl text-primary-500"></i>
+            </div>
+            <h3 class="text-white font-bold text-xl mb-2">Unggah Dokumen CV</h3>
+            <p class="text-slate-400 text-sm mb-4" id="fileName">Format PDF Standar ATS</p>
+            <div class="inline-flex items-center gap-2 text-xs text-slate-500 bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-700">
+              <i class="fas fa-shield-alt text-primary-500"></i>
+              <span>Analisis Berbasis Bobot Profesional</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- INFO CARD -->
+        <div class="bg-slate-800/50 rounded-xl border border-slate-700/50 p-4 mt-6">
+          <div class="flex gap-4">
+            <i class="fas fa-info-circle text-primary-500 mt-1"></i>
+            <div>
+              <h4 class="text-white font-bold text-sm">Sistem Pemindai Canggih</h4>
+              <p class="text-slate-400 text-xs mt-1 leading-relaxed">
+                Mesin ini menggunakan database kata kunci berbobot dan deteksi sinonim otomatis untuk memberikan evaluasi kompetensi kandidat yang presisi.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- RESULT -->
-      <div id="resultArea" class="hidden space-y-6">
+      <!-- HALAMAN 2: HASIL ANALISIS (Hidden Default) -->
+      <div id="page-result" class="page-transition">
         
         <!-- SCORE PANEL -->
-        <div class="bg-slate-800 rounded-xl border border-slate-700 p-6 shadow-lg">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-white font-bold text-lg border-l-4 border-primary-600 pl-3">Hasil Evaluasi</h2>
-            <div id="statusBadge" class="px-4 py-1 rounded text-sm font-bold bg-slate-700 text-slate-300">MENUNGGU</div>
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 shadow-xl relative overflow-hidden">
+          <!-- Background Glow -->
+          <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+
+          <div class="flex justify-between items-start mb-6 relative z-10">
+            <div>
+              <h2 class="text-white font-bold text-lg">Evaluasi Kompetensi</h2>
+              <p class="text-xs text-slate-400">Berbasis Bobot Database Universal</p>
+            </div>
+            <div id="statusBadge" class="px-4 py-1.5 rounded-lg text-sm font-bold bg-slate-700 text-slate-300 border border-slate-600">MENUNGGU</div>
           </div>
           
-          <div class="flex items-center gap-6 mb-4">
+          <div class="flex items-end gap-4 mb-2 relative z-10">
             <div class="flex-1">
-              <div class="text-slate-400 text-xs font-bold uppercase mb-1">Total Poin Kompetensi</div>
-              <div class="text-5xl font-black text-white font-mono" id="scoreValue">0</div>
+              <div class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">Skor Akhir</div>
+              <div class="text-6xl font-black text-white font-mono tracking-tighter" id="scoreValue">0</div>
             </div>
-            <div class="flex-1 h-3 bg-slate-700 rounded-full overflow-hidden">
-              <div id="progressBar" class="h-full bg-slate-600 transition-all duration-1000 ease-out w-0"></div>
-            </div>
-          </div>
-          
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="bg-slate-700/30 p-3 rounded border border-slate-600">
-              <div class="text-xl font-bold text-white" id="earnedPoints">0</div>
-              <div class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Poin Diperoleh</div>
-            </div>
-            <div class="bg-slate-700/30 p-3 rounded border border-slate-600">
-              <div class="text-xl font-bold text-slate-400" id="maxPoints">0</div>
-              <div class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Poin Maksimal</div>
+            <div class="flex-1 pb-1">
+              <div class="text-right text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">Poin</div>
+              <div class="text-right text-2xl font-bold text-primary-400 font-mono"><span id="earnedPoints">0</span> / <span id="maxPoints">0</span></div>
             </div>
           </div>
 
-          <div id="finalVerdict" class="p-3 rounded bg-slate-700/50 text-sm text-slate-300 border border-slate-600">
+          <div class="h-3 bg-slate-700 rounded-full overflow-hidden relative z-10">
+            <div id="progressBar" class="h-full bg-slate-600 transition-all duration-1000 ease-out w-0 relative">
+              <div class="absolute inset-0 bg-white/20 animate-pulse"></div> <!-- Efek Kilau -->
+            </div>
+          </div>
+
+          <div id="finalVerdict" class="mt-6 p-4 rounded-xl bg-slate-900/50 text-sm text-slate-300 border border-slate-700/50 backdrop-blur-sm">
             Sistem belum memproses dokumen.
           </div>
         </div>
 
         <!-- LOGS -->
-        <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
-          <div class="px-6 py-4 border-b border-slate-700 bg-slate-800/50">
-            <h3 class="font-bold text-white">Rincian Pemindaian</h3>
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden mt-6 shadow-xl">
+          <div class="px-6 py-4 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
+            <h3 class="font-bold text-white text-sm">Detail Kompetensi</h3>
+            <div class="flex gap-3 text-[10px] uppercase font-bold tracking-wider">
+              <span class="text-green-400 flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-green-500"></div> Ditemukan</span>
+              <span class="text-slate-500 flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-slate-600"></div> Tidak Ditemukan</span>
+            </div>
           </div>
-          <div class="max-h-[500px] overflow-y-auto scrollbar-hide" id="logList"></div>
+          <div class="max-h-[400px] overflow-y-auto scrollbar-hide" id="logList">
+            <!-- Logs -->
+          </div>
         </div>
 
-        <button onclick="resetApp()" class="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg border border-slate-600 transition-colors">
-          Ulangi Analisis
+        <button onclick="resetApp()" class="w-full mt-6 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2">
+          <i class="fas fa-redo"></i> Analisis Ulang
         </button>
       </div>
 
     </div>
   </main>
 
-  <!-- LOADER -->
-  <div id="loader" class="fixed inset-0 bg-slate-900/95 backdrop-blur-sm z-50 hidden flex-col items-center justify-center">
-    <div class="w-16 h-16 border-4 border-slate-700 border-t-primary-600 rounded-full animate-spin mb-4"></div>
-    <h2 class="text-white font-bold text-lg">Menganalisis...</h2>
-    <p class="text-slate-400 text-sm mt-1">Menghitung bobot kompetensi</p>
+  <!-- NATIVE LOADING OVERLAY -->
+  <div id="loader" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md z-[100] hidden flex-col items-center justify-center">
+    <div class="relative w-20 h-20 mb-6">
+      <div class="absolute inset-0 border-4 border-slate-700 rounded-full"></div>
+      <div class="absolute inset-0 border-4 border-primary-500 rounded-full border-t-transparent animate-spin"></div>
+      <div class="absolute inset-0 flex items-center justify-center text-primary-500 font-bold text-xs animate-pulse">HR</div>
+    </div>
+    <h2 class="text-white font-bold text-xl tracking-wide">Sedang Menganalisis...</h2>
+    <p class="text-slate-400 text-sm mt-2">Memindai database kata kunci & sinonim</p>
   </div>
 
   <script>
     // ==========================================
-    // DATABASE KATA KUNCI & BOBOT (FLEKSIBEL)
+    // DATABASE KATA KUNCI UNIVERSAL
     // ==========================================
-    // Programmer dapat menambahkan keyword di sini.
-    // Format: { id, keyword, weight (poin), category, synonyms }
-    // Semakin tinggi 'weight', semakin besar pengaruhnya ke skor total.
+    
     const keywordDatabase = [
-      // --- PENDIDIKAN (BOBOT TINGGI) ---
-      { id: 1, keyword: "S1", weight: 50, category: "Pendidikan", synonyms: ["sarjana", "bachelor", "strata 1", "gelar", "universitas"] },
-      { id: 2, keyword: "S2", weight: 30, category: "Pendidikan", synonyms: ["magister", "master", "strata 2", "s-2"] },
-      { id: 3, keyword: "S3", weight: 50, category: "Pendidikan", synonyms: ["doktor", "phd", "doctor"] },
+      // --- 1. PENDIDIKAN (CRITICAL) ---
+      { id: 1, keyword: "S1", weight: 50, category: "Pendidikan", synonyms: ["sarjana", "bachelor", "strata 1", "gelar", "universitas", "kampus"] },
+      { id: 2, keyword: "D3", weight: 30, category: "Pendidikan", synonyms: ["diploma 3", "ahli madya", "akademi"] },
+      { id: 3, keyword: "SMA", weight: 20, category: "Pendidikan", synonyms: ["sekolah menengah", "smk", "sma/smk"] },
       
-      // --- BAHASA (BOBOT TINGGI) ---
-      { id: 4, keyword: "Bahasa Inggris", weight: 40, category: "Bahasa", synonyms: ["english", "toefl", "ielts", "inggris"] },
+      // --- 2. BAHASA (HIGH IMPACT) ---
+      { id: 4, keyword: "Bahasa Inggris", weight: 40, category: "Bahasa", synonyms: ["english", "toefl", "ielts", "inggris", "toeic"] },
       { id: 5, keyword: "Mandarin", weight: 30, category: "Bahasa", synonyms: ["cina", "chinese", "hanyu"] },
+      { id: 6, keyword: "Jepang", weight: 25, category: "Bahasa", synonyms: ["nihongo", "japanese"] },
 
-      // --- PENGALAMAN (BOBOT TINGGI) ---
-      { id: 6, keyword: "Pengalaman Kerja", weight: 50, category: "Pengalaman", synonyms: ["work experience", "employment", "pekerjaan", "history"] },
-      { id: 7, keyword: "Freelance", weight: 20, category: "Pengalaman", synonyms: ["project", "lepas", "mandiri"] },
+      // --- 3. PENGALAMAN (CRITICAL) ---
+      { id: 7, keyword: "Pengalaman Kerja", weight: 50, category: "Pengalaman", synonyms: ["work experience", "employment", "pekerjaan", "history", "career", "karir"] },
+      { id: 8, keyword: "Freelance", weight: 20, category: "Pengalaman", synonyms: ["project", "lepas", "mandiri"] },
 
-      // --- IT & TEKNOLOGI (BOBOT MENENGAH) ---
-      { id: 8, keyword: "Javascript", weight: 25, category: "Teknologi", synonyms: ["js", "nodejs", "react", "vue", "angular"] },
-      { id: 9, keyword: "PHP", weight: 20, category: "Teknologi", synonyms: ["laravel", "codeigniter", "backend"] },
-      { id: 10, keyword: "Python", weight: 25, category: "Teknologi", synonyms: ["django", "flask", "data science"] },
-      { id: 11, keyword: "UI/UX", weight: 20, category: "Teknologi", synonyms: ["design", "figma", "sketch", "interface"] },
-      { id: 12, keyword: "Database", weight: 20, category: "Teknologi", synonyms: ["mysql", "sql", "oracle", "mongo"] },
-
-      // --- ADMIN & FINANCE (BOBOT MENENGAH) ---
-      { id: 13, keyword: "Microsoft Office", weight: 20, category: "Administrasi", synonyms: ["excel", "word", "powerpoint", "ppt"] },
-      { id: 14, keyword: "Akuntansi", weight: 25, category: "Administrasi", synonyms: ["accounting", "keuangan", "pajak", "laporan"] },
+      // --- 4. IT & SOFTWARE (HIGH DEMAND) ---
+      { id: 9, keyword: "Javascript", weight: 25, category: "IT & Software", synonyms: ["js", "nodejs", "react", "vue", "angular", "ecmascript"] },
+      { id: 10, keyword: "PHP", weight: 20, category: "IT & Software", synonyms: ["laravel", "codeigniter", "backend", "web dev"] },
+      { id: 11, keyword: "Python", weight: 25, category: "IT & Software", synonyms: ["django", "flask", "data science", "machine learning", "ai"] },
+      { id: 12, keyword: "Golang", weight: 25, category: "IT & Software", synonyms: ["go", "google language"] },
+      { id: 13, keyword: "UI/UX", weight: 20, category: "IT & Software", synonyms: ["design", "figma", "sketch", "interface", "user experience"] },
+      { id: 14, keyword: "Database", weight: 20, category: "IT & Software", synonyms: ["mysql", "sql", "oracle", "postgres", "mongo", "data"] },
+      { id: 15, keyword: "DevOps", weight: 25, category: "IT & Software", synonyms: ["server", "cloud", "aws", "docker", "kubernetes"] },
       
-      // --- DESAIN & KREATIF (BOBOT MENENGAH) ---
-      { id: 15, keyword: "Adobe Photoshop", weight: 15, category: "Kreatif", synonyms: ["photoshop", "edit foto", "image"] },
-      { id: 16, keyword: "Video Editing", weight: 15, category: "Kreatif", synonyms: ["premiere", "after effect", "filmora"] },
+      // --- 5. DIGITAL MARKETING (HIGH DEMAND) ---
+      { id: 16, keyword: "SEO", weight: 20, category: "Digital Marketing", synonyms: ["search engine optimization", "ranking", "organic"] },
+      { id: 17, keyword: "Google Ads", weight: 25, category: "Digital Marketing", synonyms: ["sem", "ppc", "adwords"] },
+      { id: 18, keyword: "Social Media", weight: 20, category: "Digital Marketing", synonyms: ["sosmed", "instagram", "tiktok", "facebook", "content creator"] },
+      { id: 19, keyword: "Copywriting", weight: 20, category: "Digital Marketing", synonyms: ["copy", "nulis", "content writing"] },
 
-      // --- MARKETING & SALES (BOBOT MENENGAH) ---
-      { id: 17, keyword: "Digital Marketing", weight: 25, category: "Pemasaran", synonyms: ["seo", "sem", "fb ads", "google ads"] },
-      { id: 18, keyword: "Public Speaking", weight: 20, category: "Pemasaran", synonyms: ["presentasi", "mc", "host"] },
+      // --- 6. ADMIN & FINANCE (STABLE) ---
+      { id: 20, keyword: "Microsoft Office", weight: 20, category: "Admin & Finance", synonyms: ["excel", "word", "powerpoint", "ppt", "office 365", "spreadsheet"] },
+      { id: 21, keyword: "Akuntansi", weight: 25, category: "Admin & Finance", synonyms: ["accounting", "keuangan", "pajak", "perpajakan", "audit"] },
+      { id: 22, keyword: "SAP", weight: 20, category: "Admin & Finance", synonyms: ["erp", "system aplikasi"] },
 
-      // --- TAMBAHKAN KEYWORD BARU DI BAWAH INI ---
-      // { id: 99, keyword: "Nama Skill Baru", weight: 20, category: "Kategori", synonyms: ["sinonim1", "sinonim2"] }
+      // --- 7. CREATIVE & DESIGN (VISUAL) ---
+      { id: 23, keyword: "Adobe Photoshop", weight: 15, category: "Creative", synonyms: ["photoshop", "edit foto", "image editing", "ps"] },
+      { id: 24, keyword: "Video Editing", weight: 15, category: "Creative", synonyms: ["premiere", "after effect", "filmora", "capcut", "multimedia"] },
+      { id: 25, keyword: "Illustrator", weight: 15, category: "Creative", synonyms: ["vector", "ai", "graphic design"] },
+
+      // --- 8. ENGINEERING & TECHNICAL (TEKNIS) ---
+      { id: 26, keyword: "AutoCAD", weight: 20, category: "Engineering", synonyms: ["cad", "autocad", "2d", "3d", "technical drawing", "gambar teknik"] },
+      { id: 27, keyword: "Solidworks", weight: 20, category: "Engineering", synonyms: ["sw", "3d modeling", "mekanikal"] },
+      { id: 28, keyword: "Mesin", weight: 15, category: "Engineering", synonyms: ["motor", "engine", "otomotif", "alat berat"] },
+
+      // --- 9. SALES & COMMERCIAL (BISNIS) ---
+      { id: 29, keyword: "Sales", weight: 25, category: "Sales", synonyms: ["penjualan", "closing", "marketing", "deal", "konsultan"] },
+      { id: 30, keyword: "Negosiasi", weight: 20, category: "Sales", synonyms: ["negosiasi", "tawar menawar", "negotiation"] },
+      { id: 31, keyword: "Customer Service", weight: 20, category: "Sales", synonyms: ["cs", "pelayanan", "service", "suport"] },
+
+      // --- 10. SOFT SKILLS (UMANIA) ---
+      { id: 32, keyword: "Komunikasi", weight: 20, category: "Soft Skills", synonyms: ["communication", "public speaking", "presentasi", "interpersonal", "hubungan"] },
+      { id: 33, keyword: "Kepemimpinan", weight: 25, category: "Soft Skills", synonyms: ["leadership", "memimpin", "manager", "lead", "supervisor"] },
+      { id: 34, keyword: "Teamwork", weight: 15, category: "Soft Skills", synonyms: ["kerja tim", "tim", "team", "kolaborasi", "kerja sama"] },
+      
+      // --- [ZONA TAMBAH KEYWORD] ---
+      // PERHATIAN PROGRAMMER:
+      // Silakan tambahkan keyword baru di BAWAH baris ini.
+      // Pastikan formatnya sama persis dengan di atas.
+      // Contoh: { id: 99, keyword: "Skill Baru", weight: 20, category: "Kategori Baru", synonyms: ["sinonim1", "sinonim2"] },
+      // -------------------------------------------------------
+      
     ];
 
     // --- ENGINE VARIABLES ---
     let rawText = "";
     const pdfInput = document.getElementById('pdfInput');
     const loader = document.getElementById('loader');
-    const resultArea = document.getElementById('resultArea');
-    const logList = document.getElementById('logList');
+    const pageUpload = document.getElementById('page-upload');
+    const pageResult = document.getElementById('page-result');
 
     // --- PDF HANDLER ---
     pdfInput.addEventListener('change', async (e) => {
@@ -190,20 +258,20 @@
         const buffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({data: buffer}).promise;
         let text = "";
-        
         for(let i=1; i<=pdf.numPages; i++) {
           const page = await pdf.getPage(i);
           const content = await page.getTextContent();
           text += content.items.map(item => item.str).join(" ");
         }
 
+        // Cleaning Data
         rawText = text.toLowerCase().replace(/[\n\r\t]+/g, ' ').replace(/[^\w\s\-\.\@]/g, '').replace(/\s+/g, ' ').trim();
 
         setTimeout(() => {
           loader.classList.add('hidden');
           loader.classList.remove('flex');
           analyzeDocument();
-        }, 1000);
+        },1000);
 
       } catch (err) {
         alert("Gagal membaca PDF.");
@@ -211,27 +279,28 @@
       }
     });
 
-    // --- ANALYSIS ENGINE (BERDASARKAN BOBOT) ---
+    // --- ANALYSIS ENGINE ---
     function analyzeDocument() {
-      resultArea.classList.remove('hidden');
+      // Switch Page Animation
+      pageUpload.classList.remove('active');
+      setTimeout(() => { pageUpload.style.display = 'none'; pageResult.style.display = 'block'; setTimeout(() => pageResult.classList.add('active'), 50); }, 300);
+
+      let totalWeight = 0;
+      let earnedWeight = 0;
+      let matchCount = 0;
+      const logList = document.getElementById('logList');
       logList.innerHTML = "";
 
-      let totalPoinMaksimal = 0;
-      let totalPoinDiperoleh = 0;
-      let matchCount = 0;
-
+      // Database Scan
       keywordDatabase.forEach(k => {
-        totalPoinMaksimal += k.weight; // Tambahkan bobot ke max score
-
+        totalWeight += k.weight;
         let found = false;
         let method = "Tepat";
         const key = k.keyword.toLowerCase();
 
-        // Cek Kata Kunci Utama
-        if(rawText.includes(key)) {
-          found = true;
-        }
-        // Cek Sinonim
+        // Direct
+        if(rawText.includes(key)) found = true;
+        // Synonym
         else if(k.synonyms) {
           if(k.synonyms.some(s => rawText.includes(s))) {
             found = true;
@@ -239,83 +308,92 @@
           }
         }
 
-        // RENDER LOG
+        // Render Log
         if(found) {
-          totalPoinDiperoleh += k.weight;
+          earnedWeight += k.weight;
           matchCount++;
           logList.innerHTML += `
-            <div class="p-4 flex justify-between items-center bg-green-500/5 hover:bg-slate-700/30 border-b border-slate-700">
+            <div class="p-5 flex justify-between items-center bg-green-500/5 hover:bg-slate-700/30 border-b border-slate-700/50">
               <div>
-                <div class="text-white font-bold text-sm">${k.keyword}</div>
-                <div class="text-xs text-slate-400">${k.category}</div>
+                <div class="text-white font-bold text-base">${k.keyword}</div>
+                <div class="text-xs text-slate-400 mt-1">${k.category} • Poin: ${k.weight}</div>
               </div>
               <div class="text-right">
-                <div class="text-sm font-bold text-green-400">+${k.weight} Poin</div>
-                <div class="text-[10px] text-slate-500">${method}</div>
+                <div class="text-sm font-bold text-green-400">TERDETEKSI</div>
+                <div class="text-[10px] text-slate-500 mt-0.5 uppercase font-bold">${method}</div>
               </div>
             </div>
           `;
         } else {
-          // Tampilkan keyword yang tidak ditemukan (Opsional: jika ingin semua muncul, hapus if dibawah)
-          // Disini kita tampilkan semua agar user tahu apa yang hilang
           logList.innerHTML += `
-            <div class="p-4 flex justify-between items-center opacity-40 hover:bg-slate-700/30 border-b border-slate-700">
+            <div class="p-5 flex justify-between items-center opacity-40 hover:bg-slate-700/30 border-b border-slate-700/50">
               <div>
-                <div class="text-slate-400 font-medium text-sm">${k.keyword}</div>
-                <div class="text-xs text-slate-500">${k.category}</div>
+                <div class="text-slate-300 font-medium text-base">${k.keyword}</div>
+                <div class="text-xs text-slate-500 mt-1">${k.category} • Poin: ${k.weight}</div>
               </div>
               <div class="text-right">
-                <div class="text-sm font-medium text-slate-500">0 Poin</div>
-                <div class="text-[10px] text-slate-600">Tidak Ditemukan</div>
+                <div class="text-sm font-medium text-slate-500">TIDAK DITEMUKAN</div>
+                <div class="text-[10px] text-slate-600 mt-0.5 uppercase font-bold">0 Poin</div>
               </div>
             </div>
           `;
         }
       });
 
-      // --- HITUNG SKOR AKHIR ---
-      // Skor = (Poin Diperoleh / Poin Maksimal) * 100
+      // Calculation
       let finalScore = 0;
-      if(totalPoinMaksimal > 0) {
-        finalScore = Math.round((totalPoinDiperoleh / totalPoinMaksimal) * 100);
+      if(totalWeight > 0) {
+        finalScore = Math.round((earnedWeight / totalWeight) * 100);
       }
 
-      // --- UPDATE UI ---
+      // UI Update
       document.getElementById('scoreValue').innerText = finalScore;
-      document.getElementById('earnedPoints').innerText = totalPoinDiperoleh;
-      document.getElementById('maxPoints').innerText = totalPoinMaksimal;
+      document.getElementById('earnedPoints').innerText = earnedWeight;
+      document.getElementById('maxPoints').innerText = totalWeight;
       
       const bar = document.getElementById('progressBar');
       bar.style.width = finalScore + "%";
       
-      // Warna & Keputusan
-      let color = "";
-      let status = "";
-      let verdict = "";
-
+      // Color Logic
+      let verdictColor = "bg-slate-600";
+      let statusText = "EVALUASI SELESAI";
+      let verdictDesc = "";
+      
       if(finalScore >= 80) {
-        color = "bg-green-500"; status = "SANGAT KOMPETEN"; verdict = "Kandidat memenuhi mayoritas kriteria dengan bobot kompetensi yang sangat baik.";
+        verdictColor = "bg-green-500";
+        statusText = "SANGAT KOMPETEN";
+        verdictDesc = "Kandidat memiliki kompetensi utama yang sangat kuat dan relevan.";
       } else if(finalScore >= 60) {
-        color = "bg-blue-500"; status = "KOMPETEN"; verdict = "Kandidat memenuhi standar kualifikasi yang ditetapkan.";
+        verdictColor = "bg-blue-500";
+        statusText = "KOMPETEN";
+        verdictDesc = "Kandidat memenuhi standar kualifikasi yang baik.";
       } else if(finalScore >= 40) {
-        color = "bg-yellow-500"; status = "CUKUP KOMPETEN"; verdict = "Kandidat memiliki beberapa kompetensi, namun masih kurang pada poin krusial.";
+        verdictColor = "bg-yellow-500";
+        statusText = "CUKUP KOMPETEN";
+        verdictDesc = "Kandidat memiliki beberapa kompetensi, namun perlu evaluasi lebih lanjut.";
       } else {
-        color = "bg-red-500"; status = "KURANG KOMPETEN"; verdict = "Kandidat belum memenuhi standar kompetensi minimum.";
+        verdictColor = "bg-red-500";
+        statusText = "KURANG KOMPETEN";
+        verdictDesc = "Kompetensi kandidat belum memenuhi standar minimum.";
       }
 
-      bar.className = `h-full transition-all duration-1000 ease-out ${color}`;
+      bar.className = `h-full transition-all duration-1000 ease-out relative ${verdictColor}`;
       
-      document.getElementById('statusBadge').innerText = status;
-      document.getElementById('statusBadge').className = `px-4 py-1 rounded text-sm font-bold border ${color === 'bg-red-500' ? 'bg-red-500/10 border-red-500 text-red-400' : (color === 'bg-green-500' ? 'bg-green-500/10 border-green-500 text-green-400' : 'bg-blue-500/10 border-blue-500 text-blue-400')}`;
+      const badge = document.getElementById('statusBadge');
+      badge.innerText = statusText;
+      badge.className = `px-4 py-1.5 rounded-lg text-sm font-bold border ${verdictColor === 'bg-green-500' ? 'bg-green-500/10 border-green-500 text-green-400' : (verdictColor === 'bg-blue-500' ? 'bg-blue-500/10 border-blue-500 text-blue-400' : 'bg-red-500/10 border-red-500 text-red-400')}`;
       
-      document.getElementById('finalVerdict').innerHTML = `<span class="${color === 'bg-red-500' ? 'text-red-400' : 'text-blue-400'} font-bold">${verdict}</span>`;
+      document.getElementById('finalVerdict').innerHTML = `<span class="${verdictColor === 'bg-green-500' ? 'text-green-400' : (verdictColor === 'bg-blue-500' ? 'text-blue-400' : 'text-red-400')} font-bold">${verdictDesc}</span>`;
     }
 
     function resetApp() {
       pdfInput.value = '';
       rawText = '';
-      resultArea.classList.add('hidden');
-      document.getElementById('fileName').innerText = "Format: PDF";
+      
+      pageResult.classList.remove('active');
+      setTimeout(() => { pageResult.style.display = 'none'; pageUpload.style.display = 'block'; setTimeout(() => pageUpload.classList.add('active'), 50); }, 300);
+      
+      document.getElementById('fileName').innerText = "Format PDF Standar ATS";
     }
   </script>
 </body>
