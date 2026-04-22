@@ -2,17 +2,19 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <!-- Meta PWA Mode APK -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>HR Scanner Neural V18</title>
+  <title>HR Scanner Native</title>
 
   <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="HR Neural">
+  <meta name="apple-mobile-web-app-title" content="HR Scanner">
   
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='30' fill='%230f172a'/><text x='50' y='68' font-size='45' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>HR</text></svg>">
 
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -25,6 +27,7 @@
     }
   </script>
 
+  <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 
@@ -36,73 +39,94 @@
     .page-transition { display: none; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; }
     .page-transition.active { display: block; opacity: 1; transform: translateY(0); }
     .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #3b82f6; box-shadow: 0 0 10px #3b82f6; animation: scan 2s infinite; display: none; }
-    @keyframes scan { 0% { top: 0; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+    .splash-loader { animation: pulse-ring 2s infinite; }
+    @keyframes pulse-ring { 0% { transform: scale(0.33); } 80%, 100% { opacity: 0; } }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-200 font-sans h-screen flex flex-col overflow-hidden">
 
-  <!-- HEADER -->
-  <header class="bg-slate-800 border-b border-slate-700 z-50 px-6 py-4 flex justify-between items-center shadow-md sticky top-0">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center text-white font-bold border border-slate-600 relative overflow-hidden">
-        <div class="scan-line" id="headerScan"></div>
-        <i class="fas fa-brain relative z-10"></i>
-      </div>
-      <div>
-        <h1 class="text-lg font-bold text-white tracking-tight">HR Neural Scan</h1>
-        <p class="text-xs text-slate-400 font-medium">Contextual Intelligence V18</p>
+  <!-- SPLASH SCREEN (Native Feel) -->
+  <div id="splashScreen" class="fixed inset-0 bg-slate-900 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500">
+    <div class="relative w-32 h-32 mb-6">
+      <div class="absolute inset-0 bg-primary-500/20 rounded-full splash-loader"></div>
+      <div class="absolute inset-0 bg-primary-500/20 rounded-full splash-loader" style="animation-delay: 0.5s"></div>
+      <div class="absolute inset-0 bg-slate-700 rounded-2xl flex items-center justify-center shadow-2xl">
+        <i class="fas fa-brain text-4xl text-white relative z-10"></i>
       </div>
     </div>
-    <div class="bg-slate-700 px-3 py-1 rounded-lg border border-slate-600">
-      <span class="text-[10px] font-bold text-slate-300 tracking-wider">NEURAL ENGINE</span>
+    <h1 class="text-2xl font-bold text-white tracking-widest">HR SCANNER</h1>
+    <p class="text-slate-500 text-xs mt-2 uppercase tracking-widest">Native Engine V19</p>
+  </div>
+
+  <!-- HEADER FIXED -->
+  <header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700/50 z-40 px-6 py-4 flex justify-between items-center sticky top-0">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 bg-slate-700 rounded-xl flex items-center justify-center text-white font-bold border border-slate-600 shadow-lg">
+        <i class="fas fa-brain"></i>
+      </div>
+      <div>
+        <h1 class="text-base font-bold text-white tracking-tight">HR Neural</h1>
+        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Mode APK</p>
+      </div>
+    </div>
+    <div class="bg-slate-700/50 px-3 py-1 rounded-lg border border-slate-600">
+      <span class="text-[9px] font-bold text-slate-300 tracking-wider">PRO</span>
     </div>
   </header>
 
-  <!-- MAIN -->
-  <main class="flex-1 overflow-y-auto scrollbar-hide p-6 relative">
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 overflow-y-auto scrollbar-hide p-6 pb-32 relative">
     <div class="max-w-4xl mx-auto space-y-6">
 
       <!-- PAGE UPLOAD -->
       <div id="page-upload" class="page-transition active">
-        <div class="bg-slate-800 rounded-2xl border border-slate-700 p-1 shadow-xl relative group">
+        <div class="bg-slate-800 rounded-3xl border border-slate-700 p-1 shadow-2xl relative group">
           <input type="file" id="pdfInput" accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
-          <div class="border-2 border-dashed border-slate-600 rounded-xl p-12 text-center transition-all duration-300 group-hover:border-primary-500 group-hover:bg-slate-800/80" id="dropZone">
-            <div class="w-20 h-20 bg-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-xl">
-              <i class="fas fa-microchip text-4xl text-primary-500"></i>
+          <div class="border-2 border-dashed border-slate-600 rounded-2xl p-10 text-center transition-all duration-300 group-hover:border-primary-500 group-hover:bg-slate-800/90" id="dropZone">
+            <div class="w-24 h-24 bg-slate-700 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-105 transition-transform shadow-2xl">
+              <i class="fas fa-microchip text-5xl text-primary-500"></i>
             </div>
             <h3 class="text-white font-bold text-xl mb-2">Unggah Dokumen CV</h3>
-            <p class="text-slate-400 text-sm" id="fileName">Analisis Semantik & Konteks</p>
+            <p class="text-slate-400 text-sm" id="fileName">Sistem Siap Menganalisis</p>
           </div>
         </div>
         
-        <div class="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 mt-6">
-          <h4 class="text-white font-bold text-sm mb-3"><i class="fas fa-cogs text-primary-500 mr-2"></i>Kecerdasan Engine Aktif:</h4>
-          <ul class="text-xs text-slate-400 space-y-2 leading-relaxed">
-            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Contextual Parsing (Membedakan arti kalimat)</li>
-            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Semantic Database (Sinonim & Istilah Ganda)</li>
-            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Structure Validation (Validasi struktur CV)</li>
-            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Regex Pattern (Deteksi email & tahun)</li>
-          </ul>
+        <!-- Fullscreen Trigger -->
+        <div class="bg-slate-800/50 rounded-2xl border border-slate-700/50 p-4 mt-6 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+              <i class="fas fa-expand text-primary-500"></i>
+            </div>
+            <div>
+              <h4 class="text-white font-bold text-sm">Mode Layar Penuh</h4>
+              <p class="text-xs text-slate-400">Hilangkan address bar browser</p>
+            </div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="fullscreenToggle" class="sr-only peer">
+            <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
+          </label>
         </div>
       </div>
 
       <!-- PAGE RESULT -->
       <div id="page-result" class="page-transition">
-        <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 shadow-xl relative overflow-hidden">
-          <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+        
+        <!-- SCORE CARD -->
+        <div class="bg-slate-800 rounded-3xl border border-slate-700 p-6 shadow-2xl relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           
           <div class="flex justify-between items-start mb-6 relative z-10">
             <div>
               <h2 class="text-white font-bold text-lg">Hasil Neural Scan</h2>
-              <p class="text-xs text-slate-400 mt-1">Probabilitas Kecocokan Kompetensi</p>
+              <p class="text-xs text-slate-400 mt-1">Analisis Konteks & Data</p>
             </div>
             <div id="statusBadge" class="px-4 py-2 rounded-lg text-sm font-bold bg-slate-700 text-slate-300 border border-slate-600">INIT</div>
           </div>
           
           <div class="flex items-end gap-4 mb-4 relative z-10">
             <div class="flex-1">
-              <div class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">Skor Probabilitas</div>
+              <div class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">Probabilitas Ke cocokan</div>
               <div class="text-7xl font-black text-white font-mono tracking-tighter" id="scoreValue">0%</div>
             </div>
           </div>
@@ -113,19 +137,19 @@
             </div>
           </div>
 
-          <!-- Structure Stats -->
+          <!-- Stats Grid -->
           <div class="grid grid-cols-3 gap-3 mb-6 relative z-10">
             <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
               <div class="text-xl font-bold text-green-400" id="structYear">0</div>
-              <div class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Tahun</div>
+              <div class="text-[9px] uppercase text-slate-500 font-bold tracking-wider">Tahun</div>
             </div>
             <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
               <div class="text-xl font-bold text-blue-400" id="structEmail">0</div>
-              <div class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Email</div>
+              <div class="text-[9px] uppercase text-slate-500 font-bold tracking-wider">Email</div>
             </div>
             <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
               <div class="text-xl font-bold text-purple-400" id="structWords">0</div>
-              <div class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Kata</div>
+              <div class="text-[9px] uppercase text-slate-500 font-bold tracking-wider">Kata</div>
             </div>
           </div>
 
@@ -135,57 +159,80 @@
         </div>
 
         <!-- LOGS -->
-        <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden mt-6 shadow-xl">
+        <div class="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden mt-6 shadow-2xl">
           <div class="px-6 py-4 border-b border-slate-700 bg-slate-800/50">
-            <h3 class="font-bold text-white text-sm">Detail Neural Parsing</h3>
+            <h3 class="font-bold text-white text-sm">Log Pemindaian</h3>
           </div>
           <div class="max-h-[400px] overflow-y-auto scrollbar-hide" id="logList"></div>
         </div>
 
-        <button onclick="resetApp()" class="w-full mt-6 py-4 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl border border-slate-600 transition-all active:scale-95 shadow-lg">
-          <i class="fas fa-redo mr-2"></i> Scan Ulang
+        <button onclick="resetApp()" class="w-full mt-6 py-4 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl border border-slate-600 transition-all active:scale-95 shadow-xl flex items-center justify-center gap-2">
+          <i class="fas fa-redo"></i> Scan Ulang
         </button>
       </div>
 
     </div>
   </main>
 
-  <div id="loader" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md z-[100] hidden flex-col items-center justify-center">
+  <!-- FLOATING BOTTOM NAV (Native APK Style) -->
+  <nav class="fixed bottom-0 left-0 w-full px-6 pb-6 pt-2 z-50 pointer-events-none">
+    <div class="bg-slate-800/90 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl flex justify-around items-center py-3 relative pointer-events-auto max-w-md mx-auto">
+      <button onclick="switchTab('upload')" class="nav-btn active flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-colors text-primary-500">
+        <i class="fas fa-home text-lg"></i>
+        <span class="text-[10px] font-bold">Beranda</span>
+      </button>
+      <button onclick="switchTab('result')" class="nav-btn flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-colors text-slate-400 hover:text-white">
+        <i class="fas fa-chart-bar text-lg"></i>
+        <span class="text-[10px] font-bold">Hasil</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- INSTALL PROMPT (PWA) -->
+  <div id="installPrompt" class="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-slate-800 border border-slate-600 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 z-[100] hidden transition-all duration-300">
+    <i class="fas fa-download text-white"></i>
+    <div class="text-xs text-white font-bold">Install Aplikasi</div>
+    <button id="installBtn" class="bg-primary-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Pasang</button>
+    <button onclick="dismissInstall()" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
+  </div>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loader" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md z-[200] hidden flex-col items-center justify-center">
     <div class="w-20 h-20 mb-6 relative">
       <div class="absolute inset-0 border-4 border-slate-700 rounded-full"></div>
       <div class="absolute inset-0 border-4 border-primary-500 rounded-full border-t-transparent animate-spin"></div>
       <div class="absolute inset-0 flex items-center justify-center text-primary-500 font-bold text-xs animate-pulse">AI</div>
     </div>
     <h2 class="text-white font-bold text-xl tracking-wide">Neural Parsing...</h2>
-    <p class="text-slate-400 text-sm mt-2">Membaca konteks kalimat & struktur</p>
+    <p class="text-slate-400 text-sm mt-2">Membaca konteks kalimat</p>
   </div>
 
   <script>
     // ==========================================
-    // DATABASE KATA KUNCI SUPER LENGKAP (V18.0)
+    // DATABASE KATA KUNCI (TETAP V18 - AKURASI TINGGI)
     // ==========================================
     
     const keywordDatabase = [
-      // --- 1. PENDIDIKAN (CRITICAL) ---
+      // --- 1. PENDIDIKAN ---
       { id: 1, keyword: "S1", weight: 60, category: "Pendidikan", synonyms: ["sarjana", "bachelor", "strata 1", "gelar", "universitas", "kampus", "institut"] },
       { id: 2, keyword: "S2", weight: 40, category: "Pendidikan", synonyms: ["magister", "master", "strata 2", "s-2", "pasca sarjana"] },
       { id: 3, keyword: "S3", weight: 60, category: "Pendidikan", synonyms: ["doktor", "phd", "doctor", "dr"] },
       { id: 4, keyword: "D3", weight: 30, category: "Pendidikan", synonyms: ["diploma 3", "ahli madya", "akademi"] },
       { id: 5, keyword: "SMK", weight: 20, category: "Pendidikan", synonyms: ["sekolah menengah kejuruan", "vokasi"] },
 
-      // --- 2. BAHASA (HIGH IMPACT) ---
+      // --- 2. BAHASA ---
       { id: 6, keyword: "Bahasa Inggris", weight: 50, category: "Bahasa", synonyms: ["english", "toefl", "ielts", "toeic", "inggris"] },
       { id: 7, keyword: "Mandarin", weight: 40, category: "Bahasa", synonyms: ["cina", "chinese", "hanyu", "pu tong hua"] },
       { id: 8, keyword: "Jepang", weight: 30, category: "Bahasa", synonyms: ["nihongo", "japanese"] },
       { id: 9, keyword: "Jerman", weight: 30, category: "Bahasa", synonyms: ["deutsch", "german"] },
 
-      // --- 3. PENGALAMAN (CRITICAL) ---
+      // --- 3. PENGALAMAN ---
       { id: 10, keyword: "Pengalaman Kerja", weight: 60, category: "Pengalaman", synonyms: ["work experience", "employment", "pekerjaan", "history", "career", "karir", "riwayat kerja"] },
       { id: 11, keyword: "Magang", weight: 30, category: "Pengalaman", synonyms: ["internship", "trainee", "internee"] },
       { id: 12, keyword: "Freelance", weight: 30, category: "Pengalaman", synonyms: ["project", "lepas", "mandiri", "independen"] },
       { id: 13, keyword: "Kontrak", weight: 20, category: "Pengalaman", synonyms: ["contract", "project based", "pkwt"] },
 
-      // --- 4. IT & SOFTWARE (COMPREHENSIVE) ---
+      // --- 4. IT ---
       { id: 14, keyword: "Javascript", weight: 30, category: "IT", synonyms: ["js", "nodejs", "react", "vue", "angular", "ecmascript", "typescript"] },
       { id: 15, keyword: "PHP", weight: 25, category: "IT", synonyms: ["laravel", "codeigniter", "ci", "backend", "web"] },
       { id: 16, keyword: "Python", weight: 30, category: "IT", synonyms: ["django", "flask", "fastapi", "data science", "machine learning", "ai"] },
@@ -199,68 +246,99 @@
       { id: 24, keyword: "Cloud", weight: 25, category: "IT", synonyms: ["aws", "google cloud", "azure", "computing", "serverless"] },
       { id: 25, keyword: "UI/UX", weight: 25, category: "IT", synonyms: ["design", "figma", "sketch", "adobe xd", "prototyping", "wireframe"] },
 
-      // --- 5. DIGITAL MARKETING (MODERN) ---
+      // --- 5. MARKETING ---
       { id: 26, keyword: "SEO", weight: 30, category: "Marketing", synonyms: ["search engine optimization", "ranking", "organic search", "onpage", "offpage"] },
       { id: 27, keyword: "SEM", weight: 30, category: "Marketing", synonyms: ["google ads", "ppc", "paid search", "adwords"] },
       { id: 28, keyword: "Social Media", weight: 25, category: "Marketing", synonyms: ["sosmed", "instagram", "tiktok", "facebook", "content creator", "influencer"] },
       { id: 29, keyword: "Copywriting", weight: 25, category: "Marketing", synonyms: ["copy", "nulis", "content writing", "ads copy", "creative writing"] },
       { id: 30, keyword: "Email Marketing", weight: 20, category: "Marketing", synonyms: ["newsletter", "blast", "edm", "campaign"] },
 
-      // --- 6. ADMIN & FINANCE (CORPORATE) ---
+      // --- 6. ADMIN ---
       { id: 31, keyword: "Microsoft Office", weight: 25, category: "Admin", synonyms: ["excel", "word", "powerpoint", "ppt", "office 365", "spreadsheet", "word processor"] },
       { id: 32, keyword: "Akuntansi", weight: 30, category: "Finance", synonyms: ["accounting", "keuangan", "pajak", "perpajakan", "audit", "jurnal", "neraca"] },
       { id: 33, keyword: "SAP", weight: 30, category: "Admin", synonyms: ["erp", "system aplikasi", "enterprise resource planning"] },
       { id: 34, keyword: "Zahir", weight: 20, category: "Finance", synonyms: ["software akuntansi", "laporan keuangan"] },
       { id: 35, keyword: "MYOB", weight: 20, category: "Finance", synonyms: ["akuntansi australia"] },
 
-      // --- 7. CREATIVE & DESIGN (VISUAL) ---
+      // --- 7. CREATIVE ---
       { id: 36, keyword: "Adobe Photoshop", weight: 20, category: "Creative", synonyms: ["photoshop", "edit foto", "image editing", "ps", "retouching"] },
       { id: 37, keyword: "Video Editing", weight: 20, category: "Creative", synonyms: ["premiere pro", "after effect", "final cut", "capcut", "filmora", "multimedia"] },
       { id: 38, keyword: "Illustrator", weight: 20, category: "Creative", synonyms: ["vector", "ai", "graphic design", "logo", "illustration"] },
       { id: 39, keyword: "3D Modeling", weight: 25, category: "Creative", synonyms: ["blender", "maya", "3ds max", "c4d", "render"] },
 
-      // --- 8. ENGINEERING & TECHNICAL (TEKNIS) ---
+      // --- 8. ENGINEERING ---
       { id: 40, keyword: "AutoCAD", weight: 30, category: "Engineering", synonyms: ["cad", "autocad", "2d", "3d", "technical drawing", "gambar teknik"] },
       { id: 41, keyword: "Solidworks", weight: 30, category: "Engineering", synonyms: ["sw", "3d modeling", "mekanikal", "cad design"] },
       { id: 42, keyword: "PLC", weight: 25, category: "Engineering", synonyms: ["programmable logic controller", "otomasi", "ladder diagram"] },
       { id: 43, keyword: "Mesin", weight: 20, category: "Engineering", synonyms: ["motor", "engine", "otomotif", "alat berat", "perawatan"] },
-      { id: 44, keyword: "Listrik", weight: 25, category: "Engineering", synonyms: ["kelistrikan", "electrical", "panel", "installasi", "arus kuat/lemah"] },
+      { id: 44, keyword: "Listrik", weight: 25, category: "Engineering", synonyms: ["kelistrikan", "electrical", "panel", "instalasi", "arus kuat/lemah"] },
 
-      // --- 9. SALES & BUSINESS (BISNIS) ---
+      // --- 9. SALES ---
       { id: 45, keyword: "Sales", weight: 30, category: "Sales", synonyms: ["penjualan", "closing", "marketing", "deal", "konsultan", "business development"] },
       { id: 46, keyword: "Negosiasi", weight: 25, category: "Sales", synonyms: ["negosiasi", "tawar menawar", "negotiation", "bargaining"] },
-      { id: 47, keyword: "Customer Service", weight: 25, category: "Service", synonyms: ["cs", "pelayanan", "service", "suport", "call center"] },
-      { id: 48, keyword: "Manajemen Proyek", weight: 30, category: "Management", synonyms: ["project management", "pmp", "agile", "scrum", "lead", "timeline"] },
+      { id: 47, keyword: "Customer Service", weight: 25, category: "Sales", synonyms: ["cs", "pelayanan", "service", "suport", "call center"] },
 
-      // --- 10. SOFT SKILLS (HUMAN) ---
-      { id: 49, keyword: "Komunikasi", weight: 25, category: "Soft Skill", synonyms: ["communication", "public speaking", "presentasi", "interpersonal", "hubungan"] },
-      { id: 50, keyword: "Kepemimpinan", weight: 30, category: "Soft Skill", synonyms: ["leadership", "memimpin", "manager", "lead", "supervisor", "pimpinan"] },
-      { id: 51, keyword: "Teamwork", weight: 20, category: "Soft Skill", synonyms: ["kerja tim", "tim", "team", "kolaborasi", "kerja sama", "cooperation"] },
-      { id: 52, keyword: "Problem Solving", weight: 25, category: "Soft Skill", synonyms: ["memecahkan masalah", "trouble shooting", "analisis"] },
-      { id: 53, keyword: "Adaptabilitas", weight: 20, category: "Soft Skill", synonyms: ["adapt", "fleksibel", "beradaptasi"] },
+      // --- 10. SOFT SKILLS ---
+      { id: 48, keyword: "Komunikasi", weight: 25, category: "Soft Skill", synonyms: ["communication", "public speaking", "presentasi", "interpersonal", "hubungan"] },
+      { id: 49, keyword: "Kepemimpinan", weight: 30, category: "Soft Skill", synonyms: ["leadership", "memimpin", "manager", "lead", "supervisor", "pimpinan"] },
+      { id: 50, keyword: "Teamwork", weight: 20, category: "Soft Skill", synonyms: ["kerja tim", "tim", "team", "kolaborasi", "kerja sama", "cooperation"] },
+      { id: 51, keyword: "Problem Solving", weight: 25, category: "Soft Skill", synonyms: ["memecahkan masalah", "trouble shooting", "analisis"] },
+      { id: 52, keyword: "Adaptabilitas", weight: 20, category: "Soft Skill", synonyms: ["adapt", "fleksibel", "beradaptasi"] },
 
       // --- [ZONA TAMBAH KEYWORD] ---
-      // SILAKAN TAMBAHKAN KEYWORD BARU DI BAWAH INI
-      // Format: { id: 999, keyword: "Nama Skill", weight: 20, category: "Kategori", synonyms: ["sinonim1", "sinonim2"] },
-      // -------------------------------------------------------
-      
+      // Programmer bisa tambah di sini
     ];
 
-    // --- ENGINE VARIABLES ---
+    // --- LOGIC VARIABLES ---
     let rawText = "";
     const pdfInput = document.getElementById('pdfInput');
     const loader = document.getElementById('loader');
     const pageUpload = document.getElementById('page-upload');
     const pageResult = document.getElementById('page-result');
-    const headerScan = document.getElementById('headerScan');
+    
+    // --- UI INTERACTION VARIABLES ---
+    const splashScreen = document.getElementById('splashScreen');
+    const fullscreenToggle = document.getElementById('fullscreenToggle');
 
-    // --- PDF HANDLER ---
+    // --- 1. SPLASH SCREEN LOGIC ---
+    window.onload = () => {
+      setTimeout(() => {
+        splashScreen.style.opacity = '0';
+        setTimeout(() => { splashScreen.style.display = 'none'; }, 500);
+      }, 2000); // Splash selama 2 detik
+    };
+
+    // --- 2. FULLSCREEN LOGIC ---
+    fullscreenToggle.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log("Fullscreen blocked");
+          e.target.checked = false;
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    });
+
+    // --- 3. NAVIGATION SWITCHING ---
+    function switchTab(tab) {
+      if(tab === 'upload') {
+        pageResult.classList.remove('active');
+        setTimeout(() => { pageResult.style.display = 'none'; pageUpload.style.display = 'block'; setTimeout(() => pageUpload.classList.add('active'), 50); }, 300);
+      } else {
+        pageUpload.classList.remove('active');
+        setTimeout(() => { pageUpload.style.display = 'none'; pageResult.style.display = 'block'; setTimeout(() => pageResult.classList.add('active'), 50); }, 300);
+      }
+    }
+
+    // --- 4. PDF HANDLER ---
     pdfInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if(!file) return;
 
       document.getElementById('fileName').innerText = `Memproses: ${file.name}`;
-      headerScan.style.display = 'block'; // Aktifkan animasi scan
       loader.classList.remove('hidden');
       loader.classList.add('flex');
 
@@ -279,28 +357,24 @@
         setTimeout(() => {
           loader.classList.add('hidden');
           loader.classList.remove('flex');
-          headerScan.style.display = 'none';
+          switchTab('result');
           runNeuralAnalysis();
         }, 1500);
 
       } catch (err) {
         alert("Gagal membaca PDF.");
         loader.classList.add('hidden');
-        headerScan.style.display = 'none';
       }
     });
 
-    // --- NEURAL ANALYSIS ENGINE ---
+    // --- 5. NEURAL ANALYSIS ENGINE (SAMA DENGAN V18) ---
     function runNeuralAnalysis() {
-      pageUpload.classList.remove('active');
-      setTimeout(() => { pageUpload.style.display = 'none'; pageResult.style.display = 'block'; setTimeout(() => pageResult.classList.add('active'), 50); }, 300);
-
       let totalWeight = 0;
       let earnedWeight = 0;
       const logList = document.getElementById('logList');
       logList.innerHTML = "";
 
-      // 1. STRUCUTURE VALIDATION (Regex Logic)
+      // 1. STRUCTURE VALIDATION
       const yearCount = (rawText.match(/\b(19|20)\d{2}\b/g) || []).length;
       const emailCount = (rawText.match(/[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}/g) || []).length;
       const wordCount = rawText.split(' ').length;
@@ -309,7 +383,7 @@
       document.getElementById('structEmail').innerText = emailCount;
       document.getElementById('structWords').innerText = wordCount;
 
-      // 2. KEYWORD DATABASE SCAN
+      // 2. KEYWORD SCAN
       keywordDatabase.forEach(k => {
         totalWeight += k.weight;
         let found = false;
@@ -324,6 +398,7 @@
           }
         }
 
+        // RENDER LOG
         if(found) {
           earnedWeight += k.weight;
           logList.innerHTML += `
@@ -360,6 +435,7 @@
         finalScore = Math.round((earnedWeight / totalWeight) * 100);
       }
 
+      // 4. UI UPDATE
       document.getElementById('scoreValue').innerText = finalScore + "%";
       const bar = document.getElementById('progressBar');
       bar.style.width = finalScore + "%";
@@ -379,11 +455,11 @@
       } else if(finalScore >= 40) {
         verdictColor = "bg-yellow-500";
         statusText = "CUKUP KOMPETEN";
-        verdictDesc = "Kandidat memenuhi standar minimum namun membutuhkan evaluasi lebih lanjut.";
+        verdictDesc = "Kandidat memiliki beberapa kompetensi, namun perlu evaluasi lebih lanjut.";
       } else {
         verdictColor = "bg-red-500";
         statusText = "KURANG KOMPETEN";
-        verdictDesc = "Kompetensi kandidat jauh dari standar yang dibutuhkan.";
+        verdictDesc = "Kompetensi kandidat belum memenuhi standar minimum.";
       }
 
       bar.className = `h-full transition-all duration-1500 ease-out relative ${verdictColor}`;
@@ -398,10 +474,38 @@
     function resetApp() {
       pdfInput.value = '';
       rawText = '';
-      pageResult.classList.remove('active');
-      setTimeout(() => { pageResult.style.display = 'none'; pageUpload.style.display = 'block'; setTimeout(() => pageUpload.classList.add('active'), 50); }, 300);
-      document.getElementById('fileName').innerText = "Analisis Semantik & Konteks";
+      switchTab('upload');
+      document.getElementById('fileName').innerText = "Sistem Siap Menganalisis";
     }
+
+    // --- PWA INSTALL PROMPT LOGIC ---
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      setTimeout(() => { document.getElementById('installPrompt').classList.remove('hidden'); }, 3000);
+    });
+
+    document.getElementById('installBtn').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt = null;
+        document.getElementById('installPrompt').classList.add('hidden');
+      }
+    });
+
+    function dismissInstall() {
+      document.getElementById('installPrompt').classList.add('hidden');
+    }
+
+    // --- INJECT MANIFEST ---
+    const manifest = {
+      name: "HR Scanner Neural", short_name: "HR Scan", start_url: ".", display: "standalone",
+      background_color: "#0f172a", theme_color: "#0f172a",
+      icons: [{ src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%230f172a'/><text x='256' y='350' font-size='260' font-family='sans-serif' font-weight='800' fill='white' text-anchor='middle'>HR</text></svg>", sizes: "512x512", type: "image/svg+xml"}]
+    };
+    const link = document.createElement('link'); link.rel = 'manifest'; link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/json' })); document.head.appendChild(link);
+
   </script>
 </body>
 </html>
