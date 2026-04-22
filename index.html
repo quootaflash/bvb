@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Sistem Seleksi CV Profesional</title>
+
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#1e293b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Seleksi CV">
+  
+  <!-- Icon -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='30' fill='%231e293b'/><text x='50' y='68' font-size='45' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>HR</text></svg>">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            slate: { 850: '#151e32', 900: '#0f172a' },
+            primary: { 500: '#2563eb', 600: '#1d4ed8' },
+            success: '#10b981',
+            danger: '#ef4444'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+
+  <!-- Icons & Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body { -webkit-tap-highlight-color: transparent; }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-200 font-sans h-screen flex flex-col overflow-hidden">
+
+  <!-- HEADER -->
+  <header class="bg-slate-800 border-b border-slate-700 z-50 px-6 py-4 flex justify-between items-center shadow-md">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center text-white font-bold border border-slate-600">
+        <i class="fas fa-user-tie"></i>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold text-white tracking-tight">Seleksi Kandidat</h1>
+        <p class="text-xs text-slate-400 font-medium">Sistem Analisis Dokumen Standar HR</p>
+      </div>
+    </div>
+    <div class="bg-slate-700 px-3 py-1 rounded border border-slate-600">
+      <span class="text-[10px] font-bold text-slate-300 tracking-wider">PRO V14.0</span>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 overflow-y-auto scrollbar-hide p-6 relative">
+    <div class="max-w-4xl mx-auto space-y-6">
+
+      <!-- 1. UPLOAD -->
+      <div class="bg-slate-800 rounded-xl border border-slate-700 p-1 shadow-lg relative">
+        <input type="file" id="pdfInput" accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+        <div class="border-2 border-dashed border-slate-600 rounded-lg p-8 text-center transition-colors" id="dropZone">
+          <div class="mb-3">
+            <i class="fas fa-file-pdf text-4xl text-slate-400"></i>
+          </div>
+          <h3 class="text-white font-semibold mb-1">Unggah Dokumen CV</h3>
+          <p class="text-slate-400 text-sm" id="fileName">Format: PDF • Maks 10MB</p>
+        </div>
+      </div>
+
+      <!-- 2. HASIL ANALISIS (Hidden Default) -->
+      <div id="resultArea" class="hidden space-y-6">
+        
+        <!-- Panel Keputusan -->
+        <div class="bg-slate-800 rounded-xl border border-slate-700 p-6 shadow-lg">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-white font-bold text-lg border-l-4 border-primary-600 pl-3">Keputusan Sistem</h2>
+            <div id="statusBadge" class="px-4 py-1 rounded text-sm font-bold bg-slate-700 text-slate-300">
+              MENUNGGU ANALISIS
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-6">
+            <div class="flex-1">
+              <div class="text-slate-400 text-xs font-bold uppercase mb-1">Skor Kecocokan</div>
+              <div class="text-5xl font-black text-white font-mono" id="scoreValue">0%</div>
+            </div>
+            <div class="flex-1 h-3 bg-slate-700 rounded-full overflow-hidden">
+              <div id="progressBar" class="h-full bg-slate-600 transition-all duration-1000 ease-out w-0"></div>
+            </div>
+          </div>
+          <div id="finalVerdict" class="mt-4 p-3 rounded bg-slate-700/50 text-sm text-slate-300 border border-slate-600">
+            Sistem belum memproses dokumen.
+          </div>
+        </div>
+
+        <!-- Detail Log -->
+        <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
+            <h3 class="font-bold text-white">Rincian Kriteria</h3>
+            <div class="text-xs text-slate-400 flex gap-4">
+              <span class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-green-500"></div> Terpenuhi</span>
+              <span class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-red-500"></div> Tidak Terpenuhi</span>
+            </div>
+          </div>
+          <div class="divide-y divide-slate-700 max-h-[400px] overflow-y-auto scrollbar-hide" id="logList">
+            <!-- JS Rendered -->
+          </div>
+        </div>
+
+        <button onclick="resetApp()" class="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg border border-slate-600 transition-colors">
+          Ulangi Analisis
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- LOADING -->
+  <div id="loader" class="fixed inset-0 bg-slate-900/95 backdrop-blur-sm z-50 hidden flex-col items-center justify-center">
+    <div class="w-16 h-16 border-4 border-slate-700 border-t-primary-600 rounded-full animate-spin mb-4"></div>
+    <h2 class="text-white font-bold text-lg">Memindai Dokumen...</h2>
+    <p class="text-slate-400 text-sm mt-1">Melakukan verifikasi ketat terhadap kriteria</p>
+  </div>
+
+  <!-- PWA & SCRIPT -->
+  <script>
+    // 1. CONFIGURATION (HARDCODED)
+    // type: 'wajib' (Fatal if missing), 'opsional' (Bonus)
+    const criteria = [
+      { id: 1, keyword: "S1", type: "wajib", desc: "Pendidikan Minimal Sarjana", bobot: 20 },
+      { id: 2, keyword: "Bahasa Inggris", type: "wajib", desc: "Kemampuan Bahasa Inggris Aktif", bobot: 20 },
+      { id: 3, keyword: "Microsoft Office", type: "wajib", desc: "Kompetensi Office Suite", bobot: 20 },
+      { id: 4, keyword: "Komunikasi", type: "wajib", desc: "Kemampuan Komunikasi & Interpersonal", bobot: 20 },
+      { id: 5, keyword: "Pengalaman Kerja", type: "wajib", desc: "Rekam Jejak Profesional", bobot: 20 },
+      // Opsional (Bonus)
+      { id: 6, keyword: "Leadership", type: "opsional", desc: "Kemampuan Memimpin Tim", bobot: 0 },
+      { id: 7, keyword: "Desain", type: "opsional", desc: "Keahlian Desain Grafis", bobot: 0 }
+    ];
+
+    // Sinonim Kata Kunci (Pencarian Cerdas)
+    const synonyms = {
+      "s1": ["sarjana", "bachelor", "strata 1", "gelar", "universitas"],
+      "bahasa inggris": ["english", "toefl", "ielts", "inggris", "toeic"],
+      "microsoft office": ["excel", "word", "powerpoint", "ppt", "xls", "docx", "spreadsheet"],
+      "komunikasi": ["communication", "public speaking", "presentasi", "interpersonal"],
+      "pengalaman kerja": ["work experience", "employment", "pekerjaan", "history", "karir"],
+      "leadership": ["lead", "manager", "head", "kepemimpinan", "pimpinan"],
+      "desain": ["design", "ui", "ux", "graphic", "creative", "adobe"]
+    };
+
+    // 2. ENGINE VARIABLES
+    let rawText = "";
+    const pdfInput = document.getElementById('pdfInput');
+    const loader = document.getElementById('loader');
+    const resultArea = document.getElementById('resultArea');
+    const logList = document.getElementById('logList');
+
+    // 3. PDF HANDLER
+    pdfInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if(!file) return;
+
+      document.getElementById('fileName').innerText = `Sedang memproses: ${file.name}`;
+      loader.classList.remove('hidden');
+      loader.classList.add('flex');
+
+      try {
+        const buffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({data: buffer}).promise;
+        let text = "";
+        
+        for(let i=1; i<=pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          text += content.items.map(item => item.str).join(" ");
+        }
+
+        // Cleaning Data (Pembersihan Data)
+        rawText = text
+          .toLowerCase()
+          .replace(/[\n\r\t]+/g, ' ')
+          .replace(/[^\w\s\-\.\@]/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        setTimeout(() => {
+          loader.classList.add('hidden');
+          loader.classList.remove('flex');
+          analyzeDocument();
+        }, 1000);
+
+      } catch (err) {
+        alert("Gagal membaca file PDF.");
+        loader.classList.add('hidden');
+      }
+    });
+
+    // 4. ANALYSIS ENGINE (KETAT)
+    function analyzeDocument() {
+      resultArea.classList.remove('hidden');
+      logList.innerHTML = "";
+
+      let totalBobot = 0;
+      let bobotTerpenuhi = 0;
+      let fatalFailure = false;
+      let itemsWajib = criteria.filter(c => c.type === 'wajib').length;
+      let itemsTerpenuhiWajib = 0;
+
+      criteria.forEach(c => {
+        let found = false;
+        let method = "Pencarian Langsung";
+        const key = c.keyword.toLowerCase();
+
+        // Cek Langsung
+        if(rawText.includes(key)) found = true;
+        // Cek Sinonim
+        else if(synonyms[key]) {
+          if(synonyms[key].some(s => rawText.includes(s))) {
+            found = true;
+            method = "Pencarian Semantik";
+          }
+        }
+
+        // Logic Logika
+        let logClass = "";
+        let icon = "";
+        let statusText = "";
+
+        if(found) {
+          if(c.type === 'wajib') {
+            itemsTerpenuhiWajib++;
+            bobotTerpenuhi += c.bobot;
+          }
+          totalBobot += c.bobot;
+
+          logClass = "bg-green-500/5";
+          icon = "fa-check-circle text-green-500";
+          statusText = `TERPENUHI (${method})`;
+        } else {
+          if(c.type === 'wajib') {
+            fatalFailure = true;
+            logClass = "bg-red-500/5";
+            icon = "fa-times-circle text-red-500";
+            statusText = "TIDAK DITEMUKAN (KRITERIA WAJIB)";
+          } else {
+            logClass = "bg-slate-700/30 opacity-50";
+            icon = "fa-minus-circle text-slate-500";
+            statusText = "TIDAK DITEMUKAN (OPSIONAL)";
+          }
+        }
+
+        // Render Log
+        logList.innerHTML += `
+          <div class="p-4 flex justify-between items-center ${logClass} hover:bg-slate-700/30 transition-colors">
+            <div>
+              <div class="text-white font-bold text-sm">${c.keyword}</div>
+              <div class="text-xs text-slate-400 mt-1">${c.desc}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs font-bold ${c.type === 'wajib' && !found ? 'text-red-400' : 'text-slate-300'}">${statusText}</div>
+              <div class="text-[10px] text-slate-500 mt-0.5 uppercase font-bold tracking-wider">${c.type}</div>
+            </div>
+          </div>
+        `;
+      });
+
+      // 5. CALCULATION STRICT
+      let skorAkhir = 0;
+      let verdict = "";
+      let color = "";
+      let badge = "";
+
+      // Jika ada satu saja wajib yang tidak terpenuhi -> Langsung 0%
+      if(fatalFailure) {
+        skorAkhir = 0;
+        verdict = "DITOLAK • Tidak Memenuhi Syarat Wajib";
+        color = "bg-red-500";
+        badge = "DITOLAK";
+        document.getElementById('finalVerdict').innerHTML = `<span class="text-red-400 font-bold">Kandidat tidak memenuhi standar minimum kualifikasi yang telah ditetapkan perusahaan.</span>`;
+      } else {
+        // Hitung persentase jika semua wajib terpenuhi
+        // Bobot maksimal dihitung berdasarkan kriteria Wajib
+        let maxBobot = criteria.filter(c => c.type === 'wajib').reduce((acc, curr) => acc + curr.bobot, 0);
+        
+        if(maxBobot > 0) {
+          skorAkhir = Math.round((bobotTerpenuhi / maxBobot) * 100);
+        }
+
+        if(skorAkhir >= 70) {
+          verdict = "DITERIMA • Memenuhi Standar";
+          color = "bg-green-500";
+          badge = "DITERIMA";
+          document.getElementById('finalVerdict').innerHTML = `<span class="text-green-400 font-bold">Kandidat memenuhi seluruh kriteria wajib dan sesuai standar kualifikasi perusahaan.</span>`;
+        } else {
+          verdict = "PERTIMBANGAN • Skor Rendah";
+          color = "bg-yellow-500";
+          badge = "PERTIMBANGAN";
+          document.getElementById('finalVerdict').innerHTML = `<span class="text-yellow-400 font-bold">Kandidat memenuhi syarat wajib, namun skor kompetensi masih rendah. Perlu evaluasi lebih lanjut.</span>`;
+        }
+      }
+
+      // UI Update
+      document.getElementById('scoreValue').innerText = skorAkhir + "%";
+      const bar = document.getElementById('progressBar');
+      bar.style.width = skorAkhir + "%";
+      bar.className = `h-full transition-all duration-1000 ease-out ${color}`;
+
+      const statusBadge = document.getElementById('statusBadge');
+      statusBadge.innerText = badge;
+      statusBadge.className = `px-4 py-1 rounded text-sm font-bold border ${color === 'bg-red-500' ? 'bg-red-500/10 border-red-500 text-red-400' : (color === 'bg-green-500' ? 'bg-green-500/10 border-green-500 text-green-400' : 'bg-yellow-500/10 border-yellow-500 text-yellow-400')}`;
+    }
+
+    function resetApp() {
+      pdfInput.value = '';
+      rawText = '';
+      resultArea.classList.add('hidden');
+      document.getElementById('fileName').innerText = "Format: PDF • Maks 10MB";
+    }
+  </script>
+</body>
+</html>
