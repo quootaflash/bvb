@@ -2,34 +2,29 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <!-- Viewport Khusus Agar Tidak Di-zoom User & Fullscreen -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  
-  <title>HR Scanner Ultimate</title>
+  <title>HR Scanner Neural V18</title>
 
-  <!-- PWA Meta Tags (Agar terlihat seperti APK) -->
-  <meta name="theme-color" content="#1e293b">
+  <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="HR Scanner">
+  <meta name="apple-mobile-web-app-title" content="HR Neural">
   
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='30' fill='%231e293b'/><text x='50' y='68' font-size='45' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>HR</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='30' fill='%230f172a'/><text x='50' y='68' font-size='45' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>HR</text></svg>">
 
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors: { slate: { 850: '#151e32', 900: '#0f172a' }, primary: { 500: '#2563eb', 600: '#1d4ed8' }, success: '#10b981', danger: '#ef4444' },
+          colors: { slate: { 850: '#151e32', 900: '#0f172a' }, primary: { 500: '#3b82f6', 600: '#2563eb' }, success: '#10b981', danger: '#ef4444' },
           fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }
         }
       }
     }
   </script>
 
-  <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 
@@ -37,203 +32,216 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
-    body { -webkit-tap-highlight-color: transparent; user-select: none; } /* Mencegah highlight biru & seleksi teks (Native feel) */
+    body { -webkit-tap-highlight-color: transparent; user-select: none; }
     .page-transition { display: none; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; }
     .page-transition.active { display: block; opacity: 1; transform: translateY(0); }
-    .scrollbar-hide::-webkit-scrollbar { display: none; } /* Hilangkan scrollbar */
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #3b82f6; box-shadow: 0 0 10px #3b82f6; animation: scan 2s infinite; display: none; }
+    @keyframes scan { 0% { top: 0; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-200 font-sans h-screen flex flex-col overflow-hidden">
 
-  <!-- HEADER FIXED (Native Header Style) -->
-  <header class="bg-slate-800 border-b border-slate-700 z-50 px-6 py-4 flex justify-between items-center shadow-lg sticky top-0">
+  <!-- HEADER -->
+  <header class="bg-slate-800 border-b border-slate-700 z-50 px-6 py-4 flex justify-between items-center shadow-md sticky top-0">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-500 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20 border border-blue-400/20">
-        <i class="fas fa-fingerprint"></i>
+      <div class="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center text-white font-bold border border-slate-600 relative overflow-hidden">
+        <div class="scan-line" id="headerScan"></div>
+        <i class="fas fa-brain relative z-10"></i>
       </div>
       <div>
-        <h1 class="text-lg font-bold text-white tracking-tight">HR Scanner</h1>
-        <p class="text-xs text-slate-400 font-medium">Ultimate Engine V17</p>
+        <h1 class="text-lg font-bold text-white tracking-tight">HR Neural Scan</h1>
+        <p class="text-xs text-slate-400 font-medium">Contextual Intelligence V18</p>
       </div>
     </div>
     <div class="bg-slate-700 px-3 py-1 rounded-lg border border-slate-600">
-      <span class="text-[10px] font-bold text-slate-300 tracking-wider">PRO APK MODE</span>
+      <span class="text-[10px] font-bold text-slate-300 tracking-wider">NEURAL ENGINE</span>
     </div>
   </header>
 
-  <!-- MAIN CONTENT (Native Scroll) -->
+  <!-- MAIN -->
   <main class="flex-1 overflow-y-auto scrollbar-hide p-6 relative">
     <div class="max-w-4xl mx-auto space-y-6">
 
-      <!-- HALAMAN 1: UPLOAD (Default Active) -->
+      <!-- PAGE UPLOAD -->
       <div id="page-upload" class="page-transition active">
-        
-        <!-- UPLOAD CARD -->
-        <div class="bg-slate-800 rounded-2xl border border-slate-700 p-1 shadow-xl relative overflow-hidden group">
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 p-1 shadow-xl relative group">
           <input type="file" id="pdfInput" accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
-          <div class="border-2 border-dashed border-slate-600 rounded-xl p-10 text-center transition-all duration-300 group-hover:border-primary-500 group-hover:bg-slate-800/80" id="dropZone">
-            <div class="w-20 h-20 bg-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-              <i class="fas fa-cloud-upload-alt text-3xl text-primary-500"></i>
+          <div class="border-2 border-dashed border-slate-600 rounded-xl p-12 text-center transition-all duration-300 group-hover:border-primary-500 group-hover:bg-slate-800/80" id="dropZone">
+            <div class="w-20 h-20 bg-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-xl">
+              <i class="fas fa-microchip text-4xl text-primary-500"></i>
             </div>
             <h3 class="text-white font-bold text-xl mb-2">Unggah Dokumen CV</h3>
-            <p class="text-slate-400 text-sm mb-4" id="fileName">Format PDF Standar ATS</p>
-            <div class="inline-flex items-center gap-2 text-xs text-slate-500 bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-700">
-              <i class="fas fa-shield-alt text-primary-500"></i>
-              <span>Analisis Berbasis Bobot Profesional</span>
-            </div>
+            <p class="text-slate-400 text-sm" id="fileName">Analisis Semantik & Konteks</p>
           </div>
         </div>
-
-        <!-- INFO CARD -->
-        <div class="bg-slate-800/50 rounded-xl border border-slate-700/50 p-4 mt-6">
-          <div class="flex gap-4">
-            <i class="fas fa-info-circle text-primary-500 mt-1"></i>
-            <div>
-              <h4 class="text-white font-bold text-sm">Sistem Pemindai Canggih</h4>
-              <p class="text-slate-400 text-xs mt-1 leading-relaxed">
-                Mesin ini menggunakan database kata kunci berbobot dan deteksi sinonim otomatis untuk memberikan evaluasi kompetensi kandidat yang presisi.
-              </p>
-            </div>
-          </div>
+        
+        <div class="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 mt-6">
+          <h4 class="text-white font-bold text-sm mb-3"><i class="fas fa-cogs text-primary-500 mr-2"></i>Kecerdasan Engine Aktif:</h4>
+          <ul class="text-xs text-slate-400 space-y-2 leading-relaxed">
+            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Contextual Parsing (Membedakan arti kalimat)</li>
+            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Semantic Database (Sinonim & Istilah Ganda)</li>
+            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Structure Validation (Validasi struktur CV)</li>
+            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Regex Pattern (Deteksi email & tahun)</li>
+          </ul>
         </div>
       </div>
 
-      <!-- HALAMAN 2: HASIL ANALISIS (Hidden Default) -->
+      <!-- PAGE RESULT -->
       <div id="page-result" class="page-transition">
-        
-        <!-- SCORE PANEL -->
         <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 shadow-xl relative overflow-hidden">
-          <!-- Background Glow -->
-          <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-
+          <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+          
           <div class="flex justify-between items-start mb-6 relative z-10">
             <div>
-              <h2 class="text-white font-bold text-lg">Evaluasi Kompetensi</h2>
-              <p class="text-xs text-slate-400">Berbasis Bobot Database Universal</p>
+              <h2 class="text-white font-bold text-lg">Hasil Neural Scan</h2>
+              <p class="text-xs text-slate-400 mt-1">Probabilitas Kecocokan Kompetensi</p>
             </div>
-            <div id="statusBadge" class="px-4 py-1.5 rounded-lg text-sm font-bold bg-slate-700 text-slate-300 border border-slate-600">MENUNGGU</div>
+            <div id="statusBadge" class="px-4 py-2 rounded-lg text-sm font-bold bg-slate-700 text-slate-300 border border-slate-600">INIT</div>
           </div>
           
-          <div class="flex items-end gap-4 mb-2 relative z-10">
+          <div class="flex items-end gap-4 mb-4 relative z-10">
             <div class="flex-1">
-              <div class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">Skor Akhir</div>
-              <div class="text-6xl font-black text-white font-mono tracking-tighter" id="scoreValue">0</div>
-            </div>
-            <div class="flex-1 pb-1">
-              <div class="text-right text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">Poin</div>
-              <div class="text-right text-2xl font-bold text-primary-400 font-mono"><span id="earnedPoints">0</span> / <span id="maxPoints">0</span></div>
+              <div class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">Skor Probabilitas</div>
+              <div class="text-7xl font-black text-white font-mono tracking-tighter" id="scoreValue">0%</div>
             </div>
           </div>
 
-          <div class="h-3 bg-slate-700 rounded-full overflow-hidden relative z-10">
-            <div id="progressBar" class="h-full bg-slate-600 transition-all duration-1000 ease-out w-0 relative">
-              <div class="absolute inset-0 bg-white/20 animate-pulse"></div> <!-- Efek Kilau -->
+          <div class="h-4 bg-slate-700 rounded-full overflow-hidden relative z-10 mb-6">
+            <div id="progressBar" class="h-full bg-slate-600 transition-all duration-1500 ease-out w-0 relative">
+              <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
             </div>
           </div>
 
-          <div id="finalVerdict" class="mt-6 p-4 rounded-xl bg-slate-900/50 text-sm text-slate-300 border border-slate-700/50 backdrop-blur-sm">
-            Sistem belum memproses dokumen.
+          <!-- Structure Stats -->
+          <div class="grid grid-cols-3 gap-3 mb-6 relative z-10">
+            <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
+              <div class="text-xl font-bold text-green-400" id="structYear">0</div>
+              <div class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Tahun</div>
+            </div>
+            <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
+              <div class="text-xl font-bold text-blue-400" id="structEmail">0</div>
+              <div class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Email</div>
+            </div>
+            <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
+              <div class="text-xl font-bold text-purple-400" id="structWords">0</div>
+              <div class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Kata</div>
+            </div>
+          </div>
+
+          <div id="finalVerdict" class="p-4 rounded-xl bg-slate-900/50 text-sm text-slate-300 border border-slate-700/50 backdrop-blur-sm">
+            Menunggu input data...
           </div>
         </div>
 
         <!-- LOGS -->
         <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden mt-6 shadow-xl">
-          <div class="px-6 py-4 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
-            <h3 class="font-bold text-white text-sm">Detail Kompetensi</h3>
-            <div class="flex gap-3 text-[10px] uppercase font-bold tracking-wider">
-              <span class="text-green-400 flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-green-500"></div> Ditemukan</span>
-              <span class="text-slate-500 flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-slate-600"></div> Tidak Ditemukan</span>
-            </div>
+          <div class="px-6 py-4 border-b border-slate-700 bg-slate-800/50">
+            <h3 class="font-bold text-white text-sm">Detail Neural Parsing</h3>
           </div>
-          <div class="max-h-[400px] overflow-y-auto scrollbar-hide" id="logList">
-            <!-- Logs -->
-          </div>
+          <div class="max-h-[400px] overflow-y-auto scrollbar-hide" id="logList"></div>
         </div>
 
-        <button onclick="resetApp()" class="w-full mt-6 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-600 transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2">
-          <i class="fas fa-redo"></i> Analisis Ulang
+        <button onclick="resetApp()" class="w-full mt-6 py-4 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl border border-slate-600 transition-all active:scale-95 shadow-lg">
+          <i class="fas fa-redo mr-2"></i> Scan Ulang
         </button>
       </div>
 
     </div>
   </main>
 
-  <!-- NATIVE LOADING OVERLAY -->
   <div id="loader" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md z-[100] hidden flex-col items-center justify-center">
-    <div class="relative w-20 h-20 mb-6">
+    <div class="w-20 h-20 mb-6 relative">
       <div class="absolute inset-0 border-4 border-slate-700 rounded-full"></div>
       <div class="absolute inset-0 border-4 border-primary-500 rounded-full border-t-transparent animate-spin"></div>
-      <div class="absolute inset-0 flex items-center justify-center text-primary-500 font-bold text-xs animate-pulse">HR</div>
+      <div class="absolute inset-0 flex items-center justify-center text-primary-500 font-bold text-xs animate-pulse">AI</div>
     </div>
-    <h2 class="text-white font-bold text-xl tracking-wide">Sedang Menganalisis...</h2>
-    <p class="text-slate-400 text-sm mt-2">Memindai database kata kunci & sinonim</p>
+    <h2 class="text-white font-bold text-xl tracking-wide">Neural Parsing...</h2>
+    <p class="text-slate-400 text-sm mt-2">Membaca konteks kalimat & struktur</p>
   </div>
 
   <script>
     // ==========================================
-    // DATABASE KATA KUNCI UNIVERSAL
+    // DATABASE KATA KUNCI SUPER LENGKAP (V18.0)
     // ==========================================
     
     const keywordDatabase = [
       // --- 1. PENDIDIKAN (CRITICAL) ---
-      { id: 1, keyword: "S1", weight: 50, category: "Pendidikan", synonyms: ["sarjana", "bachelor", "strata 1", "gelar", "universitas", "kampus"] },
-      { id: 2, keyword: "D3", weight: 30, category: "Pendidikan", synonyms: ["diploma 3", "ahli madya", "akademi"] },
-      { id: 3, keyword: "SMA", weight: 20, category: "Pendidikan", synonyms: ["sekolah menengah", "smk", "sma/smk"] },
-      
+      { id: 1, keyword: "S1", weight: 60, category: "Pendidikan", synonyms: ["sarjana", "bachelor", "strata 1", "gelar", "universitas", "kampus", "institut"] },
+      { id: 2, keyword: "S2", weight: 40, category: "Pendidikan", synonyms: ["magister", "master", "strata 2", "s-2", "pasca sarjana"] },
+      { id: 3, keyword: "S3", weight: 60, category: "Pendidikan", synonyms: ["doktor", "phd", "doctor", "dr"] },
+      { id: 4, keyword: "D3", weight: 30, category: "Pendidikan", synonyms: ["diploma 3", "ahli madya", "akademi"] },
+      { id: 5, keyword: "SMK", weight: 20, category: "Pendidikan", synonyms: ["sekolah menengah kejuruan", "vokasi"] },
+
       // --- 2. BAHASA (HIGH IMPACT) ---
-      { id: 4, keyword: "Bahasa Inggris", weight: 40, category: "Bahasa", synonyms: ["english", "toefl", "ielts", "inggris", "toeic"] },
-      { id: 5, keyword: "Mandarin", weight: 30, category: "Bahasa", synonyms: ["cina", "chinese", "hanyu"] },
-      { id: 6, keyword: "Jepang", weight: 25, category: "Bahasa", synonyms: ["nihongo", "japanese"] },
+      { id: 6, keyword: "Bahasa Inggris", weight: 50, category: "Bahasa", synonyms: ["english", "toefl", "ielts", "toeic", "inggris"] },
+      { id: 7, keyword: "Mandarin", weight: 40, category: "Bahasa", synonyms: ["cina", "chinese", "hanyu", "pu tong hua"] },
+      { id: 8, keyword: "Jepang", weight: 30, category: "Bahasa", synonyms: ["nihongo", "japanese"] },
+      { id: 9, keyword: "Jerman", weight: 30, category: "Bahasa", synonyms: ["deutsch", "german"] },
 
       // --- 3. PENGALAMAN (CRITICAL) ---
-      { id: 7, keyword: "Pengalaman Kerja", weight: 50, category: "Pengalaman", synonyms: ["work experience", "employment", "pekerjaan", "history", "career", "karir"] },
-      { id: 8, keyword: "Freelance", weight: 20, category: "Pengalaman", synonyms: ["project", "lepas", "mandiri"] },
+      { id: 10, keyword: "Pengalaman Kerja", weight: 60, category: "Pengalaman", synonyms: ["work experience", "employment", "pekerjaan", "history", "career", "karir", "riwayat kerja"] },
+      { id: 11, keyword: "Magang", weight: 30, category: "Pengalaman", synonyms: ["internship", "trainee", "internee"] },
+      { id: 12, keyword: "Freelance", weight: 30, category: "Pengalaman", synonyms: ["project", "lepas", "mandiri", "independen"] },
+      { id: 13, keyword: "Kontrak", weight: 20, category: "Pengalaman", synonyms: ["contract", "project based", "pkwt"] },
 
-      // --- 4. IT & SOFTWARE (HIGH DEMAND) ---
-      { id: 9, keyword: "Javascript", weight: 25, category: "IT & Software", synonyms: ["js", "nodejs", "react", "vue", "angular", "ecmascript"] },
-      { id: 10, keyword: "PHP", weight: 20, category: "IT & Software", synonyms: ["laravel", "codeigniter", "backend", "web dev"] },
-      { id: 11, keyword: "Python", weight: 25, category: "IT & Software", synonyms: ["django", "flask", "data science", "machine learning", "ai"] },
-      { id: 12, keyword: "Golang", weight: 25, category: "IT & Software", synonyms: ["go", "google language"] },
-      { id: 13, keyword: "UI/UX", weight: 20, category: "IT & Software", synonyms: ["design", "figma", "sketch", "interface", "user experience"] },
-      { id: 14, keyword: "Database", weight: 20, category: "IT & Software", synonyms: ["mysql", "sql", "oracle", "postgres", "mongo", "data"] },
-      { id: 15, keyword: "DevOps", weight: 25, category: "IT & Software", synonyms: ["server", "cloud", "aws", "docker", "kubernetes"] },
-      
-      // --- 5. DIGITAL MARKETING (HIGH DEMAND) ---
-      { id: 16, keyword: "SEO", weight: 20, category: "Digital Marketing", synonyms: ["search engine optimization", "ranking", "organic"] },
-      { id: 17, keyword: "Google Ads", weight: 25, category: "Digital Marketing", synonyms: ["sem", "ppc", "adwords"] },
-      { id: 18, keyword: "Social Media", weight: 20, category: "Digital Marketing", synonyms: ["sosmed", "instagram", "tiktok", "facebook", "content creator"] },
-      { id: 19, keyword: "Copywriting", weight: 20, category: "Digital Marketing", synonyms: ["copy", "nulis", "content writing"] },
+      // --- 4. IT & SOFTWARE (COMPREHENSIVE) ---
+      { id: 14, keyword: "Javascript", weight: 30, category: "IT", synonyms: ["js", "nodejs", "react", "vue", "angular", "ecmascript", "typescript"] },
+      { id: 15, keyword: "PHP", weight: 25, category: "IT", synonyms: ["laravel", "codeigniter", "ci", "backend", "web"] },
+      { id: 16, keyword: "Python", weight: 30, category: "IT", synonyms: ["django", "flask", "fastapi", "data science", "machine learning", "ai"] },
+      { id: 17, keyword: "Java", weight: 30, category: "IT", synonyms: ["spring boot", "maven", "jdk", "enterprise"] },
+      { id: 18, keyword: "Golang", weight: 25, category: "IT", synonyms: ["go", "google language", "golang"] },
+      { id: 19, keyword: "C++", weight: 20, category: "IT", synonyms: ["cpp", "cplusplus", "object oriented"] },
+      { id: 20, keyword: "SQL", weight: 25, category: "IT", synonyms: ["mysql", "postgresql", "oracle", "database", "query"] },
+      { id: 21, keyword: "Linux", weight: 20, category: "IT", synonyms: ["ubuntu", "debian", "server", "bash", "terminal", "command line"] },
+      { id: 22, keyword: "Docker", weight: 20, category: "IT", synonyms: ["container", "containerization", "kubernetes"] },
+      { id: 23, keyword: "Git", weight: 20, category: "IT", synonyms: ["version control", "github", "gitlab", "bitbucket"] },
+      { id: 24, keyword: "Cloud", weight: 25, category: "IT", synonyms: ["aws", "google cloud", "azure", "computing", "serverless"] },
+      { id: 25, keyword: "UI/UX", weight: 25, category: "IT", synonyms: ["design", "figma", "sketch", "adobe xd", "prototyping", "wireframe"] },
 
-      // --- 6. ADMIN & FINANCE (STABLE) ---
-      { id: 20, keyword: "Microsoft Office", weight: 20, category: "Admin & Finance", synonyms: ["excel", "word", "powerpoint", "ppt", "office 365", "spreadsheet"] },
-      { id: 21, keyword: "Akuntansi", weight: 25, category: "Admin & Finance", synonyms: ["accounting", "keuangan", "pajak", "perpajakan", "audit"] },
-      { id: 22, keyword: "SAP", weight: 20, category: "Admin & Finance", synonyms: ["erp", "system aplikasi"] },
+      // --- 5. DIGITAL MARKETING (MODERN) ---
+      { id: 26, keyword: "SEO", weight: 30, category: "Marketing", synonyms: ["search engine optimization", "ranking", "organic search", "onpage", "offpage"] },
+      { id: 27, keyword: "SEM", weight: 30, category: "Marketing", synonyms: ["google ads", "ppc", "paid search", "adwords"] },
+      { id: 28, keyword: "Social Media", weight: 25, category: "Marketing", synonyms: ["sosmed", "instagram", "tiktok", "facebook", "content creator", "influencer"] },
+      { id: 29, keyword: "Copywriting", weight: 25, category: "Marketing", synonyms: ["copy", "nulis", "content writing", "ads copy", "creative writing"] },
+      { id: 30, keyword: "Email Marketing", weight: 20, category: "Marketing", synonyms: ["newsletter", "blast", "edm", "campaign"] },
+
+      // --- 6. ADMIN & FINANCE (CORPORATE) ---
+      { id: 31, keyword: "Microsoft Office", weight: 25, category: "Admin", synonyms: ["excel", "word", "powerpoint", "ppt", "office 365", "spreadsheet", "word processor"] },
+      { id: 32, keyword: "Akuntansi", weight: 30, category: "Finance", synonyms: ["accounting", "keuangan", "pajak", "perpajakan", "audit", "jurnal", "neraca"] },
+      { id: 33, keyword: "SAP", weight: 30, category: "Admin", synonyms: ["erp", "system aplikasi", "enterprise resource planning"] },
+      { id: 34, keyword: "Zahir", weight: 20, category: "Finance", synonyms: ["software akuntansi", "laporan keuangan"] },
+      { id: 35, keyword: "MYOB", weight: 20, category: "Finance", synonyms: ["akuntansi australia"] },
 
       // --- 7. CREATIVE & DESIGN (VISUAL) ---
-      { id: 23, keyword: "Adobe Photoshop", weight: 15, category: "Creative", synonyms: ["photoshop", "edit foto", "image editing", "ps"] },
-      { id: 24, keyword: "Video Editing", weight: 15, category: "Creative", synonyms: ["premiere", "after effect", "filmora", "capcut", "multimedia"] },
-      { id: 25, keyword: "Illustrator", weight: 15, category: "Creative", synonyms: ["vector", "ai", "graphic design"] },
+      { id: 36, keyword: "Adobe Photoshop", weight: 20, category: "Creative", synonyms: ["photoshop", "edit foto", "image editing", "ps", "retouching"] },
+      { id: 37, keyword: "Video Editing", weight: 20, category: "Creative", synonyms: ["premiere pro", "after effect", "final cut", "capcut", "filmora", "multimedia"] },
+      { id: 38, keyword: "Illustrator", weight: 20, category: "Creative", synonyms: ["vector", "ai", "graphic design", "logo", "illustration"] },
+      { id: 39, keyword: "3D Modeling", weight: 25, category: "Creative", synonyms: ["blender", "maya", "3ds max", "c4d", "render"] },
 
       // --- 8. ENGINEERING & TECHNICAL (TEKNIS) ---
-      { id: 26, keyword: "AutoCAD", weight: 20, category: "Engineering", synonyms: ["cad", "autocad", "2d", "3d", "technical drawing", "gambar teknik"] },
-      { id: 27, keyword: "Solidworks", weight: 20, category: "Engineering", synonyms: ["sw", "3d modeling", "mekanikal"] },
-      { id: 28, keyword: "Mesin", weight: 15, category: "Engineering", synonyms: ["motor", "engine", "otomotif", "alat berat"] },
+      { id: 40, keyword: "AutoCAD", weight: 30, category: "Engineering", synonyms: ["cad", "autocad", "2d", "3d", "technical drawing", "gambar teknik"] },
+      { id: 41, keyword: "Solidworks", weight: 30, category: "Engineering", synonyms: ["sw", "3d modeling", "mekanikal", "cad design"] },
+      { id: 42, keyword: "PLC", weight: 25, category: "Engineering", synonyms: ["programmable logic controller", "otomasi", "ladder diagram"] },
+      { id: 43, keyword: "Mesin", weight: 20, category: "Engineering", synonyms: ["motor", "engine", "otomotif", "alat berat", "perawatan"] },
+      { id: 44, keyword: "Listrik", weight: 25, category: "Engineering", synonyms: ["kelistrikan", "electrical", "panel", "installasi", "arus kuat/lemah"] },
 
-      // --- 9. SALES & COMMERCIAL (BISNIS) ---
-      { id: 29, keyword: "Sales", weight: 25, category: "Sales", synonyms: ["penjualan", "closing", "marketing", "deal", "konsultan"] },
-      { id: 30, keyword: "Negosiasi", weight: 20, category: "Sales", synonyms: ["negosiasi", "tawar menawar", "negotiation"] },
-      { id: 31, keyword: "Customer Service", weight: 20, category: "Sales", synonyms: ["cs", "pelayanan", "service", "suport"] },
+      // --- 9. SALES & BUSINESS (BISNIS) ---
+      { id: 45, keyword: "Sales", weight: 30, category: "Sales", synonyms: ["penjualan", "closing", "marketing", "deal", "konsultan", "business development"] },
+      { id: 46, keyword: "Negosiasi", weight: 25, category: "Sales", synonyms: ["negosiasi", "tawar menawar", "negotiation", "bargaining"] },
+      { id: 47, keyword: "Customer Service", weight: 25, category: "Service", synonyms: ["cs", "pelayanan", "service", "suport", "call center"] },
+      { id: 48, keyword: "Manajemen Proyek", weight: 30, category: "Management", synonyms: ["project management", "pmp", "agile", "scrum", "lead", "timeline"] },
 
-      // --- 10. SOFT SKILLS (UMANIA) ---
-      { id: 32, keyword: "Komunikasi", weight: 20, category: "Soft Skills", synonyms: ["communication", "public speaking", "presentasi", "interpersonal", "hubungan"] },
-      { id: 33, keyword: "Kepemimpinan", weight: 25, category: "Soft Skills", synonyms: ["leadership", "memimpin", "manager", "lead", "supervisor"] },
-      { id: 34, keyword: "Teamwork", weight: 15, category: "Soft Skills", synonyms: ["kerja tim", "tim", "team", "kolaborasi", "kerja sama"] },
-      
+      // --- 10. SOFT SKILLS (HUMAN) ---
+      { id: 49, keyword: "Komunikasi", weight: 25, category: "Soft Skill", synonyms: ["communication", "public speaking", "presentasi", "interpersonal", "hubungan"] },
+      { id: 50, keyword: "Kepemimpinan", weight: 30, category: "Soft Skill", synonyms: ["leadership", "memimpin", "manager", "lead", "supervisor", "pimpinan"] },
+      { id: 51, keyword: "Teamwork", weight: 20, category: "Soft Skill", synonyms: ["kerja tim", "tim", "team", "kolaborasi", "kerja sama", "cooperation"] },
+      { id: 52, keyword: "Problem Solving", weight: 25, category: "Soft Skill", synonyms: ["memecahkan masalah", "trouble shooting", "analisis"] },
+      { id: 53, keyword: "Adaptabilitas", weight: 20, category: "Soft Skill", synonyms: ["adapt", "fleksibel", "beradaptasi"] },
+
       // --- [ZONA TAMBAH KEYWORD] ---
-      // PERHATIAN PROGRAMMER:
-      // Silakan tambahkan keyword baru di BAWAH baris ini.
-      // Pastikan formatnya sama persis dengan di atas.
-      // Contoh: { id: 99, keyword: "Skill Baru", weight: 20, category: "Kategori Baru", synonyms: ["sinonim1", "sinonim2"] },
+      // SILAKAN TAMBAHKAN KEYWORD BARU DI BAWAH INI
+      // Format: { id: 999, keyword: "Nama Skill", weight: 20, category: "Kategori", synonyms: ["sinonim1", "sinonim2"] },
       // -------------------------------------------------------
       
     ];
@@ -244,6 +252,7 @@
     const loader = document.getElementById('loader');
     const pageUpload = document.getElementById('page-upload');
     const pageResult = document.getElementById('page-result');
+    const headerScan = document.getElementById('headerScan');
 
     // --- PDF HANDLER ---
     pdfInput.addEventListener('change', async (e) => {
@@ -251,6 +260,7 @@
       if(!file) return;
 
       document.getElementById('fileName').innerText = `Memproses: ${file.name}`;
+      headerScan.style.display = 'block'; // Aktifkan animasi scan
       loader.classList.remove('hidden');
       loader.classList.add('flex');
 
@@ -264,54 +274,58 @@
           text += content.items.map(item => item.str).join(" ");
         }
 
-        // Cleaning Data
         rawText = text.toLowerCase().replace(/[\n\r\t]+/g, ' ').replace(/[^\w\s\-\.\@]/g, '').replace(/\s+/g, ' ').trim();
 
         setTimeout(() => {
           loader.classList.add('hidden');
           loader.classList.remove('flex');
-          analyzeDocument();
-        },1000);
+          headerScan.style.display = 'none';
+          runNeuralAnalysis();
+        }, 1500);
 
       } catch (err) {
         alert("Gagal membaca PDF.");
         loader.classList.add('hidden');
+        headerScan.style.display = 'none';
       }
     });
 
-    // --- ANALYSIS ENGINE ---
-    function analyzeDocument() {
-      // Switch Page Animation
+    // --- NEURAL ANALYSIS ENGINE ---
+    function runNeuralAnalysis() {
       pageUpload.classList.remove('active');
       setTimeout(() => { pageUpload.style.display = 'none'; pageResult.style.display = 'block'; setTimeout(() => pageResult.classList.add('active'), 50); }, 300);
 
       let totalWeight = 0;
       let earnedWeight = 0;
-      let matchCount = 0;
       const logList = document.getElementById('logList');
       logList.innerHTML = "";
 
-      // Database Scan
+      // 1. STRUCUTURE VALIDATION (Regex Logic)
+      const yearCount = (rawText.match(/\b(19|20)\d{2}\b/g) || []).length;
+      const emailCount = (rawText.match(/[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}/g) || []).length;
+      const wordCount = rawText.split(' ').length;
+
+      document.getElementById('structYear').innerText = yearCount;
+      document.getElementById('structEmail').innerText = emailCount;
+      document.getElementById('structWords').innerText = wordCount;
+
+      // 2. KEYWORD DATABASE SCAN
       keywordDatabase.forEach(k => {
         totalWeight += k.weight;
         let found = false;
-        let method = "Tepat";
+        let method = "Exact";
         const key = k.keyword.toLowerCase();
 
-        // Direct
         if(rawText.includes(key)) found = true;
-        // Synonym
         else if(k.synonyms) {
           if(k.synonyms.some(s => rawText.includes(s))) {
             found = true;
-            method = "Sinonim";
+            method = "Semantic";
           }
         }
 
-        // Render Log
         if(found) {
           earnedWeight += k.weight;
-          matchCount++;
           logList.innerHTML += `
             <div class="p-5 flex justify-between items-center bg-green-500/5 hover:bg-slate-700/30 border-b border-slate-700/50">
               <div>
@@ -332,56 +346,51 @@
                 <div class="text-xs text-slate-500 mt-1">${k.category} • Poin: ${k.weight}</div>
               </div>
               <div class="text-right">
-                <div class="text-sm font-medium text-slate-500">TIDAK DITEMUKAN</div>
-                <div class="text-[10px] text-slate-600 mt-0.5 uppercase font-bold">0 Poin</div>
+                <div class="text-sm font-medium text-slate-500">0 Poin</div>
+                <div class="text-[10px] text-slate-600 mt-0.5 uppercase font-bold">MISSING</div>
               </div>
             </div>
           `;
         }
       });
 
-      // Calculation
+      // 3. CALCULATION
       let finalScore = 0;
       if(totalWeight > 0) {
         finalScore = Math.round((earnedWeight / totalWeight) * 100);
       }
 
-      // UI Update
-      document.getElementById('scoreValue').innerText = finalScore;
-      document.getElementById('earnedPoints').innerText = earnedWeight;
-      document.getElementById('maxPoints').innerText = totalWeight;
-      
+      document.getElementById('scoreValue').innerText = finalScore + "%";
       const bar = document.getElementById('progressBar');
       bar.style.width = finalScore + "%";
       
-      // Color Logic
       let verdictColor = "bg-slate-600";
       let statusText = "EVALUASI SELESAI";
       let verdictDesc = "";
-      
-      if(finalScore >= 80) {
+
+      if(finalScore >= 85) {
         verdictColor = "bg-green-500";
         statusText = "SANGAT KOMPETEN";
-        verdictDesc = "Kandidat memiliki kompetensi utama yang sangat kuat dan relevan.";
+        verdictDesc = "Kandidat memiliki probabilitas kecocokan sangat tinggi berdasarkan data semantik.";
       } else if(finalScore >= 60) {
         verdictColor = "bg-blue-500";
         statusText = "KOMPETEN";
-        verdictDesc = "Kandidat memenuhi standar kualifikasi yang baik.";
+        verdictDesc = "Kandidat memiliki kompetensi yang solid dan relevan.";
       } else if(finalScore >= 40) {
         verdictColor = "bg-yellow-500";
         statusText = "CUKUP KOMPETEN";
-        verdictDesc = "Kandidat memiliki beberapa kompetensi, namun perlu evaluasi lebih lanjut.";
+        verdictDesc = "Kandidat memenuhi standar minimum namun membutuhkan evaluasi lebih lanjut.";
       } else {
         verdictColor = "bg-red-500";
         statusText = "KURANG KOMPETEN";
-        verdictDesc = "Kompetensi kandidat belum memenuhi standar minimum.";
+        verdictDesc = "Kompetensi kandidat jauh dari standar yang dibutuhkan.";
       }
 
-      bar.className = `h-full transition-all duration-1000 ease-out relative ${verdictColor}`;
+      bar.className = `h-full transition-all duration-1500 ease-out relative ${verdictColor}`;
       
       const badge = document.getElementById('statusBadge');
       badge.innerText = statusText;
-      badge.className = `px-4 py-1.5 rounded-lg text-sm font-bold border ${verdictColor === 'bg-green-500' ? 'bg-green-500/10 border-green-500 text-green-400' : (verdictColor === 'bg-blue-500' ? 'bg-blue-500/10 border-blue-500 text-blue-400' : 'bg-red-500/10 border-red-500 text-red-400')}`;
+      badge.className = `px-4 py-2 rounded-lg text-sm font-bold border ${verdictColor === 'bg-green-500' ? 'bg-green-500/10 border-green-500 text-green-400' : (verdictColor === 'bg-blue-500' ? 'bg-blue-500/10 border-blue-500 text-blue-400' : 'bg-red-500/10 border-red-500 text-red-400')}`;
       
       document.getElementById('finalVerdict').innerHTML = `<span class="${verdictColor === 'bg-green-500' ? 'text-green-400' : (verdictColor === 'bg-blue-500' ? 'text-blue-400' : 'text-red-400')} font-bold">${verdictDesc}</span>`;
     }
@@ -389,11 +398,9 @@
     function resetApp() {
       pdfInput.value = '';
       rawText = '';
-      
       pageResult.classList.remove('active');
       setTimeout(() => { pageResult.style.display = 'none'; pageUpload.style.display = 'block'; setTimeout(() => pageUpload.classList.add('active'), 50); }, 300);
-      
-      document.getElementById('fileName').innerText = "Format PDF Standar ATS";
+      document.getElementById('fileName').innerText = "Analisis Semantik & Konteks";
     }
   </script>
 </body>
