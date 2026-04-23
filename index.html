@@ -6,35 +6,38 @@
   <title>CVPRO Operator</title>
 
   <!-- PWA & ICON SETTINGS -->
-  <meta name="theme-color" content="#111827">
+  <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="CVPRO">
   
-  <!-- 1. FAVICON untuk Browser Tab -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%234F46E5'/><text x='50' y='68' font-size='40' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>CP</text></svg>">
+  <!-- Favicon & Icon (Tema Terang - Cyan) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%2306B6D4'/><text x='50' y='68' font-size='40' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>CP</text></svg>">
+  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvpro_light/180/180">
 
-  <!-- 2. APPLE TOUCH ICON untuk iOS Home Screen -->
-  <!-- Menggunakan placeholder gambar yang konsisten agar icon terbaca saat "Add to Home Screen" -->
-  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvproicon2024/180/180">
-
-  <!-- FONTS & ICONS LIBRARY -->
+  <!-- FONTS & ICONS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --primary: #4F46E5; /* Indigo 600 */
-      --primary-dark: #312E81;
-      --bg: #111827;      /* Gray 900 */
-      --card: #1F2937;    /* Gray 800 */
-      --border: #374151;  /* Gray 700 */
-      --text: #F9FAFB;
-      --text-muted: #9CA3AF;
+      /* TEMA TERANG (LIGHT MODE) - CYAN ACCENT */
+      --primary: #06B6D4; /* Cyan 500 */
+      --primary-dark: #0891b2;
+      --primary-light: #cffafe;
+      --bg: #F3F4F6;      /* Gray 100 (Background abu sangat muda) */
+      --surface: #FFFFFF; /* Putih untuk Card/Header */
+      --border: #E5E7EB;  /* Gray 200 */
+      --text-main: #1F2937; /* Gray 800 (Hampir Hitam) */
+      --text-sub: #6B7280;  /* Gray 500 */
       --danger: #EF4444;
       --safe-bottom: env(safe-area-inset-bottom, 20px);
       --safe-top: env(safe-area-inset-top, 10px);
+      
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; outline: none; }
@@ -42,7 +45,7 @@
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: var(--bg);
-      color: var(--text);
+      color: var(--text-main);
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
@@ -54,7 +57,6 @@
     .fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     
-    /* --- SCROLLBAR HIDE --- */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -72,138 +74,174 @@
     header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
     .brand { display: flex; align-items: center; gap: 15px; }
     
-    /* Logo Box SVG Inline */
     .logo-box {
       width: 50px; height: 50px; 
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border-radius: 14px; 
+      background: var(--primary);
+      border-radius: 16px; 
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
-      position: relative;
-      overflow: hidden;
+      box-shadow: 0 10px 20px -5px rgba(6, 182, 212, 0.4); /* Cyan Glow */
+      position: relative; overflow: hidden;
     }
-    /* Efek kilau pada logo */
-    .logo-box::after {
-      content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-      background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
-      transform: skewX(-25deg);
-      animation: shine 3s infinite;
-    }
-    @keyframes shine { 0%, 80% { left: -100%; } 100% { left: 200%; } }
 
-    .brand-info h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; }
+    .brand-info h1 { font-size: 22px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; line-height: 1.1; }
     .brand-info p { font-size: 10px; font-weight: 700; color: var(--primary); letter-spacing: 1.2px; text-transform: uppercase; margin-top: 4px; }
 
     .clock-display {
-      font-family: 'Plus Jakarta Sans', monospace; font-size: 14px; font-weight: 700; 
-      background: var(--card); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); color: white;
+      font-family: 'Plus Jakarta Sans', monospace; font-size: 13px; font-weight: 700; 
+      background: var(--surface); padding: 8px 14px; border-radius: 12px; border: 1px solid var(--border); color: var(--text-sub);
+      box-shadow: var(--shadow-sm);
     }
 
     /* --- MENU GRID --- */
     .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
     .menu-item {
-      background: var(--card); border: 1px solid var(--border); border-radius: 18px; 
+      background: var(--surface); border: 1px solid var(--border); border-radius: 20px; 
       padding: 18px; display: flex; align-items: center; gap: 14px; 
       transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); position: relative; overflow: hidden; cursor: pointer;
+      box-shadow: var(--shadow-sm);
     }
-    .menu-item:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+    .menu-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--primary); }
     .menu-item:active { transform: scale(0.96); }
     
     .icon-box { 
-      width: 44px; height: 44px; border-radius: 12px; 
-      background: rgba(79, 70, 229, 0.1); color: var(--primary); 
+      width: 44px; height: 44px; border-radius: 14px; 
+      background: var(--primary-light); color: var(--primary-dark); 
       display: flex; align-items: center; justify-content: center; font-size: 18px; 
       transition: 0.3s;
     }
     .menu-item:hover .icon-box { background: var(--primary); color: white; }
     
     .menu-text { display: flex; flex-direction: column; }
-    .menu-label { font-size: 15px; font-weight: 700; color: var(--text); }
-    .menu-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
+    .menu-label { font-size: 15px; font-weight: 700; color: var(--text-main); }
+    .menu-sub { font-size: 11px; color: var(--text-sub); margin-top: 2px; font-weight: 500; }
 
     /* --- WEBVIEW OVERLAY --- */
     #webview-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: #000; z-index: 9999; display: flex; flex-direction: column;
+      background: #fff; z-index: 9999; display: flex; flex-direction: column;
       transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     #webview-overlay.active { transform: translateY(0); }
 
     .wb-header {
       height: 70px; padding: 0 20px; padding-top: var(--safe-top);
-      background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;
+      box-shadow: var(--shadow-sm);
     }
-    .wb-title { font-size: 14px; font-weight: 700; color: white; }
+    .wb-title { font-size: 14px; font-weight: 700; color: var(--text-main); }
     
     .wb-btn-back {
-      display: flex; align-items: center; gap: 8px; color: white; font-size: 14px; font-weight: 600;
-      background: rgba(255,255,255,0.1); padding: 8px 14px; border-radius: 10px; border: none; cursor: pointer;
+      display: flex; align-items: center; gap: 8px; color: var(--text-main); font-size: 14px; font-weight: 600;
+      background: #f3f4f6; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer;
     }
-    .wb-btn-back:active { background: var(--primary); }
+    .wb-btn-back:active { background: var(--primary); color: white; border-color: var(--primary); }
     
     .wb-actions { display: flex; gap: 10px; }
     .wb-icon-btn {
-      width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.1);
-      color: white; border: none; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+      width: 38px; height: 38px; border-radius: 10px; background: white;
+      color: var(--text-main); border: 1px solid var(--border); font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer;
     }
-    .wb-icon-btn:active { background: var(--primary); }
+    .wb-icon-btn:active { background: var(--primary); color: white; border-color: var(--primary); }
 
-    .wb-content { flex: 1; width: 100%; height: 100%; border: none; background: white; }
+    .wb-content { flex: 1; width: 100%; height: 100%; border: none; background: #f9fafb; }
 
     /* --- HISTORY PAGE --- */
     .search-bar {
-      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      padding: 14px 16px; display: flex; align-items: center; gap: 12px; color: var(--text-muted); margin-bottom: 20px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 14px 18px; display: flex; align-items: center; gap: 12px; color: var(--text-sub); margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
     }
-    .search-bar input { background: transparent; border: none; color: white; width: 100%; outline: none; font-family: inherit; font-size: 14px; }
+    .search-bar input { background: transparent; border: none; color: var(--text-main); width: 100%; outline: none; font-family: inherit; font-size: 14px; }
 
     .stats-box {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
-      border-radius: 18px; padding: 22px; margin-bottom: 25px; 
+      border-radius: 24px; padding: 24px; margin-bottom: 25px; 
       display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+      box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.4);
+      color: white;
     }
-    .stats-info h2 { font-size: 32px; font-weight: 800; color: white; line-height: 1; margin-bottom: 4px; }
-    .stats-info p { font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stats-info h2 { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .stats-info p { font-size: 12px; opacity: 0.9; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
     .history-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px;
       margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
-      transition: 0.2s;
+      transition: 0.2s; box-shadow: var(--shadow-sm);
     }
-    .history-card:active { background: #2d3748; }
+    .history-card:active { transform: scale(0.98); background: #f9fafb; }
+    
+    /* Highlight card sering diakses */
+    .history-card.frequent { border-left: 4px solid var(--primary); }
+    
     .h-left { display: flex; align-items: center; gap: 14px; flex: 1; }
-    .h-icon { width: 40px; height: 40px; background: rgba(255,255,255,0.05); border-radius: 10px; color: #9CA3AF; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-    .h-info h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
-    .h-info p { font-size: 11px; color: var(--text-muted); }
+    .h-icon { width: 40px; height: 40px; background: #f3f4f6; border-radius: 12px; color: #9CA3AF; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .h-info h4 { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 2px; }
+    .h-info p { font-size: 11px; color: var(--text-sub); }
     .h-btns { display: flex; gap: 8px; }
     .h-btn {
-      width: 36px; height: 36px; border-radius: 10px; border: none; 
-      background: rgba(255,255,255,0.05); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 10px; border: 1px solid transparent; 
+      background: #f3f4f6; color: var(--text-sub); cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
-    .h-btn.share:hover { color: var(--primary); background: rgba(79, 70, 229, 0.1); }
-    .h-btn.delete:hover { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+    .h-btn.share:hover { color: var(--primary); background: var(--primary-light); }
+    .h-btn.delete:hover { color: var(--danger); background: #FEF2F2; }
 
     /* --- BOTTOM NAV --- */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; width: 100%; height: calc(70px + var(--safe-bottom));
-      padding-bottom: var(--safe-bottom); background: rgba(17, 24, 39, 0.9);
+      padding-bottom: var(--safe-bottom); background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px); border-top: 1px solid var(--border);
       display: flex; justify-content: space-around; align-items: center; z-index: 100;
+      box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
     }
-    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #6B7280; transition: 0.3s; cursor: pointer; height: 100%; }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9CA3AF; transition: 0.3s; cursor: pointer; height: 100%; }
     .nav-item i { font-size: 20px; margin-bottom: 4px; transition: 0.3s; }
     .nav-item span { font-size: 10px; font-weight: 600; }
     .nav-item.active { color: var(--primary); }
     .nav-item.active i { transform: translateY(-2px); }
 
+    /* --- CUSTOM ALERT MODAL --- */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    
+    .modal-box {
+      background: white; width: 85%; max-width: 320px; border-radius: 20px;
+      padding: 24px; text-align: center;
+      transform: scale(0.9); transition: transform 0.2s; box-shadow: var(--shadow-lg);
+    }
+    .modal-overlay.active .modal-box { transform: scale(1); }
+    
+    .modal-icon {
+      width: 60px; height: 60px; background: #FEF2F2; color: #EF4444; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px;
+    }
+    .modal-icon.info { background: var(--primary-light); color: var(--primary); }
+    .modal-icon.success { background: #D1FAE5; color: #10B981; }
+
+    .modal-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+    .modal-msg { font-size: 14px; color: var(--text-sub); margin-bottom: 24px; line-height: 1.5; }
+
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-btn {
+      flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s;
+    }
+    .btn-cancel { background: #F3F4F6; color: var(--text-main); }
+    .btn-cancel:active { background: #E5E7EB; }
+    .btn-confirm { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(6, 182, 212, 0.3); }
+    .btn-confirm:active { background: var(--primary-dark); transform: scale(0.98); }
+
     /* --- TOAST NOTIFICATION --- */
     .toast {
       position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
-      background: rgba(255,255,255,0.95); color: #111827; padding: 10px 20px; 
-      border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      background: #1F2937; color: white; padding: 12px 24px; 
+      border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: var(--shadow-lg);
       opacity: 0; pointer-events: none; transition: 0.3s; z-index: 200; white-space: nowrap;
+      display: flex; align-items: center; gap: 8px;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -217,11 +255,10 @@
       <header>
         <div class="brand">
           <div class="logo-box">
-            <!-- Inline SVG Logo agar tajam dan ringan -->
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="24" height="24" rx="6" fill="white"/>
-              <path d="M7 7H10V17H7V7Z" fill="#4F46E5"/>
-              <path d="M14 7H17V17H14V7Z" fill="#4F46E5"/>
+              <path d="M7 7H10V17H7V7Z" fill="currentColor"/>
+              <path d="M14 7H17V17H14V7Z" fill="currentColor"/>
             </svg>
           </div>
           <div class="brand-info"><h1>CVPRO</h1><p>Operator v967</p></div>
@@ -274,7 +311,7 @@
           <h2 id="total-access">0</h2>
           <p>Total Akses Modul</p>
         </div>
-        <i class="fas fa-chart-pie" style="font-size: 40px; color: rgba(255,255,255,0.2);"></i>
+        <i class="fas fa-chart-pie" style="font-size: 40px; opacity: 0.3;"></i>
       </div>
 
       <div class="search-bar fade-in" style="animation-delay: 0.1s;">
@@ -283,11 +320,11 @@
       </div>
 
       <div id="history-list">
-        <!-- List akan diisi oleh JavaScript -->
+        <!-- List rendered by JS -->
       </div>
 
       <div style="text-align:center; margin-top:30px; padding-bottom: 20px;">
-        <button onclick="clearAllHistory()" style="background:transparent; border:1px solid #374151; color:#9CA3AF; padding:12px 24px; border-radius:12px; font-weight:600; font-size:13px;">Reset Semua Data</button>
+        <button onclick="confirmClearHistory()" style="background:transparent; border:1px solid var(--border); color:var(--text-sub); padding:12px 24px; border-radius:12px; font-weight:600; font-size:13px;">Reset Semua Data</button>
       </div>
     </div>
   </div>
@@ -311,8 +348,20 @@
       </div>
     </div>
     
-    <!-- Allow Popups and Same Origin for better compatibility -->
     <iframe id="app-frame" class="wb-content" src="about:blank" allow="encrypted-media; fullscreen; clipboard-read; clipboard-write"></iframe>
+  </div>
+
+  <!-- CUSTOM MODAL ALERT -->
+  <div class="modal-overlay" id="custom-modal">
+    <div class="modal-box">
+      <div class="modal-icon" id="modal-icon"><i class="fas fa-exclamation-circle"></i></div>
+      <h3 class="modal-title" id="modal-title">Judul</h3>
+      <p class="modal-msg" id="modal-msg">Pesan notifikasi disini.</p>
+      <div class="modal-actions">
+        <button class="modal-btn btn-cancel" onclick="closeModal(false)">Batal</button>
+        <button class="modal-btn btn-confirm" id="modal-confirm-btn">OK</button>
+      </div>
+    </div>
   </div>
 
   <!-- BOTTOM NAV -->
@@ -326,18 +375,84 @@
   </nav>
 
   <!-- TOAST NOTIFICATION -->
-  <div id="toast" class="toast">Notifikasi</div>
+  <div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span>Notifikasi</span></div>
 
   <script>
     // --- CONFIG ---
     const STORAGE_PREFIX = 'cp_hist_967_';
-    
+    let modalCallback = null;
+
     // --- ELEMENTS ---
     const webviewOverlay = document.getElementById('webview-overlay');
     const appFrame = document.getElementById('app-frame');
     const wbTitle = document.getElementById('wb-title');
     const toastEl = document.getElementById('toast');
     let currentUrl = '';
+
+    // --- CUSTOM ALERT SYSTEM ---
+    function showAlert(type, title, message, onConfirm = null) {
+      const modal = document.getElementById('custom-modal');
+      const icon = document.getElementById('modal-icon');
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-msg').innerText = message;
+      
+      // Icon Setup
+      icon.className = 'modal-icon';
+      if(type === 'danger') {
+        icon.classList.add('danger');
+        icon.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        confirmBtn.style.backgroundColor = 'var(--danger)';
+        confirmBtn.style.boxShadow = '0 4px 10px rgba(239, 68, 68, 0.3)';
+      } else if (type === 'info') {
+        icon.classList.add('info');
+        icon.innerHTML = '<i class="fas fa-info-circle"></i>';
+        confirmBtn.style.backgroundColor = 'var(--primary)';
+        confirmBtn.style.boxShadow = '0 4px 10px rgba(6, 182, 212, 0.3)';
+      } else if (type === 'success') {
+        icon.classList.add('success');
+        icon.innerHTML = '<i class="fas fa-check"></i>';
+        confirmBtn.style.backgroundColor = 'var(--primary)';
+      }
+
+      modalCallback = onConfirm;
+      
+      // Jika tidak ada callback (hanya info), sembunyikan tombol batal
+      const cancelBtn = document.querySelector('.btn-cancel');
+      if (!onConfirm) {
+        cancelBtn.style.display = 'none';
+        confirmBtn.innerText = 'Mengerti';
+      } else {
+        cancelBtn.style.display = 'block';
+        confirmBtn.innerText = 'Ya, Lanjutkan';
+      }
+
+      modal.classList.add('active');
+    }
+
+    function closeModal(result) {
+      document.getElementById('custom-modal').classList.remove('active');
+      if (result && modalCallback) modalCallback();
+      modalCallback = null;
+    }
+
+    function showToast(msg, isError = false) {
+      const span = toastEl.querySelector('span');
+      const icon = toastEl.querySelector('i');
+      
+      span.innerText = msg;
+      if(isError) {
+        icon.className = 'fas fa-exclamation-circle';
+        toastEl.style.background = '#EF4444';
+      } else {
+        icon.className = 'fas fa-check-circle';
+        toastEl.style.background = '#1F2937';
+      }
+      
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), 2500);
+    }
 
     // --- NAVIGATION LOGIC ---
     function openApp(title, url) {
@@ -350,13 +465,12 @@
 
     function closeWebview() {
       webviewOverlay.classList.remove('active');
-      // Delay clear src agar animasi transisi lebih mulus
       setTimeout(() => { appFrame.src = 'about:blank'; }, 300);
     }
 
     function refreshWebview() {
       appFrame.src = appFrame.src;
-      showToast("Memuat ulang halaman...");
+      showToast("Halaman dimuat ulang");
     }
 
     function shareCurrentUrl() {
@@ -365,18 +479,11 @@
           title: 'CVPRO Project Link',
           text: 'Buka proyek ini di CVPRO:',
           url: currentUrl
-        }).catch(console.error);
+        }).catch(() => {});
       } else {
-        // Fallback copy
         navigator.clipboard.writeText(currentUrl);
-        showToast("Link disalin ke clipboard");
+        showToast("Link berhasil disalin");
       }
-    }
-
-    function showToast(msg) {
-      toastEl.innerText = msg;
-      toastEl.classList.add('show');
-      setTimeout(() => toastEl.classList.remove('show'), 2500);
     }
 
     // --- HISTORY ENGINE ---
@@ -417,21 +524,22 @@
         }
       });
 
-      // Filter & Sort (Latest first)
       if(filterText) items = items.filter(i => i.name.toLowerCase().includes(filterText.toLowerCase()));
       items.sort((a,b) => b.ts - a.ts);
 
       if(items.length === 0) {
-        list.innerHTML = '<div style="text-align:center; color:#4B5563; padding:50px 20px; font-size:13px; display:flex; flex-direction:column; align-items:center; gap:10px;"><i class="fas fa-folder-open" style="font-size:30px; margin-bottom:10px;"></i><br>Belum ada riwayat akses.</div>';
+        list.innerHTML = '<div style="text-align:center; color:#9CA3AF; padding:50px 20px; font-size:13px; display:flex; flex-direction:column; align-items:center; gap:10px;"><i class="fas fa-folder-open" style="font-size:30px; margin-bottom:10px;"></i><br>Belum ada riwayat akses.</div>';
         return;
       }
 
       items.forEach((item, index) => {
         const date = new Date(item.ts).toLocaleDateString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+        // Fitur: Highlight jika akses > 5
+        const frequentClass = item.count > 5 ? 'frequent' : '';
         
         const div = document.createElement('div');
-        div.className = 'history-card fade-in';
-        div.style.animationDelay = `${index * 0.05}s`; // Stagger effect
+        div.className = `history-card fade-in ${frequentClass}`;
+        div.style.animationDelay = `${index * 0.05}s`;
         div.innerHTML = `
           <div class="h-left" onclick="openApp('${item.name}', '${item.url}')">
             <div class="h-icon"><i class="fas fa-history"></i></div>
@@ -442,7 +550,7 @@
           </div>
           <div class="h-btns">
             <button class="h-btn share" onclick="shareItem('${item.url}')"><i class="fas fa-share-alt"></i></button>
-            <button class="h-btn delete" onclick="deleteHistory('${STORAGE_PREFIX}${item.name.replace(/\s+/g,'')}')"><i class="fas fa-trash"></i></button>
+            <button class="h-btn delete" onclick="confirmDelete('${STORAGE_PREFIX}${item.name.replace(/\s+/g,'')}')"><i class="fas fa-trash"></i></button>
           </div>
         `;
         list.appendChild(div);
@@ -457,24 +565,24 @@
       }
     }
 
-    function deleteHistory(key) {
-      if(confirm("Hapus history ini?")) {
+    function confirmDelete(key) {
+      showAlert('danger', 'Hapus History?', 'Riwayat akses untuk modul ini akan dihapus permanen.', () => {
         localStorage.removeItem(key);
         updateStats();
         renderHistory(document.getElementById('search-input').value);
         showToast("History dihapus");
-      }
+      });
     }
 
-    function clearAllHistory() {
-      if(confirm("Apakah Anda yakin ingin menghapus semua riwayat?")) {
+    function confirmClearHistory() {
+      showAlert('danger', 'Reset Semua?', 'Semua data riwayat akses akan dihapus permanen dan tidak dapat dikembalikan.', () => {
         Object.keys(localStorage).forEach(k => {
           if(k.startsWith(STORAGE_PREFIX)) localStorage.removeItem(k);
         });
         updateStats();
         renderHistory();
         showToast("Semua data direset");
-      }
+      });
     }
 
     function filterHistory() {
@@ -487,7 +595,6 @@
       document.getElementById(id).classList.add('active');
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       el.classList.add('active');
-      
       if(id === 'view-history') renderHistory();
     }
 
@@ -496,40 +603,28 @@
       const now = new Date();
       document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
     }, 1000);
-    // Set immediate
     document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
 
     // --- INIT ---
     updateStats();
 
-    // --- PWA MANIFEST DYNAMIC INJECTION ---
-    // Menggunakan icon eksternal agar terdeteksi sebagai "App Icon" saat install PWA
+    // --- PWA MANIFEST ---
     const manifestData = {
       name: "CVPRO Operator",
       short_name: "CVPRO",
       start_url: ".",
       display: "standalone",
-      background_color: "#111827",
-      theme_color: "#111827",
-      description: "Aplikasi Manajemen Operator CVPRO",
+      background_color: "#F3F4F6",
+      theme_color: "#ffffff",
+      description: "Operator Management System",
       icons: [
-        {
-          src: "https://picsum.photos/seed/cvproicon2024/192/192",
-          sizes: "192x192",
-          type: "image/jpeg"
-        },
-        {
-          src: "https://picsum.photos/seed/cvproicon2024/512/512",
-          sizes: "512x512",
-          type: "image/jpeg"
-        }
+        { src: "https://picsum.photos/seed/cvpro_light/192/192", sizes: "192x192", type: "image/jpeg" },
+        { src: "https://picsum.photos/seed/cvpro_light/512/512", sizes: "512x512", type: "image/jpeg" }
       ]
     };
-    
     const stringManifest = JSON.stringify(manifestData);
     const blob = new Blob([stringManifest], {type: 'application/json'});
     const manifestURL = URL.createObjectURL(blob);
-    
     const link = document.createElement('link');
     link.rel = 'manifest';
     link.href = manifestURL;
