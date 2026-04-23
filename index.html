@@ -3,41 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>CVPRO Ultimate</title>
+  <title>CVPRO Operator</title>
 
   <!-- PWA CONFIG -->
-  <meta name="theme-color" content="#F1F5F9">
+  <meta name="theme-color" content="#F8FAFC">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="CVPRO">
-  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvpro_ult/192/192">
+  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvpro_op/192/192">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%232563EB'/><text x='50' y='68' font-size='40' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>CP</text></svg>">
 
-  <!-- PRECONNECT FOR SPEED -->
+  <!-- PRECONNECT -->
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
 
   <!-- LIBRARIES -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- HTML5-QRCode Library for Scanner -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
   <style>
-    /* --- CSS VARIABLES & THEME --- */
     :root {
       --primary: #2563EB; --primary-dark: #1E40AF; --primary-grad: linear-gradient(135deg, #3B82F6, #1D4ED8);
-      --bg-body: #F1F5F9; --surface: #FFFFFF; --surface-alt: #F8FAFC;
+      --bg-body: #F8FAFC; --surface: #FFFFFF; --surface-alt: #F1F5F9;
       --text-main: #0F172A; --text-muted: #64748B; --border: #E2E8F0;
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      --glass: rgba(255, 255, 255, 0.7); --glass-border: rgba(255, 255, 255, 0.5);
     }
     [data-theme="dark"] {
       --bg-body: #0F172A; --surface: #1E293B; --surface-alt: #334155;
       --text-main: #F8FAFC; --text-muted: #94A3B8; --border: #334155;
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-      --glass: rgba(30, 41, 59, 0.7); --glass-border: rgba(255, 255, 255, 0.1);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; outline: none; }
@@ -45,24 +42,20 @@
     body {
       font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main);
       height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
-      transition: background-color 0.2s ease, color 0.2s ease;
+      transition: background-color 0.2s, color 0.2s;
     }
 
-    /* --- ANIMATIONS (OPTIMIZED) --- */
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-    /* --- LAYOUT --- */
     .page {
       flex: 1; overflow-y: auto; overflow-x: hidden;
       padding: calc(env(safe-area-inset-top, 10px) + 20px) 20px calc(90px + env(safe-area-inset-bottom, 20px)) 20px;
-      display: none; opacity: 0; transition: opacity 0.2s ease;
+      display: none; opacity: 0; transition: opacity 0.15s ease;
     }
     .page.active { display: block; opacity: 1; }
     .container { max-width: 600px; margin: 0 auto; position: relative; }
 
-    /* --- HEADER --- */
     header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     .brand { display: flex; align-items: center; gap: 14px; }
     .logo-box {
@@ -73,25 +66,20 @@
     .brand-info h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
     .brand-info p { font-size: 10px; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
 
-    /* --- COMPONENTS --- */
     .section-title { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 24px 0 12px; letter-spacing: 0.5px; }
     
     .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
     .menu-card {
       background: var(--surface); border-radius: 20px; padding: 20px;
       display: flex; flex-direction: column; gap: 12px;
-      box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: transform 0.15s;
+      box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: transform 0.1s;
     }
     .menu-card:active { transform: scale(0.96); }
     .mc-header { display: flex; align-items: center; gap: 10px; }
-    .mc-icon {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: var(--surface-alt); color: var(--primary);
-      display: flex; align-items: center; justify-content: center;
-    }
+    .mc-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--surface-alt); color: var(--primary); display: flex; align-items: center; justify-content: center; }
     .mc-title { font-size: 15px; font-weight: 700; }
     .mc-desc { font-size: 12px; color: var(--text-muted); font-weight: 500; }
-    
+
     .settings-list { display: flex; flex-direction: column; gap: 12px; }
     .setting-item {
       background: var(--surface); border-radius: 16px; padding: 16px;
@@ -103,7 +91,6 @@
     .st-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
     .st-info p { font-size: 11px; color: var(--text-muted); }
 
-    /* Switch */
     .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 34px; }
@@ -111,20 +98,11 @@
     input:checked + .slider { background-color: var(--primary); }
     input:checked + .slider:before { transform: translateX(20px); }
 
-    /* --- ANALYTICS --- */
     .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
     .stat-card { background: var(--surface); padding: 16px; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
     .stat-val { font-size: 24px; font-weight: 800; color: var(--text-main); }
     .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 4px; }
     
-    .chart-container { background: var(--surface); padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
-    .chart-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); }
-    .bars { display: flex; align-items: flex-end; gap: 8px; height: 60px; }
-    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-    .bar { width: 100%; background: var(--border); border-radius: 4px; transition: height 0.5s; min-height: 4px; }
-    .bar.active { background: var(--primary); }
-    .bar-label { font-size: 9px; color: var(--text-muted); }
-
     .history-list { display: flex; flex-direction: column; gap: 12px; }
     .history-item {
       background: var(--surface); padding: 16px; border-radius: 16px;
@@ -139,64 +117,49 @@
     .btn-delete { background: #FEF2F2; color: var(--danger); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     [data-theme="dark"] .btn-delete { background: rgba(239,68,68,0.2); }
 
-    /* --- BEAUTIFUL MODAL --- */
+    /* --- MODALS --- */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
       z-index: 2000; display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none; transition: opacity 0.2s;
     }
     .modal-overlay.open { opacity: 1; pointer-events: auto; }
-    
     .modal-box {
       background: var(--surface); width: 85%; max-width: 340px; border-radius: 24px;
-      padding: 28px 24px; box-shadow: var(--shadow-lg);
-      transform: scale(0.9); transition: transform 0.2s;
+      padding: 28px 24px; box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.2s;
     }
     .modal-overlay.open .modal-box { transform: scale(1); }
-    
-    .modal-icon {
-      width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 20px;
-      background: linear-gradient(135deg, #FEE2E2, #FECACA);
-      color: #EF4444; display: flex; align-items: center; justify-content: center; font-size: 28px;
-      box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
-    }
-    
+    .modal-icon { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 20px; background: linear-gradient(135deg, #FEE2E2, #FECACA); color: #EF4444; display: flex; align-items: center; justify-content: center; font-size: 28px; }
     .modal-title { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 8px; color: var(--text-main); }
     .modal-msg { font-size: 14px; color: var(--text-muted); text-align: center; margin-bottom: 24px; line-height: 1.5; }
-    
     .modal-actions { display: flex; gap: 12px; }
-    .modal-btn {
-      flex: 1; padding: 14px; border-radius: 14px; border: none; font-weight: 700; font-size: 14px; cursor: pointer;
-    }
+    .modal-btn { flex: 1; padding: 14px; border-radius: 14px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; }
     .btn-cancel { background: var(--surface-alt); color: var(--text-main); }
-    .btn-confirm { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
-    .btn-danger { background: var(--danger); color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
-
-    /* Input in Modal */
+    .btn-confirm { background: var(--primary); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
     .input-modal { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-alt); color: var(--text-main); outline: none; font-size: 14px; margin-bottom: 12px; }
     .input-modal:focus { border-color: var(--primary); }
 
-    /* --- LOCK SCREEN & BIOMETRIC --- */
-    #lock-screen {
-      position: fixed; inset: 0; background: var(--bg-body); z-index: 1000;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      transform: translateY(100%); transition: transform 0.4s ease;
-    }
-    #lock-screen.active { transform: translateY(0); }
-    
-    .bio-btn {
-      width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--border);
-      background: var(--surface); color: var(--primary); font-size: 32px;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1); transition: 0.2s; margin-top: 20px;
-    }
-    .bio-btn:active { transform: scale(0.95); background: var(--surface-alt); border-color: var(--primary); }
+    /* --- CALCULATOR --- */
+    .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .calc-display { grid-column: span 4; background: var(--surface-alt); padding: 20px; border-radius: 16px; text-align: right; font-size: 32px; font-weight: 800; margin-bottom: 10px; border: 1px solid var(--border); }
+    .calc-btn { padding: 15px; border-radius: 12px; border: none; background: var(--surface); font-size: 18px; font-weight: 600; color: var(--text-main); box-shadow: var(--shadow-sm); cursor: pointer; }
+    .calc-btn.op { background: var(--surface-alt); color: var(--primary); }
+    .calc-btn.eq { background: var(--primary); color: white; grid-column: span 2; }
+    .calc-btn:active { transform: scale(0.95); }
+
+    /* --- QR SCANNER --- */
+    #qr-overlay { position: fixed; inset: 0; background: black; z-index: 3000; display: none; flex-direction: column; }
+    #qr-overlay.active { display: flex; }
+    #qr-reader { flex: 1; width: 100%; object-fit: cover; }
+    .qr-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; color: white; }
+    .qr-btn-close { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 16px; border-radius: 8px; font-weight: 600; }
 
     /* --- WEBVIEW --- */
     #webview-overlay { position: fixed; inset: 0; background: var(--bg-body); z-index: 50; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1); }
     #webview-overlay.active { transform: translateY(0); }
-    .wb-header { height: 60px; padding: 0 20px; padding-top: env(safe-area-inset-top, 10px); background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-    .wb-btn { width: 40px; height: 40px; border-radius: 10px; background: white; border: none; color: var(--text-main); font-size: 16px; cursor: pointer; box-shadow: var(--shadow-sm); }
+    .wb-header { height: 60px; padding: 0 20px; padding-top: env(safe-area-inset-top, 10px); background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .wb-btn { width: 40px; height: 40px; border-radius: 10px; background: var(--surface-alt); border: none; color: var(--text-main); font-size: 16px; cursor: pointer; }
 
     /* --- BOTTOM NAV --- */
     .bottom-nav {
@@ -221,8 +184,8 @@
     <div class="container">
       <header>
         <div class="brand">
-          <div class="logo-box"><i class="fas fa-layer-group"></i></div>
-          <div class="brand-info"><h1 id="header-app-name">CVPRO</h1><p id="header-operator-name">Operator</p></div>
+          <div class="logo-box"><i class="fas fa-bolt"></i></div>
+          <div class="brand-info"><h1>CVPRO</h1><p>Operator Pro</p></div>
         </div>
         <div style="font-size:12px; font-weight:700; color:var(--text-muted);" id="clock">00:00</div>
       </header>
@@ -258,7 +221,7 @@
         </div>
         <div class="menu-card" onclick="app.nav('view-settings', document.querySelectorAll('.nav-item')[2])">
           <div class="mc-header"><div class="mc-icon"><i class="fas fa-cog"></i></div><div class="mc-title">Pengaturan</div></div>
-          <div class="mc-desc">System Config</div>
+          <div class="mc-desc">Tools & Config</div>
         </div>
       </div>
     </div>
@@ -268,7 +231,7 @@
   <div class="page" id="view-history">
     <div class="container">
       <header>
-        <div class="brand-info"><h1>Analytics</h1><p>Performance Dashboard</p></div>
+        <div class="brand-info"><h1>Analytics</h1><p>Performance Data</p></div>
       </header>
 
       <div class="analytics-grid">
@@ -282,36 +245,55 @@
         </div>
       </div>
 
-      <div class="chart-container">
-        <div class="chart-title">Aktivitas Minggu Ini</div>
-        <div class="bars" id="activity-chart">
-          <div class="bar-col"><div class="bar" style="height: 20%"></div><div class="bar-label">S</div></div>
-          <div class="bar-col"><div class="bar" style="height: 45%"></div><div class="bar-label">S</div></div>
-          <div class="bar-col"><div class="bar" style="height: 30%"></div><div class="bar-label">R</div></div>
-          <div class="bar-col"><div class="bar active" style="height: 80%"></div><div class="bar-label">K</div></div>
-          <div class="bar-col"><div class="bar" style="height: 50%"></div><div class="bar-label">J</div></div>
-          <div class="bar-col"><div class="bar" style="height: 60%"></div><div class="bar-label">S</div></div>
-          <div class="bar-col"><div class="bar" style="height: 40%"></div><div class="bar-label">M</div></div>
-        </div>
-      </div>
-
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <h3 style="font-size:16px; font-weight:700;">Recent Log</h3>
-        <button onclick="historyManager.showClearModal()" style="font-size:11px; color:var(--danger); border:none; background:none; font-weight:600;">Reset Data</button>
+        <button onclick="historyManager.clearAll()" style="font-size:11px; color:var(--danger); border:none; background:none; font-weight:600;">Reset Data</button>
       </div>
 
       <div id="history-list" class="history-list"></div>
     </div>
   </div>
 
-  <!-- PAGE: SETTINGS -->
+  <!-- PAGE: SETTINGS & TOOLS -->
   <div class="page" id="view-settings">
     <div class="container">
       <header>
-        <div class="brand-info"><h1>Pengaturan</h1><p>Operator Configuration</p></div>
+        <div class="brand-info"><h1>Tools</h1><p>Operator Utilities</p></div>
       </header>
 
-      <div class="section-title">Akun Operator</div>
+      <div class="section-title">Productivity Tools</div>
+      <div class="settings-list">
+        <div class="setting-item" onclick="tools.openCalc()">
+          <div class="st-left">
+            <div class="st-icon"><i class="fas fa-calculator"></i></div>
+            <div class="st-info"><h4>Kalkulator</h4><p>Hitung cepat data</p></div>
+          </div>
+          <i class="fas fa-chevron-right" style="color:var(--border); font-size:12px;"></i>
+        </div>
+        <div class="setting-item" onclick="tools.openQR()">
+          <div class="st-left">
+            <div class="st-icon"><i class="fas fa-qrcode"></i></div>
+            <div class="st-info"><h4>QR Scanner</h4><p>Scan kode data</p></div>
+          </div>
+          <i class="fas fa-chevron-right" style="color:var(--border); font-size:12px;"></i>
+        </div>
+        <div class="setting-item" onclick="tools.openTemplates()">
+          <div class="st-left">
+            <div class="st-icon"><i class="fas fa-file-alt"></i></div>
+            <div class="st-info"><h4>Template Pesan</h4><p>Pesan standar cepat</p></div>
+          </div>
+          <i class="fas fa-chevron-right" style="color:var(--border); font-size:12px;"></i>
+        </div>
+        <div class="setting-item" onclick="tools.openClipboard()">
+          <div class="st-left">
+            <div class="st-icon"><i class="fas fa-clipboard"></i></div>
+            <div class="st-info"><h4>Clipboard History</h4><p>Riwayat copy</p></div>
+          </div>
+          <div class="st-value" id="clip-count">0</div>
+        </div>
+      </div>
+
+      <div class="section-title">Preferences</div>
       <div class="settings-list">
         <div class="setting-item" onclick="configManager.editProfile()">
           <div class="st-left">
@@ -320,24 +302,13 @@
           </div>
           <i class="fas fa-chevron-right" style="color:var(--border); font-size:12px;"></i>
         </div>
-        <div class="setting-item" onclick="configManager.editNotes()">
-          <div class="st-left">
-            <div class="st-icon"><i class="fas fa-sticky-note"></i></div>
-            <div class="st-info"><h4>Catatan Cepat</h4><p id="display-notes-preview">Kosong</p></div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--border); font-size:12px;"></i>
-        </div>
-      </div>
-
-      <div class="section-title">Keamanan & Tampilan</div>
-      <div class="settings-list">
         <div class="setting-item">
           <div class="st-left">
-            <div class="st-icon"><i class="fas fa-fingerprint"></i></div>
-            <div class="st-info"><h4>Login Biometrik</h4><p>Fingerprint / FaceID</p></div>
+            <div class="st-icon"><i class="fas fa-volume-up"></i></div>
+            <div class="st-info"><h4>Sound Effect</h4><p>Suara notifikasi</p></div>
           </div>
           <label class="switch">
-            <input type="checkbox" id="bio-toggle" onchange="configManager.toggleBio()">
+            <input type="checkbox" id="sound-toggle" onchange="configManager.toggleSound()">
             <span class="slider"></span>
           </label>
         </div>
@@ -351,12 +322,6 @@
             <span class="slider"></span>
           </label>
         </div>
-        <div class="setting-item" onclick="configManager.setLockTime()">
-          <div class="st-left">
-            <div class="st-icon"><i class="fas fa-hourglass-half"></i></div>
-            <div class="st-info"><h4>Waktu Kunci Otomatis</h4><p id="lock-time-display">5 Menit</p></div>
-          </div>
-        </div>
       </div>
 
       <div class="section-title">Sistem</div>
@@ -367,10 +332,10 @@
             <div class="st-info"><h4>Bersihkan Cache</h4><p>Perbaiki performa</p></div>
           </div>
         </div>
-        <div class="setting-item" onclick="app.lockNow()">
+        <div class="setting-item">
           <div class="st-left">
-            <div class="st-icon"><i class="fas fa-lock"></i></div>
-            <div class="st-info"><h4>Kunci Sekarang</h4><p>Manual Lock</p></div>
+            <div class="st-icon"><i class="fas fa-info-circle"></i></div>
+            <div class="st-info"><h4>Versi Aplikasi</h4><p>v1.0.0 Operator Pro</p></div>
           </div>
         </div>
       </div>
@@ -387,30 +352,71 @@
     <iframe id="app-frame" style="flex:1; width:100%; border:none; background:white;" src="about:blank" allow="encrypted-media; fullscreen"></iframe>
   </div>
 
-  <!-- MODAL ALERT (BEAUTIFUL) -->
+  <!-- CALCULATOR OVERLAY -->
+  <div id="calc-overlay" class="modal-overlay" style="z-index: 1500;">
+    <div class="modal-box" style="width: 100%; max-width: 400px; transform: none; opacity: 1; margin: 0;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+        <h3 style="font-weight:800;">Kalkulator</h3>
+        <button onclick="tools.closeCalc()" style="background:none; border:none; font-size:20px;"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="calc-display" id="calc-screen">0</div>
+      <div class="calc-grid">
+        <button class="calc-btn op" onclick="calc.clear()">C</button>
+        <button class="calc-btn op" onclick="calc.del()">DEL</button>
+        <button class="calc-btn op" onclick="calc.add('%')">%</button>
+        <button class="calc-btn op" onclick="calc.add('/')">÷</button>
+        <button class="calc-btn" onclick="calc.add('7')">7</button>
+        <button class="calc-btn" onclick="calc.add('8')">8</button>
+        <button class="calc-btn" onclick="calc.add('9')">9</button>
+        <button class="calc-btn op" onclick="calc.add('*')">×</button>
+        <button class="calc-btn" onclick="calc.add('4')">4</button>
+        <button class="calc-btn" onclick="calc.add('5')">5</button>
+        <button class="calc-btn" onclick="calc.add('6')">6</button>
+        <button class="calc-btn op" onclick="calc.add('-')">-</button>
+        <button class="calc-btn" onclick="calc.add('1')">1</button>
+        <button class="calc-btn" onclick="calc.add('2')">2</button>
+        <button class="calc-btn" onclick="calc.add('3')">3</button>
+        <button class="calc-btn op" onclick="calc.add('+')">+</button>
+        <button class="calc-btn" onclick="calc.add('0')">0</button>
+        <button class="calc-btn" onclick="calc.add('.')">.</button>
+        <button class="calc-btn eq" onclick="calc.solve()">=</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEMPLATE OVERLAY -->
+  <div id="template-overlay" class="modal-overlay">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+        <h3 style="font-weight:800;">Templates</h3>
+        <button onclick="document.getElementById('template-overlay').classList.remove('open')" style="background:none; border:none; font-size:20px;"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="template-list" style="display:flex; flex-direction:column; gap:10px;">
+        <!-- JS Will Populate -->
+      </div>
+      <button onclick="tools.addTemplate()" class="modal-btn btn-confirm" style="margin-top:20px;">+ Buat Baru</button>
+    </div>
+  </div>
+
+  <!-- QR OVERLAY -->
+  <div id="qr-overlay">
+    <div class="qr-header">
+      <button onclick="tools.stopQR()" class="qr-btn-close">Tutup</button>
+      <span style="font-weight:700;">Scan QR Code</span>
+      <div style="width:50px;"></div>
+    </div>
+    <div id="qr-reader"></div>
+  </div>
+
+  <!-- GENERIC MODAL -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal-box">
       <div class="modal-icon" id="modal-icon-bg"><i class="fas fa-exclamation-circle" id="modal-icon-symbol"></i></div>
       <h3 class="modal-title" id="modal-title">Judul</h3>
-      <div id="modal-content-dynamic"></div> <!-- For Forms -->
+      <div id="modal-content-dynamic"></div>
       <p class="modal-msg" id="modal-msg">Pesan disini</p>
       <div class="modal-actions" id="modal-actions"></div>
     </div>
-  </div>
-
-  <!-- LOCK SCREEN -->
-  <div id="lock-screen">
-    <div class="logo-box" style="margin-bottom:20px;"><i class="fas fa-layer-group"></i></div>
-    <h2 style="margin-bottom:8px;">Locked</h2>
-    <p style="color:var(--text-muted); margin-bottom:30px;">Autentikasi Diperlukan</p>
-    
-    <!-- Fingerprint Button -->
-    <button class="bio-btn" onclick="authManager.authenticate()">
-      <i class="fas fa-fingerprint"></i>
-    </button>
-    <p id="bio-status" style="margin-top:15px; font-size:12px; color:var(--primary);">Touch sensor</p>
-
-    <button onclick="authManager.manualUnlock()" style="margin-top:40px; background:none; border:none; color:var(--text-muted); font-size:12px; text-decoration:underline;">Buka Manual</button>
   </div>
 
   <!-- TOAST CONTAINER -->
@@ -420,109 +426,64 @@
   <nav class="bottom-nav">
     <div class="nav-item active" onclick="app.nav('view-home', this)"><i class="fas fa-th-large"></i><span>Home</span></div>
     <div class="nav-item" onclick="app.nav('view-history', this)"><i class="fas fa-chart-bar"></i><span>Stats</span></div>
-    <div class="nav-item" onclick="app.nav('view-settings', this)"><i class="fas fa-cog"></i><span>Config</span></div>
+    <div class="nav-item" onclick="app.nav('view-settings', this)"><i class="fas fa-tools"></i><span>Tools</span></div>
   </nav>
 
   <script>
-    // --- PWA MANIFEST & SPEED OPTIMIZATION ---
+    // --- MANIFEST ---
     const manifestData = {
-      name: "CVPRO Ultimate", short_name: "CVPRO", start_url: ".", display: "standalone",
-      orientation: "portrait", background_color: "#F1F5F9", theme_color: "#F1F5F9",
-      icons: [{ src: "https://picsum.photos/seed/cvpro_ult/192/192", sizes: "192x192", type: "image/jpeg" }]
+      name: "CVPRO Operator", short_name: "CVPRO", start_url: ".", display: "standalone",
+      orientation: "portrait", background_color: "#F8FAFC", theme_color: "#F8FAFC",
+      icons: [{ src: "https://picsum.photos/seed/cvpro_op/192/192", sizes: "192x192", type: "image/jpeg" }]
     };
     const blob = new Blob([JSON.stringify(manifestData)], {type:'application/json'});
-    const link = document.createElement('link');
-    link.rel = 'manifest'; link.href = URL.createObjectURL(blob);
-    document.head.appendChild(link);
+    document.head.appendChild(Object.assign(document.createElement('link'),{rel:'manifest', href:URL.createObjectURL(blob)}));
 
-    // --- STORAGE (FAST) ---
+    // --- STORAGE ---
     const Storage = {
-      PREFIX: 'cp_ult_v8_',
+      PREFIX: 'cp_op_v10_',
       get: (k) => { try{ return JSON.parse(localStorage.getItem(Storage.PREFIX+k)); }catch(e){return null;} },
       set: (k,v) => localStorage.setItem(Storage.PREFIX+k, JSON.stringify(v)),
       remove: (k) => localStorage.removeItem(Storage.PREFIX+k),
       clear: () => Object.keys(localStorage).filter(x=>x.startsWith(Storage.PREFIX)).forEach(x=>localStorage.removeItem(x))
     };
 
-    // --- BIOMETRIC AUTH MANAGER ---
-    const authManager = {
-      isSupported: () => window.PublicKeyCredential,
-      
-      init: () => {
-        const bioEnabled = Storage.get('bioEnabled');
-        if(bioEnabled) {
-          document.getElementById('bio-toggle').checked = true;
-          // Auto lock on start if enabled
-          authManager.checkAutoLock();
-        } else {
-          document.getElementById('lock-screen').classList.add('active'); // Default lock
+    // --- SOUND MANAGER ---
+    const Sound = {
+      playClick: () => {
+        if(Storage.get('soundEnabled')) {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, ctx.currentTime);
+          gain.gain.setValueAtTime(0.1, ctx.currentTime);
+          osc.start();
+          gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.1);
+          osc.stop(ctx.currentTime + 0.1);
         }
-      },
-
-      toggleBio: () => {
-        const enabled = document.getElementById('bio-toggle').checked;
-        if(enabled && !authManager.isSupported()) {
-          alert("Perangkat Anda tidak mendukung Fingerprint WebAuthn.");
-          document.getElementById('bio-toggle').checked = false;
-          return;
-        }
-        Storage.set('bioEnabled', enabled);
-        app.toast(enabled ? "Biometrik Aktif" : "Biometrik Nonaktif");
-      },
-
-      authenticate: async () => {
-        const status = document.getElementById('bio-status');
-        status.innerText = "Scanning...";
-        
-        // Check if supported first
-        if (!window.PublicKeyCredential) {
-          app.toast("Browser tidak mendukung biometrik");
-          authManager.manualUnlock();
-          return;
-        }
-
-        // Try WebAuthn (Simulation for Demo / Real Implementation requires backend)
-        // Note: Real WebAuthn requires a backend to generate challenges. 
-        // For this standalone PWA, we simulate the success UI if supported.
-        setTimeout(() => {
-          status.innerText = "Berhasil";
-          status.style.color = "var(--success)";
-          setTimeout(() => {
-            document.getElementById('lock-screen').classList.remove('active');
-            status.innerText = "Touch sensor";
-            status.style.color = "var(--primary)";
-            app.resetTimer();
-          }, 800);
-        }, 1500);
-      },
-
-      manualUnlock: () => {
-        document.getElementById('lock-screen').classList.remove('active');
-        app.resetTimer();
-      },
-
-      checkAutoLock: () => {
-        document.getElementById('lock-screen').classList.add('active');
       }
     };
 
-    // --- MODAL MANAGER (BEAUTIFUL ALERTS) ---
+    // --- MODAL MANAGER ---
     const Modal = {
       el: document.getElementById('modal-overlay'),
       title: document.getElementById('modal-title'),
       msg: document.getElementById('modal-msg'),
       actions: document.getElementById('modal-actions'),
-      
+      content: document.getElementById('modal-content-dynamic'),
       close: () => Modal.el.classList.remove('open'),
       
-      // Beautiful Alert for Analytics Delete
       showConfirm: (title, message, onConfirm) => {
         Modal.title.innerText = title;
         Modal.msg.innerText = message;
+        Modal.content.innerHTML = "";
         Modal.el.classList.add('open');
         
-        // Style Icon Danger
-        document.getElementById('modal-icon-bg').style.background = "linear-gradient(135deg, #FEE2E2, #FECACA)";
+        const iconBox = document.getElementById('modal-icon-bg');
+        iconBox.style.background = "linear-gradient(135deg, #FEE2E2, #FECACA)";
         document.getElementById('modal-icon-symbol').className = "fas fa-trash-alt";
         document.getElementById('modal-icon-symbol').parentElement.style.color = "#EF4444";
 
@@ -530,7 +491,6 @@
           <button class="modal-btn btn-cancel" onclick="Modal.close()">Batal</button>
           <button class="modal-btn btn-danger" id="btn-modal-confirm">Hapus</button>
         `;
-        
         const btn = document.getElementById('btn-modal-confirm');
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
@@ -539,12 +499,12 @@
 
       showForm: (title, html, onConfirm) => {
         Modal.title.innerText = title;
-        Modal.msg.innerText = ""; // Hide text msg
-        document.getElementById('modal-content-dynamic').innerHTML = html;
+        Modal.msg.innerText = "";
+        Modal.content.innerHTML = html;
         Modal.el.classList.add('open');
-        
-        // Style Icon Info
-        document.getElementById('modal-icon-bg').style.background = "linear-gradient(135deg, #DBEAFE, #BFDBFE)";
+
+        const iconBox = document.getElementById('modal-icon-bg');
+        iconBox.style.background = "linear-gradient(135deg, #DBEAFE, #BFDBFE)";
         document.getElementById('modal-icon-symbol').className = "fas fa-pen";
         document.getElementById('modal-icon-symbol').parentElement.style.color = "#2563EB";
 
@@ -552,7 +512,6 @@
           <button class="modal-btn btn-cancel" onclick="Modal.close()">Batal</button>
           <button class="modal-btn btn-confirm" id="btn-modal-save">Simpan</button>
         `;
-        
         const btn = document.getElementById('btn-modal-save');
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
@@ -567,28 +526,27 @@
         document.documentElement.setAttribute('data-theme', theme);
         document.getElementById('theme-toggle').checked = (theme === 'dark');
         
+        const sound = Storage.get('soundEnabled');
+        document.getElementById('sound-toggle').checked = !!sound;
+
         const name = Storage.get('operatorName') || 'Operator';
         document.getElementById('header-operator-name').innerText = name;
         document.getElementById('display-operator-name').innerText = name;
-
-        const notes = Storage.get('notes') || '';
-        document.getElementById('display-notes-preview').innerText = notes ? notes.substring(0, 20) + '...' : 'Kosong';
-        
-        const lockTime = Storage.get('lockTime') || 5;
-        document.getElementById('lock-time-display').innerText = lockTime + " Menit";
-        app.lockTimeout = lockTime * 60 * 1000;
       },
-
       toggleTheme: () => {
         const isDark = document.getElementById('theme-toggle').checked;
         const newTheme = isDark ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', newTheme);
         Storage.set('theme', newTheme);
-        app.toast(isDark ? "Mode Gelap" : "Mode Terang");
+        Sound.playClick();
       },
-
+      toggleSound: () => {
+        const isOn = document.getElementById('sound-toggle').checked;
+        Storage.set('soundEnabled', isOn);
+        Sound.playClick();
+      },
       editProfile: () => {
-        const current = Storage.get('operatorName') || '';
+        const current = Storage.get('operatorName') || 'Operator';
         Modal.showForm("Ubah Profil", `<input type="text" id="inp-name" class="input-modal" value="${current}" placeholder="Nama Lengkap">`, () => {
           const val = document.getElementById('inp-name').value;
           if(val) {
@@ -596,36 +554,142 @@
             document.getElementById('header-operator-name').innerText = val;
             document.getElementById('display-operator-name').innerText = val;
             app.toast("Profil diperbarui");
+            Sound.playClick();
+          }
+        });
+      }
+    };
+
+    // --- TOOLS MANAGER ---
+    const tools = {
+      html5QrcodeScanner: null,
+
+      openCalc: () => {
+        Sound.playClick();
+        document.getElementById('calc-overlay').style.opacity = "1";
+        document.getElementById('calc-overlay').style.pointerEvents = "auto";
+        calc.clear();
+      },
+      closeCalc: () => {
+        Sound.playClick();
+        document.getElementById('calc-overlay').style.opacity = "0";
+        document.getElementById('calc-overlay').style.pointerEvents = "none";
+      },
+      
+      openQR: () => {
+        Sound.playClick();
+        document.getElementById('qr-overlay').classList.add('active');
+        if(!tools.html5QrcodeScanner) {
+          tools.html5QrcodeScanner = new Html5Qrcode("qr-reader");
+          const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+          tools.html5QrcodeScanner.start({ facingMode: "environment" }, config, tools.onScanSuccess);
+        }
+      },
+      stopQR: () => {
+        Sound.playClick();
+        document.getElementById('qr-overlay').classList.remove('active');
+        if(tools.html5QrcodeScanner) {
+          tools.html5QrcodeScanner.stop().catch(err => console.error("Stop failed", err));
+        }
+      },
+      onScanSuccess: (decodedText, decodedResult) => {
+        Sound.playClick();
+        tools.stopQR();
+        navigator.clipboard.writeText(decodedText);
+        app.toast("QR Code Disalin ke Clipboard");
+        tools.saveToClipboard(decodedText);
+      },
+
+      openTemplates: () => {
+        Sound.playClick();
+        const list = document.getElementById('template-list');
+        const templates = Storage.get('templates') || [
+          {id:1, text: "Terima kasih, data telah kami terima."},
+          {id:2, text: "Mohon menunggu, sedang dalam proses verifikasi."},
+          {id:3, text: "Maaf, data Anda tidak lengkap."}
+        ];
+
+        list.innerHTML = templates.map(t => `
+          <div style="padding:12px; background:var(--surface-alt); border-radius:10px; font-size:13px; word-break:break-all;">
+            ${t.text}
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:5px;">
+              <button onclick="tools.useTemplate(${t.id})" style="font-size:11px; color:var(--primary); background:none; border:none; font-weight:600;">Pakai</button>
+              <button onclick="tools.delTemplate(${t.id})" style="font-size:11px; color:var(--danger); background:none; border:none;"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+        `).join('');
+        
+        document.getElementById('template-overlay').classList.add('open');
+      },
+      addTemplate: () => {
+        Modal.showForm("Buat Template", `<input type="text" id="inp-tpl" class="input-modal" placeholder="Tulis pesan standar...">`, () => {
+          const txt = document.getElementById('inp-tpl').value;
+          if(txt) {
+            const tpls = Storage.get('templates') || [];
+            tpls.push({id: Date.now(), text: txt});
+            Storage.set('templates', tpls);
+            tools.openTemplates(); // Refresh
+            Sound.playClick();
           }
         });
       },
-
-      editNotes: () => {
-        const current = Storage.get('notes') || '';
-        Modal.showForm("Catatan Operator", `<textarea id="inp-notes" class="input-modal" rows="4" placeholder="Catatan untuk shift ini...">${current}</textarea>`, () => {
-          const val = document.getElementById('inp-notes').value;
-          Storage.set('notes', val);
-          document.getElementById('display-notes-preview').innerText = val ? val.substring(0, 20) + '...' : 'Kosong';
-          app.toast("Catatan tersimpan");
-        });
+      useTemplate: (id) => {
+        const tpls = Storage.get('templates') || [];
+        const t = tpls.find(x => x.id === id);
+        if(t) {
+          navigator.clipboard.writeText(t.text);
+          document.getElementById('template-overlay').classList.remove('open');
+          app.toast("Template disalin!");
+          Sound.playClick();
+        }
+      },
+      delTemplate: (id) => {
+        let tpls = Storage.get('templates') || [];
+        tpls = tpls.filter(x => x.id !== id);
+        Storage.set('templates', tpls);
+        tools.openTemplates();
+        Sound.playClick();
       },
 
-      setLockTime: () => {
-        const times = [1, 5, 10, 30, 60];
-        let html = `<select id="sel-time" class="input-modal">`;
-        times.forEach(t => html += `<option value="${t}">${t} Menit</option>`);
-        html += `</select>`;
-        Modal.showForm("Waktu Kunci", html, () => {
-          const val = document.getElementById('sel-time').value;
-          Storage.set('lockTime', val);
-          document.getElementById('lock-time-display').innerText = val + " Menit";
-          app.lockTimeout = val * 60 * 1000;
-          app.resetTimer(); // Restart timer with new setting
-          app.toast("Waktu kunci diatur");
+      openClipboard: () => {
+        Sound.playClick();
+        const history = Storage.get('clipHistory') || [];
+        if(history.length === 0) { app.toast("Riwayat kosong"); return; }
+        
+        let html = `<div style="max-height:200px; overflow-y:auto;">`;
+        history.forEach((text, i) => {
+          html += `<div style="padding:10px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between;">
+            <span style="font-size:12px; word-break:break-all;">${text}</span>
+            <i class="fas fa-copy" style="color:var(--primary); font-size:12px; cursor:pointer;" onclick="navigator.clipboard.writeText('${text.replace(/'/g, "\\'")}');app.toast('Disalin!')"></i>
+          </div>`;
         });
+        html += `</div>`;
+        
+        Modal.showForm("Riwayat Clipboard", html, () => {});
       },
-      
-      toggleBio: authManager.toggleBio
+      saveToClipboard: (text) => {
+        let history = Storage.get('clipHistory') || [];
+        history.unshift(text);
+        if(history.length > 10) history.pop();
+        Storage.set('clipHistory', history);
+        tools.updateCount();
+      },
+      updateCount: () => {
+        const h = Storage.get('clipHistory') || [];
+        document.getElementById('clip-count').innerText = h.length;
+      }
+    };
+
+    const calc = {
+      exp: "",
+      add: (val) => { calc.exp += val; calc.update(); },
+      clear: () => { calc.exp = ""; calc.update(); },
+      del: () => { calc.exp = calc.exp.slice(0, -1); calc.update(); },
+      update: () => { document.getElementById('calc-screen').innerText = calc.exp || "0"; },
+      solve: () => {
+        try { calc.exp = new Function('return ' + calc.exp)().toString(); calc.update(); Sound.playClick(); }
+        catch(e) { app.toast("Format salah"); }
+      }
     };
 
     // --- HISTORY MANAGER ---
@@ -669,7 +733,7 @@
           app.toast("Log dihapus");
         });
       },
-      showClearModal: () => {
+      clearAll: () => {
         Modal.showConfirm("Reset Sistem?", "Seluruh data log dan analitik akan dihapus permanen.", () => {
           Storage.clear();
           historyManager.render();
@@ -678,63 +742,48 @@
       }
     };
 
-    // --- APP CONTROLLER (OPTIMIZED) ---
+    // --- APP CONTROLLER ---
     const app = {
-      lastActivity: Date.now(),
-      lockTimeout: 5 * 60 * 1000, // Default 5 min
-      timerInterval: null,
-
       init: () => {
-        authManager.init();
         configManager.init();
         historyManager.render();
-        app.startTimer();
+        tools.updateCount();
         setInterval(app.updateClock, 1000);
         app.updateClock();
+        
+        document.addEventListener('copy', (e) => {
+          const text = window.getSelection().toString();
+          if(text) tools.saveToClipboard(text);
+        });
       },
-
-      startTimer: () => {
-        if(app.timerInterval) clearInterval(app.timerInterval);
-        app.timerInterval = setInterval(() => {
-          if (Date.now() - app.lastActivity > app.lockTimeout) {
-            authManager.checkAutoLock();
-          }
-        }, 1000);
-      },
-
-      resetTimer: () => { app.lastActivity = Date.now(); },
-      
       updateClock: () => {
         document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
       },
-
       open: (title, url) => {
+        Sound.playClick();
         document.getElementById('wb-title').innerText = title;
         document.getElementById('webview-overlay').classList.add('active');
         document.getElementById('app-frame').src = url;
         historyManager.add(title, url);
-        app.resetTimer();
       },
-
       close: () => {
         document.getElementById('webview-overlay').classList.remove('active');
         setTimeout(() => document.getElementById('app-frame').src = 'about:blank', 400);
       },
-
       refresh: () => {
         const frame = document.getElementById('app-frame');
         frame.src = frame.src;
+        Sound.playClick();
         app.toast("Memuat ulang...");
       },
-
       nav: (id, el) => {
+        Sound.playClick();
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
         if(id === 'view-history') historyManager.render();
       },
-
       toast: (msg) => {
         const container = document.getElementById('toast-container');
         const el = document.createElement('div');
@@ -743,22 +792,13 @@
         container.appendChild(el);
         setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 2500);
       },
-
       clearCache: () => {
         app.toast("Membersihkan cache...");
         setTimeout(() => location.reload(true), 1000);
-      },
-
-      lockNow: () => {
-        authManager.checkAutoLock();
       }
     };
 
-    // Global Listeners
-    document.addEventListener('click', app.resetTimer);
-    document.addEventListener('touchstart', app.resetTimer);
     window.onload = app.init;
-
   </script>
 </body>
 </html>
