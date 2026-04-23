@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="CVPRO">
-  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvpro_op/192/192">
+  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvpro_fix/192/192">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%232563EB'/><text x='50' y='68' font-size='40' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>CP</text></svg>">
 
   <!-- PRECONNECT -->
@@ -20,7 +20,6 @@
   <!-- LIBRARIES -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- HTML5-QRCode Library for Scanner -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
   <style>
@@ -28,6 +27,7 @@
       --primary: #2563EB; --primary-dark: #1E40AF; --primary-grad: linear-gradient(135deg, #3B82F6, #1D4ED8);
       --bg-body: #F8FAFC; --surface: #FFFFFF; --surface-alt: #F1F5F9;
       --text-main: #0F172A; --text-muted: #64748B; --border: #E2E8F0;
+      --danger: #EF4444; --success: #10B981;
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
@@ -129,18 +129,18 @@
       padding: 28px 24px; box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.2s;
     }
     .modal-overlay.open .modal-box { transform: scale(1); }
-    .modal-icon { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 20px; background: linear-gradient(135deg, #FEE2E2, #FECACA); color: #EF4444; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+    .modal-icon { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 20px; background: linear-gradient(135deg, #FEE2E2, #FECACA); color: var(--danger); display: flex; align-items: center; justify-content: center; font-size: 28px; }
     .modal-title { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 8px; color: var(--text-main); }
     .modal-msg { font-size: 14px; color: var(--text-muted); text-align: center; margin-bottom: 24px; line-height: 1.5; }
     .modal-actions { display: flex; gap: 12px; }
     .modal-btn { flex: 1; padding: 14px; border-radius: 14px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; }
     .btn-cancel { background: var(--surface-alt); color: var(--text-main); }
     .btn-confirm { background: var(--primary); color: white; }
-    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger { background: var(--danger); color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
     .input-modal { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-alt); color: var(--text-main); outline: none; font-size: 14px; margin-bottom: 12px; }
     .input-modal:focus { border-color: var(--primary); }
 
-    /* --- CALCULATOR --- */
+    /* --- TOOLS (CALC, CONVERT, STOPWATCH) --- */
     .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
     .calc-display { grid-column: span 4; background: var(--surface-alt); padding: 20px; border-radius: 16px; text-align: right; font-size: 32px; font-weight: 800; margin-bottom: 10px; border: 1px solid var(--border); }
     .calc-btn { padding: 15px; border-radius: 12px; border: none; background: var(--surface); font-size: 18px; font-weight: 600; color: var(--text-main); box-shadow: var(--shadow-sm); cursor: pointer; }
@@ -148,7 +148,14 @@
     .calc-btn.eq { background: var(--primary); color: white; grid-column: span 2; }
     .calc-btn:active { transform: scale(0.95); }
 
-    /* --- QR SCANNER --- */
+    .stopwatch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top:20px; }
+    .sw-display { grid-column: span 2; font-size: 48px; font-weight: 800; text-align: center; font-family: monospace; margin-bottom: 20px; color: var(--primary); }
+    .sw-btn { padding: 15px; border-radius: 12px; border: none; background: var(--surface); font-weight: 700; cursor: pointer; font-size: 16px; }
+    .sw-btn.start { background: var(--success); color: white; }
+    .sw-btn.stop { background: var(--danger); color: white; }
+    .sw-btn.reset { background: var(--surface-alt); }
+
+    /* --- QR OVERLAY --- */
     #qr-overlay { position: fixed; inset: 0; background: black; z-index: 3000; display: none; flex-direction: column; }
     #qr-overlay.active { display: flex; }
     #qr-reader { flex: 1; width: 100%; object-fit: cover; }
@@ -187,7 +194,7 @@
           <div class="logo-box"><i class="fas fa-bolt"></i></div>
           <div class="brand-info"><h1>CVPRO</h1><p>Operator Pro</p></div>
         </div>
-        <div style="font-size:12px; font-weight:700; color:var(--text-muted);" id="clock">00:00</div>
+        <div style="font-size:14px; font-weight:700; color:var(--primary);" id="clock">--:--</div>
       </header>
 
       <div class="menu-grid" style="animation: slideUp 0.6s ease;">
@@ -270,6 +277,20 @@
           </div>
           <i class="fas fa-chevron-right" style="color:var(--border); font-size:12px;"></i>
         </div>
+        <div class="setting-item" onclick="tools.openStopwatch()">
+          <div class="st-left">
+            <div class="st-icon"><i class="fas fa-stopwatch"></i></div>
+            <div class="st-info"><h4>Stopwatch</h4><p>Timer operasional</p></div>
+          </div>
+          <i class="fas fa-chevron-right" style="color:var(--border); font-size:12px;"></i>
+        </div>
+        <div class="setting-item" onclick="tools.openConverter()">
+          <div class="st-left">
+            <div class="st-icon"><i class="fas fa-exchange-alt"></i></div>
+            <div class="st-info"><h4>Converter</h4><p>Konversi Ukuran/Angka</p></div>
+          </div>
+          <i class="fas fa-chevron-right" style="color:var(--border); font-size:12px;"></i>
+        </div>
         <div class="setting-item" onclick="tools.openQR()">
           <div class="st-left">
             <div class="st-icon"><i class="fas fa-qrcode"></i></div>
@@ -332,12 +353,6 @@
             <div class="st-info"><h4>Bersihkan Cache</h4><p>Perbaiki performa</p></div>
           </div>
         </div>
-        <div class="setting-item">
-          <div class="st-left">
-            <div class="st-icon"><i class="fas fa-info-circle"></i></div>
-            <div class="st-info"><h4>Versi Aplikasi</h4><p>v1.0.0 Operator Pro</p></div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -384,6 +399,40 @@
     </div>
   </div>
 
+  <!-- STOPWATCH OVERLAY -->
+  <div id="sw-overlay" class="modal-overlay" style="z-index: 1500;">
+    <div class="modal-box" style="width: 100%; max-width: 400px; transform: none; opacity: 1; margin: 0;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+        <h3 style="font-weight:800;">Stopwatch</h3>
+        <button onclick="tools.closeStopwatch()" style="background:none; border:none; font-size:20px;"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="sw-display" id="sw-screen">00:00:00</div>
+      <div class="stopwatch-grid">
+        <button class="sw-btn start" id="btn-sw-start" onclick="sw.toggle()">Mulai</button>
+        <button class="sw-btn reset" onclick="sw.reset()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONVERTER OVERLAY -->
+  <div id="conv-overlay" class="modal-overlay" style="z-index: 1500;">
+    <div class="modal-box" style="width: 100%; max-width: 400px; transform: none; opacity: 1; margin: 0;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+        <h3 style="font-weight:800;">Konverter Data</h3>
+        <button onclick="tools.closeConverter()" style="background:none; border:none; font-size:20px;"><i class="fas fa-times"></i></button>
+      </div>
+      <div style="display:grid; gap:10px;">
+        <input type="number" id="conv-inp" class="input-modal" placeholder="Masukkan angka..." oninput="conv.calculate()">
+        <select id="conv-type" class="input-modal" onchange="conv.calculate()">
+          <option value="kbmb">KB ke MB</option>
+          <option value="mbgb">MB ke GB</option>
+          <option value="num">Angka ke Ribuan (K)</option>
+        </select>
+        <div style="text-align:center; padding:10px; background:var(--surface-alt); border-radius:12px; font-weight:800; font-size:18px; color:var(--primary);" id="conv-result">0</div>
+      </div>
+    </div>
+  </div>
+
   <!-- TEMPLATE OVERLAY -->
   <div id="template-overlay" class="modal-overlay">
     <div class="modal-box">
@@ -391,9 +440,7 @@
         <h3 style="font-weight:800;">Templates</h3>
         <button onclick="document.getElementById('template-overlay').classList.remove('open')" style="background:none; border:none; font-size:20px;"><i class="fas fa-times"></i></button>
       </div>
-      <div id="template-list" style="display:flex; flex-direction:column; gap:10px;">
-        <!-- JS Will Populate -->
-      </div>
+      <div id="template-list" style="display:flex; flex-direction:column; gap:10px;"></div>
       <button onclick="tools.addTemplate()" class="modal-btn btn-confirm" style="margin-top:20px;">+ Buat Baru</button>
     </div>
   </div>
@@ -434,14 +481,14 @@
     const manifestData = {
       name: "CVPRO Operator", short_name: "CVPRO", start_url: ".", display: "standalone",
       orientation: "portrait", background_color: "#F8FAFC", theme_color: "#F8FAFC",
-      icons: [{ src: "https://picsum.photos/seed/cvpro_op/192/192", sizes: "192x192", type: "image/jpeg" }]
+      icons: [{ src: "https://picsum.photos/seed/cvpro_fix/192/192", sizes: "192x192", type: "image/jpeg" }]
     };
     const blob = new Blob([JSON.stringify(manifestData)], {type:'application/json'});
     document.head.appendChild(Object.assign(document.createElement('link'),{rel:'manifest', href:URL.createObjectURL(blob)}));
 
     // --- STORAGE ---
     const Storage = {
-      PREFIX: 'cp_op_v10_',
+      PREFIX: 'cp_op_v11_',
       get: (k) => { try{ return JSON.parse(localStorage.getItem(Storage.PREFIX+k)); }catch(e){return null;} },
       set: (k,v) => localStorage.setItem(Storage.PREFIX+k, JSON.stringify(v)),
       remove: (k) => localStorage.removeItem(Storage.PREFIX+k),
@@ -467,7 +514,7 @@
       }
     };
 
-    // --- MODAL MANAGER ---
+    // --- MODAL MANAGER (FIXED RED BUTTON) ---
     const Modal = {
       el: document.getElementById('modal-overlay'),
       title: document.getElementById('modal-title'),
@@ -487,10 +534,12 @@
         document.getElementById('modal-icon-symbol').className = "fas fa-trash-alt";
         document.getElementById('modal-icon-symbol').parentElement.style.color = "#EF4444";
 
+        // FIX: Tombol Hapus Merah
         Modal.actions.innerHTML = `
           <button class="modal-btn btn-cancel" onclick="Modal.close()">Batal</button>
           <button class="modal-btn btn-danger" id="btn-modal-confirm">Hapus</button>
         `;
+        
         const btn = document.getElementById('btn-modal-confirm');
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
@@ -512,6 +561,7 @@
           <button class="modal-btn btn-cancel" onclick="Modal.close()">Batal</button>
           <button class="modal-btn btn-confirm" id="btn-modal-save">Simpan</button>
         `;
+        
         const btn = document.getElementById('btn-modal-save');
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
@@ -563,6 +613,7 @@
     // --- TOOLS MANAGER ---
     const tools = {
       html5QrcodeScanner: null,
+      swInterval: null,
 
       openCalc: () => {
         Sound.playClick();
@@ -575,7 +626,29 @@
         document.getElementById('calc-overlay').style.opacity = "0";
         document.getElementById('calc-overlay').style.pointerEvents = "none";
       },
-      
+
+      openStopwatch: () => {
+        Sound.playClick();
+        document.getElementById('sw-overlay').style.opacity = "1";
+        document.getElementById('sw-overlay').style.pointerEvents = "auto";
+      },
+      closeStopwatch: () => {
+        Sound.playClick();
+        document.getElementById('sw-overlay').style.opacity = "0";
+        document.getElementById('sw-overlay').style.pointerEvents = "none";
+      },
+
+      openConverter: () => {
+        Sound.playClick();
+        document.getElementById('conv-overlay').style.opacity = "1";
+        document.getElementById('conv-overlay').style.pointerEvents = "auto";
+      },
+      closeConverter: () => {
+        Sound.playClick();
+        document.getElementById('conv-overlay').style.opacity = "0";
+        document.getElementById('conv-overlay').style.pointerEvents = "none";
+      },
+
       openQR: () => {
         Sound.playClick();
         document.getElementById('qr-overlay').classList.add('active');
@@ -592,11 +665,11 @@
           tools.html5QrcodeScanner.stop().catch(err => console.error("Stop failed", err));
         }
       },
-      onScanSuccess: (decodedText, decodedResult) => {
+      onScanSuccess: (decodedText) => {
         Sound.playClick();
         tools.stopQR();
         navigator.clipboard.writeText(decodedText);
-        app.toast("QR Code Disalin ke Clipboard");
+        app.toast("QR Code Disalin");
         tools.saveToClipboard(decodedText);
       },
 
@@ -608,7 +681,6 @@
           {id:2, text: "Mohon menunggu, sedang dalam proses verifikasi."},
           {id:3, text: "Maaf, data Anda tidak lengkap."}
         ];
-
         list.innerHTML = templates.map(t => `
           <div style="padding:12px; background:var(--surface-alt); border-radius:10px; font-size:13px; word-break:break-all;">
             ${t.text}
@@ -618,7 +690,6 @@
             </div>
           </div>
         `).join('');
-        
         document.getElementById('template-overlay').classList.add('open');
       },
       addTemplate: () => {
@@ -628,7 +699,7 @@
             const tpls = Storage.get('templates') || [];
             tpls.push({id: Date.now(), text: txt});
             Storage.set('templates', tpls);
-            tools.openTemplates(); // Refresh
+            tools.openTemplates();
             Sound.playClick();
           }
         });
@@ -681,14 +752,71 @@
     };
 
     const calc = {
-      exp: "",
-      add: (val) => { calc.exp += val; calc.update(); },
+      exp: "", add: (val) => { calc.exp += val; calc.update(); },
       clear: () => { calc.exp = ""; calc.update(); },
       del: () => { calc.exp = calc.exp.slice(0, -1); calc.update(); },
       update: () => { document.getElementById('calc-screen').innerText = calc.exp || "0"; },
       solve: () => {
         try { calc.exp = new Function('return ' + calc.exp)().toString(); calc.update(); Sound.playClick(); }
         catch(e) { app.toast("Format salah"); }
+      }
+    };
+
+    const sw = {
+      seconds: 0,
+      running: false,
+      toggle: () => {
+        sw.running = !sw.running;
+        const btn = document.getElementById('btn-sw-start');
+        if(sw.running) {
+          btn.innerText = "Jeda";
+          btn.classList.remove('start');
+          btn.classList.add('stop');
+          sw.interval = setInterval(() => {
+            sw.seconds++;
+            sw.update();
+          }, 1000);
+        } else {
+          btn.innerText = "Mulai";
+          btn.classList.remove('stop');
+          btn.classList.add('start');
+          clearInterval(sw.interval);
+        }
+        Sound.playClick();
+      },
+      reset: () => {
+        sw.running = false;
+        sw.seconds = 0;
+        clearInterval(sw.interval);
+        const btn = document.getElementById('btn-sw-start');
+        btn.innerText = "Mulai";
+        btn.classList.remove('stop');
+        btn.classList.add('start');
+        sw.update();
+        Sound.playClick();
+      },
+      update: () => {
+        const h = Math.floor(sw.seconds / 3600).toString().padStart(2,'0');
+        const m = Math.floor((sw.seconds % 3600) / 60).toString().padStart(2,'0');
+        const s = (sw.seconds % 60).toString().padStart(2,'0');
+        document.getElementById('sw-screen').innerText = `${h}:${m}:${s}`;
+      }
+    };
+
+    const conv = {
+      calculate: () => {
+        const val = parseFloat(document.getElementById('conv-inp').value);
+        const type = document.getElementById('conv-type').value;
+        const res = document.getElementById('conv-result');
+        if(isNaN(val)) { res.innerText = "0"; return; }
+        
+        let result = 0;
+        let unit = "";
+        if(type === 'kbmb') { result = val / 1024; unit = "MB"; }
+        if(type === 'mbgb') { result = val / 1024; unit = "GB"; }
+        if(type === 'num') { result = val / 1000; unit = "K"; }
+        
+        res.innerText = result.toFixed(2) + " " + unit;
       }
     };
 
@@ -742,15 +870,17 @@
       }
     };
 
-    // --- APP CONTROLLER ---
+    // --- APP CONTROLLER (FIXED CLOCK) ---
     const app = {
       init: () => {
         configManager.init();
         historyManager.render();
         tools.updateCount();
-        setInterval(app.updateClock, 1000);
-        app.updateClock();
         
+        // FIX CLOCK: Interval setiap detik & update langsung
+        app.updateClock();
+        setInterval(app.updateClock, 1000);
+
         document.addEventListener('copy', (e) => {
           const text = window.getSelection().toString();
           if(text) tools.saveToClipboard(text);
