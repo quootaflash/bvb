@@ -5,19 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>CVPRO Enterprise</title>
 
-  <!-- --- PWA CONFIGURATION (CORE) --- -->
-  <!-- Warna Status Bar Browser -->
+  <!-- PWA CONFIG -->
   <meta name="theme-color" content="#F1F5F9">
-  <!-- Memaksa tampilan Full Screen / Standalone -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="CVPRO">
-  <meta name="mobile-web-app-capable" content="yes">
-  
-  <!-- Icon High Res untuk Install Screen -->
-  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvpro_pwa_final/192/192">
-  
-  <!-- Favicon -->
+  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvpro_config/192/192">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%232563EB'/><text x='50' y='68' font-size='40' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>CP</text></svg>">
 
   <!-- LIBRARIES -->
@@ -25,24 +18,32 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
+    /* --- THEME VARIABLES --- */
     :root {
-      /* ENTERPRISE THEME */
       --primary: #2563EB;
       --primary-dark: #1E40AF;
       --primary-grad: linear-gradient(135deg, #3B82F6, #1D4ED8);
-      --bg-body: #F1F5F9; /* Slate 100 - MATCHES MANIFEST */
+      /* Default Light Mode */
+      --bg-body: #F1F5F9;
       --surface: #FFFFFF;
+      --surface-alt: #F8FAFC;
       --text-main: #0F172A;
       --text-muted: #64748B;
-      --danger: #EF4444;
-      --success: #10B981;
-      
-      --safe-bottom: env(safe-area-inset-bottom, 20px);
-      --safe-top: env(safe-area-inset-top, 10px);
-      
+      --border: #E2E8F0;
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Dark Mode Variables Override */
+    [data-theme="dark"] {
+      --bg-body: #0F172A;
+      --surface: #1E293B;
+      --surface-alt: #334155;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border: #334155;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; outline: none; }
@@ -56,6 +57,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* --- ANIMATIONS --- */
@@ -65,7 +67,7 @@
     /* --- PAGES --- */
     .page {
       flex: 1; overflow-y: auto; overflow-x: hidden;
-      padding: calc(var(--safe-top) + 20px) 20px calc(90px + var(--safe-bottom)) 20px;
+      padding: calc(env(safe-area-inset-top, 10px) + 20px) 20px calc(90px + env(safe-area-inset-bottom, 20px)) 20px;
       display: none; opacity: 0; transition: opacity 0.3s ease;
     }
     .page.active { display: block; opacity: 1; }
@@ -82,26 +84,59 @@
     .brand-info h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
     .brand-info p { font-size: 10px; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
 
-    /* --- MENU GRID --- */
+    /* --- COMPONENTS --- */
+    .section-title { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 24px 0 12px; letter-spacing: 0.5px; }
+    
     .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
     .menu-card {
       background: var(--surface); border-radius: 20px; padding: 20px;
       display: flex; flex-direction: column; gap: 12px;
-      box-shadow: var(--shadow-sm); border: 1px solid rgba(255,255,255,0.8);
-      transition: transform 0.2s; position: relative; overflow: hidden;
+      box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+      transition: transform 0.2s;
     }
     .menu-card:active { transform: scale(0.96); }
+    
     .mc-header { display: flex; align-items: center; gap: 10px; }
     .mc-icon {
       width: 38px; height: 38px; border-radius: 10px;
-      background: #EFF6FF; color: var(--primary);
+      background: var(--surface-alt); color: var(--primary);
       display: flex; align-items: center; justify-content: center;
     }
     .mc-title { font-size: 15px; font-weight: 700; }
     .mc-desc { font-size: 12px; color: var(--text-muted); font-weight: 500; }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
-    .sd-green { background: var(--success); }
-    .sd-blue { background: var(--primary); }
+    
+    /* Settings List Style */
+    .settings-list { display: flex; flex-direction: column; gap: 12px; }
+    .setting-item {
+      background: var(--surface); border-radius: 16px; padding: 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+    }
+    .st-left { display: flex; align-items: center; gap: 14px; }
+    .st-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--surface-alt); color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
+    .st-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .st-info p { font-size: 11px; color: var(--text-muted); }
+    
+    /* Toggle Switch */
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--border); transition: .4s; border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+      background-color: white; transition: .4s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Input Text */
+    .input-modal {
+      width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-main); outline: none; font-size: 14px;
+    }
+    .input-modal:focus { border-color: var(--primary); }
 
     /* --- WEBVIEW --- */
     #webview-overlay {
@@ -111,9 +146,9 @@
     }
     #webview-overlay.active { transform: translateY(0); }
     .wb-header {
-      height: 60px; padding: 0 20px; padding-top: var(--safe-top);
+      height: 60px; padding: 0 20px; padding-top: env(safe-area-inset-top, 10px);
       background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;
     }
     .wb-btn {
       width: 40px; height: 40px; border-radius: 10px; background: white;
@@ -122,14 +157,15 @@
 
     /* --- ANALYTICS --- */
     .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .stat-card { background: var(--surface); padding: 16px; border-radius: 16px; box-shadow: var(--shadow-sm); }
+    .stat-card { background: var(--surface); padding: 16px; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
     .stat-val { font-size: 24px; font-weight: 800; color: var(--text-main); }
     .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 4px; }
-    .chart-container { background: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+    
+    .chart-container { background: var(--surface); padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
     .chart-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); }
     .bars { display: flex; align-items: flex-end; gap: 8px; height: 60px; }
     .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-    .bar { width: 100%; background: #E2E8F0; border-radius: 4px; transition: height 0.5s; min-height: 4px; }
+    .bar { width: 100%; background: var(--border); border-radius: 4px; transition: height 0.5s; min-height: 4px; }
     .bar.active { background: var(--primary); }
     .bar-label { font-size: 9px; color: var(--text-muted); }
 
@@ -137,42 +173,34 @@
     .history-item {
       background: var(--surface); padding: 16px; border-radius: 16px;
       display: flex; justify-content: space-between; align-items: center;
-      box-shadow: var(--shadow-sm); border-left: 4px solid transparent;
+      box-shadow: var(--shadow-sm); border: 1px solid var(--border);
     }
     .hi-left { display: flex; gap: 12px; align-items: center; }
-    .hi-icon { width: 36px; height: 36px; background: #F1F5F9; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+    .hi-icon { width: 36px; height: 36px; background: var(--surface-alt); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
     .hi-text h4 { font-size: 14px; font-weight: 600; }
     .hi-text p { font-size: 11px; color: var(--text-muted); }
-    .btn-delete {
-      background: #FEF2F2; color: var(--danger); border: none;
-      width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
-    .btn-delete:active { background: var(--danger); color: white; }
+    .btn-delete { background: #FEF2F2; color: var(--danger); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
     /* --- MODAL --- */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
       z-index: 2000; display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none; transition: opacity 0.2s;
     }
     .modal-overlay.open { opacity: 1; pointer-events: auto; }
     .modal-box {
       background: var(--surface); width: 85%; max-width: 320px; border-radius: 24px;
-      padding: 30px 24px; text-align: center;
-      box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.2s;
+      padding: 24px; box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.2s;
     }
     .modal-overlay.open .modal-box { transform: scale(1); }
-    .modal-icon {
-      width: 56px; height: 56px; background: #FEF2F2; color: var(--danger);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 20px; font-size: 24px;
-    }
-    .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
-    .modal-msg { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-title { font-size: 18px; font-weight: 800; }
+    .modal-msg { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
     .modal-actions { display: flex; gap: 12px; }
-    .modal-btn { flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; }
-    .btn-cancel { background: #F1F5F9; color: var(--text-main); }
-    .btn-confirm { background: var(--danger); color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+    .modal-btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .btn-cancel { background: var(--surface-alt); color: var(--text-main); }
+    .btn-confirm { background: var(--primary); color: white; }
+    .btn-confirm.danger { background: var(--danger); }
 
     /* --- LOCK SCREEN --- */
     #lock-screen {
@@ -181,8 +209,6 @@
       transform: translateY(100%); transition: transform 0.4s ease;
     }
     #lock-screen.active { transform: translateY(0); }
-    .lock-content { text-align: center; animation: slideUp 0.5s; }
-    .lock-icon { font-size: 40px; color: var(--primary); margin-bottom: 20px; }
     .unlock-btn {
       margin-top: 30px; background: var(--primary); color: white; border: none;
       padding: 14px 40px; border-radius: 30px; font-weight: 700; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
@@ -190,10 +216,9 @@
 
     /* --- BOTTOM NAV --- */
     .bottom-nav {
-      position: fixed; bottom: 0; left: 0; width: 100%; height: calc(70px + var(--safe-bottom));
-      padding-bottom: var(--safe-bottom); background: rgba(255,255,255,0.9);
-      backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05);
-      display: flex; justify-content: space-around; align-items: center; z-index: 40;
+      position: fixed; bottom: 0; left: 0; width: 100%; height: calc(70px + env(safe-area-inset-bottom, 20px));
+      padding-bottom: env(safe-area-inset-bottom, 20px); background: var(--surface);
+      border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 40;
     }
     .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); transition: 0.3s; }
     .nav-item.active { color: var(--primary); }
@@ -217,7 +242,7 @@
       <header>
         <div class="brand">
           <div class="logo-box"><i class="fas fa-layer-group"></i></div>
-          <div class="brand-info"><h1>CVPRO</h1><p>Enterprise Suite</p></div>
+          <div class="brand-info"><h1 id="header-app-name">CVPRO</h1><p id="header-operator-name">Operator Guest</p></div>
         </div>
         <div style="font-size:12px; font-weight:700; color:var(--text-muted);" id="clock">00:00</div>
       </header>
@@ -225,33 +250,33 @@
       <div class="menu-grid" style="animation: slideUp 0.6s ease;">
         <div class="menu-card" onclick="app.open('ATS Portal', 'https://45.dunnak.com')">
           <div class="mc-header"><div class="mc-icon"><i class="fas fa-briefcase"></i></div><div class="mc-title">ATS Portal</div></div>
-          <div class="mc-desc"><span class="status-dot sd-green"></span>System Ready</div>
+          <div class="mc-desc">System Recruitment</div>
         </div>
         <div class="menu-card" onclick="app.open('Lamaran', 'https://46.dunnak.com')">
           <div class="mc-header"><div class="mc-icon"><i class="fas fa-file-signature"></i></div><div class="mc-title">Lamaran</div></div>
-          <div class="mc-desc"><span class="status-dot sd-blue"></span>Docs Active</div>
+          <div class="mc-desc">Document Center</div>
         </div>
         <div class="menu-card" onclick="app.open('Resign', 'https://47.dunnak.com')">
           <div class="mc-header"><div class="mc-icon"><i class="fa-solid fa-envelope-open-text"></i></div><div class="mc-title">Resign HR</div></div>
-          <div class="mc-desc">Admin Module</div>
+          <div class="mc-desc">HR Management</div>
         </div>
         <div class="menu-card" onclick="app.open('Creative 1', 'https://51.dunnak.com')">
           <div class="mc-header"><div class="mc-icon"><i class="fas fa-palette"></i></div><div class="mc-title">Creative 1</div></div>
-          <div class="mc-desc">Design Team</div>
+          <div class="mc-desc">Design Team A</div>
         </div>
         <div class="menu-card" onclick="app.open('Creative 2', 'https://52.dunnak.com')">
           <div class="mc-header"><div class="mc-icon"><i class="fas fa-layer-group"></i></div><div class="mc-title">Creative 2</div></div>
-          <div class="mc-desc">Design Team</div>
+          <div class="mc-desc">Design Team B</div>
         </div>
         <div class="menu-card" onclick="app.open('Creative 3', 'https://53.dunnak.com')">
           <div class="mc-header"><div class="mc-icon"><i class="fas fa-bezier-curve"></i></div><div class="mc-title">Creative 3</div></div>
-          <div class="mc-desc">Design Team</div>
+          <div class="mc-desc">Design Team C</div>
         </div>
         <div class="menu-card" onclick="app.open('Entry Scan', 'https://school.dunnak.com')">
           <div class="mc-header"><div class="mc-icon"><i class="fas fa-camera-retro"></i></div><div class="mc-title">Scanner</div></div>
           <div class="mc-desc">Data Input</div>
         </div>
-        <div class="menu-card" onclick="app.open('Settings', '#')">
+        <div class="menu-card" onclick="app.nav('view-settings', document.querySelectorAll('.nav-item')[2])">
           <div class="mc-header"><div class="mc-icon"><i class="fas fa-cog"></i></div><div class="mc-title">Pengaturan</div></div>
           <div class="mc-desc">System Config</div>
         </div>
@@ -280,7 +305,6 @@
       <div class="chart-container">
         <div class="chart-title">Aktivitas Minggu Ini</div>
         <div class="bars" id="activity-chart">
-          <!-- Bars generated by JS -->
           <div class="bar-col"><div class="bar" style="height: 20%"></div><div class="bar-label">S</div></div>
           <div class="bar-col"><div class="bar" style="height: 45%"></div><div class="bar-label">S</div></div>
           <div class="bar-col"><div class="bar" style="height: 30%"></div><div class="bar-label">R</div></div>
@@ -296,8 +320,90 @@
         <button onclick="historyManager.confirmClearAll()" style="font-size:11px; color:var(--danger); border:none; background:none; font-weight:600;">Reset Data</button>
       </div>
 
-      <div id="history-list" class="history-list">
-        <!-- List by JS -->
+      <div id="history-list" class="history-list"></div>
+    </div>
+  </div>
+
+  <!-- PAGE: SETTINGS -->
+  <div class="page" id="view-settings">
+    <div class="container">
+      <header>
+        <div class="brand-info"><h1>Pengaturan</h1><p>Konfigurasi Operator</p></div>
+      </header>
+
+      <div class="section-title">Akun</div>
+      <div class="settings-list">
+        <div class="setting-item" onclick="configManager.editProfile()">
+          <div class="st-left">
+            <div class="st-icon"><i class="fas fa-user"></i></div>
+            <div class="st-info">
+              <h4>Nama Operator</h4>
+              <p id="display-operator-name">Guest</p>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right" style="color:var(--border); font-size:12px;"></i>
+        </div>
+      </div>
+
+      <div class="section-title">Tampilan</div>
+      <div class="settings-list">
+        <div class="setting-item">
+          <div class="st-left">
+            <div class="st-icon"><i class="fas fa-moon"></i></div>
+            <div class="st-info">
+              <h4>Mode Gelap</h4>
+              <p>Kenyamanan mata</p>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="theme-toggle" onchange="configManager.toggleTheme()">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="section-title">Data & Penyimpanan</div>
+      <div class="settings-list">
+        <div class="setting-item" onclick="historyManager.confirmClearAll()">
+          <div class="st-left">
+            <div class="st-icon" style="color:var(--danger); background:rgba(239,68,68,0.1)"><i class="fas fa-trash-alt"></i></div>
+            <div class="st-info">
+              <h4>Hapus Semua History</h4>
+              <p>Bersihkan log aktivitas</p>
+            </div>
+          </div>
+        </div>
+        <div class="setting-item" onclick="app.clearCache()">
+          <div class="st-left">
+            <div class="st-icon" style="color:var(--primary); background:rgba(37,99,235,0.1)"><i class="fas fa-broom"></i></div>
+            <div class="st-info">
+              <h4>Bersihkan Cache</h4>
+              <p>Perbaiki performa aplikasi</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">Sistem</div>
+      <div class="settings-list">
+        <div class="setting-item">
+          <div class="st-left">
+            <div class="st-icon"><i class="fas fa-info-circle"></i></div>
+            <div class="st-info">
+              <h4>Versi Aplikasi</h4>
+              <p>v2.0.4 Enterprise</p>
+            </div>
+          </div>
+        </div>
+        <div class="setting-item" onclick="app.lockNow()">
+          <div class="st-left">
+            <div class="st-icon" style="color:var(--text-muted)"><i class="fas fa-lock"></i></div>
+            <div class="st-info">
+              <h4>Kunci Sekarang</h4>
+              <p>Kunci layar manual</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -315,22 +421,23 @@
   <!-- LOCK SCREEN -->
   <div id="lock-screen">
     <div class="lock-content">
-      <div class="lock-icon"><i class="fas fa-lock"></i></div>
-      <h2>Session Locked</h2>
-      <p style="color:var(--text-muted); margin-top:8px;">Ketuk untuk membuka aplikasi</p>
+      <div class="lock-icon" style="font-size:40px; color:var(--primary); margin-bottom:20px;"><i class="fas fa-lock"></i></div>
+      <h2 style="margin-bottom:8px;">Session Locked</h2>
+      <p style="color:var(--text-muted);">Ketuk untuk membuka aplikasi</p>
       <button class="unlock-btn" onclick="app.unlock()">UNLOCK</button>
     </div>
   </div>
 
-  <!-- MODAL ALERT -->
+  <!-- GENERIC MODAL -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal-box">
-      <div class="modal-icon"><i class="fas fa-exclamation-circle"></i></div>
-      <h3 class="modal-title" id="modal-title">Confirm</h3>
-      <p class="modal-msg" id="modal-msg">Are you sure?</p>
-      <div class="modal-actions">
-        <button class="modal-btn btn-cancel" id="btn-modal-cancel">Batal</button>
-        <button class="modal-btn btn-confirm" id="btn-modal-confirm">Hapus</button>
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Judul</h3>
+        <button onclick="Modal.close()" style="background:none;border:none;color:var(--text-muted);font-size:18px;"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="modal-content"></div> <!-- Dynamic Content (Input form, etc) -->
+      <div class="modal-actions" id="modal-actions">
+        <!-- Buttons injected by JS -->
       </div>
     </div>
   </div>
@@ -342,169 +449,166 @@
   <nav class="bottom-nav">
     <div class="nav-item active" onclick="app.nav('view-home', this)"><i class="fas fa-th-large"></i><span>Dashboard</span></div>
     <div class="nav-item" onclick="app.nav('view-history', this)"><i class="fas fa-chart-bar"></i><span>Analytics</span></div>
+    <div class="nav-item" onclick="app.nav('view-settings', this)"><i class="fas fa-cog"></i><span>Setting</span></div>
   </nav>
 
-  <!-- --- PWA MANIFEST GENERATION (STANDALONE) --- -->
   <script>
+    // --- MANIFEST GENERATION ---
     const manifestData = {
-      name: "CVPRO Enterprise",
-      short_name: "CVPRO",
-      start_url: ".",
-      display: "standalone", // PENTING: Agar tanpa address bar
-      orientation: "portrait",
-      background_color: "#F1F5F9",
-      theme_color: "#F1F5F9",
-      icons: [
-        { src: "https://picsum.photos/seed/cvpro_pwa_final/192/192", sizes: "192x192", type: "image/jpeg" },
-        { src: "https://picsum.photos/seed/cvpro_pwa_final/512/512", sizes: "512x512", type: "image/jpeg" }
-      ]
+      name: "CVPRO Enterprise", short_name: "CVPRO", start_url: ".", display: "standalone",
+      orientation: "portrait", background_color: "#F1F5F9", theme_color: "#F1F5F9",
+      icons: [{ src: "https://picsum.photos/seed/cvpro_config/192/192", sizes: "192x192", type: "image/jpeg" }]
     };
-    const stringManifest = JSON.stringify(manifestData);
-    const blob = new Blob([stringManifest], {type: 'application/json'});
-    const manifestURL = URL.createObjectURL(blob);
+    const blob = new Blob([JSON.stringify(manifestData)], {type:'application/json'});
     const link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = manifestURL;
+    link.rel = 'manifest'; link.href = URL.createObjectURL(blob);
     document.head.appendChild(link);
 
-    // --- APP LOGIC ---
+    // --- CORE STORAGE ---
     const Storage = {
-      PREFIX: 'cp_ent_v6_',
-      hash: (str) => btoa(str).replace(/=/g, ''),
-      get: (key) => {
-        const k = Storage.PREFIX + Storage.hash(key);
-        const raw = localStorage.getItem(k);
-        return raw ? JSON.parse(raw) : null;
-      },
-      set: (key, val) => {
-        const k = Storage.PREFIX + Storage.hash(key);
-        localStorage.setItem(k, JSON.stringify(val));
-      },
-      remove: (key) => {
-        const k = Storage.PREFIX + Storage.hash(key);
-        localStorage.removeItem(k);
-      },
-      getAll: () => {
-        const items = [];
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k.startsWith(Storage.PREFIX)) {
-            try { items.push(JSON.parse(localStorage.getItem(k))); } catch(e){}
-          }
-        }
-        return items;
-      },
+      PREFIX: 'cp_ent_v7_',
+      get: (key) => JSON.parse(localStorage.getItem(Storage.PREFIX + key) || 'null'),
+      set: (key, val) => localStorage.setItem(Storage.PREFIX + key, JSON.stringify(val)),
+      remove: (key) => localStorage.removeItem(Storage.PREFIX + key),
       clearAll: () => {
-        const keys = [];
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k.startsWith(Storage.PREFIX)) keys.push(k);
-        }
+        const keys = Object.keys(localStorage).filter(k => k.startsWith(Storage.PREFIX));
         keys.forEach(k => localStorage.removeItem(k));
       }
     };
 
-    const Modal = {
-      el: document.getElementById('modal-overlay'),
-      titleEl: document.getElementById('modal-title'),
-      msgEl: document.getElementById('modal-msg'),
-      confirmBtn: document.getElementById('btn-modal-confirm'),
-      cancelBtn: document.getElementById('btn-modal-cancel'),
-      
-      show: function(title, msg, onConfirm) {
-        this.titleEl.innerText = title;
-        this.msgEl.innerText = msg;
-        this.el.classList.add('open');
+    // --- CONFIG MANAGER ---
+    const configManager = {
+      init: () => {
+        const theme = Storage.get('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        document.getElementById('theme-toggle').checked = (theme === 'dark');
         
-        const newConfirm = this.confirmBtn.cloneNode(true);
-        this.confirmBtn.parentNode.replaceChild(newConfirm, this.confirmBtn);
-        this.confirmBtn = newConfirm;
-        
-        this.confirmBtn.addEventListener('click', () => {
-          this.close();
-          if (onConfirm) onConfirm();
-        });
-
-        const newCancel = this.cancelBtn.cloneNode(true);
-        this.cancelBtn.parentNode.replaceChild(newCancel, this.cancelBtn);
-        this.cancelBtn = newCancel;
-        this.cancelBtn.addEventListener('click', () => this.close());
+        const name = Storage.get('operatorName') || 'Operator Guest';
+        document.getElementById('header-operator-name').innerText = name;
+        document.getElementById('display-operator-name').innerText = name;
       },
-      close: function() {
-        this.el.classList.remove('open');
+
+      toggleTheme: () => {
+        const isDark = document.getElementById('theme-toggle').checked;
+        const newTheme = isDark ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        Storage.set('theme', newTheme);
+        app.toast(isDark ? "Mode Gelap Aktif" : "Mode Terang Aktif");
+      },
+
+      editProfile: () => {
+        const currentName = Storage.get('operatorName') || 'Operator Guest';
+        Modal.showForm("Ubah Nama Operator", `
+          <input type="text" id="input-name" class="input-modal" value="${currentName}" placeholder="Masukkan nama...">
+          <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Nama ini akan tampil di header dashboard.</p>
+        `, () => {
+          const newName = document.getElementById('input-name').value.trim();
+          if(newName) {
+            Storage.set('operatorName', newName);
+            document.getElementById('header-operator-name').innerText = newName;
+            document.getElementById('display-operator-name').innerText = newName;
+            app.toast("Nama berhasil diperbarui");
+          }
+        });
       }
     };
 
+    // --- MODAL MANAGER ---
+    const Modal = {
+      el: document.getElementById('modal-overlay'),
+      titleEl: document.getElementById('modal-title'),
+      contentEl: document.getElementById('modal-content'),
+      actionsEl: document.getElementById('modal-actions'),
+      
+      close: () => { Modal.el.classList.remove('open'); },
+      
+      showForm: (title, htmlContent, onConfirm) => {
+        Modal.titleEl.innerText = title;
+        Modal.contentEl.innerHTML = htmlContent;
+        Modal.actionsEl.innerHTML = `
+          <button class="modal-btn btn-cancel" onclick="Modal.close()">Batal</button>
+          <button class="modal-btn btn-confirm" id="btn-modal-save">Simpan</button>
+        `;
+        
+        // Re-bind button to avoid double listeners
+        const newBtn = document.getElementById('btn-modal-save');
+        const clone = newBtn.cloneNode(true);
+        newBtn.parentNode.replaceChild(clone, newBtn);
+        
+        clone.addEventListener('click', () => {
+          Modal.close();
+          if(onConfirm) onConfirm();
+        });
+        
+        Modal.el.classList.add('open');
+      }
+    };
+
+    // --- HISTORY MANAGER ---
     const historyManager = {
       add: (name, url) => {
-        let data = Storage.get(name) || { name, url, count: 0, ts: 0 };
-        data.count++;
-        data.ts = Date.now();
-        Storage.set(name, data);
+        let data = Storage.get('hist_' + name) || { name, url, count: 0, ts: 0 };
+        data.count++; data.ts = Date.now();
+        Storage.set('hist_' + name, data);
         historyManager.render();
-      },
-      remove: (name) => {
-        Storage.remove(name);
-        historyManager.render();
-        app.toast("Log berhasil dihapus");
-      },
-      confirmDelete: (name) => {
-        Modal.show("Hapus Log?", `Data akses untuk "${name}" akan dihapus permanen.`, () => historyManager.remove(name));
-      },
-      confirmClearAll: () => {
-        Modal.show("Reset Sistem?", "Seluruh data analitik dan log akan dikosongkan.", () => {
-          Storage.clearAll();
-          historyManager.render();
-          app.toast("Sistem di-reset");
-        });
       },
       render: () => {
         const list = document.getElementById('history-list');
-        const items = Storage.getAll().sort((a,b) => b.ts - a.ts);
-        document.getElementById('stat-total').innerText = items.reduce((acc, curr) => acc + curr.count, 0);
+        const items = Object.keys(localStorage)
+          .filter(k => k.startsWith(Storage.PREFIX + 'hist_'))
+          .map(k => JSON.parse(localStorage.getItem(k)))
+          .sort((a,b) => b.ts - a.ts);
+        
+        document.getElementById('stat-total').innerText = items.reduce((acc,c) => acc + c.count, 0);
         document.getElementById('stat-unique').innerText = items.length;
-
-        list.innerHTML = '';
-        if (items.length === 0) {
-          list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Tidak ada data aktivitas.</div>';
-          return;
-        }
-
+        
+        list.innerHTML = items.length ? '' : '<div style="text-align:center; padding:20px; color:var(--text-muted);">Tidak ada data.</div>';
+        
         items.forEach(item => {
           const date = new Date(item.ts).toLocaleDateString('id-ID', { day:'numeric', month:'short' });
           const el = document.createElement('div');
           el.className = 'history-item';
           el.innerHTML = `
-            <div class="hi-left">
+            <div class="hi-left" onclick="app.open('${item.name}', '${item.url}')">
               <div class="hi-icon"><i class="fas fa-clock"></i></div>
-              <div class="hi-text">
-                <h4>${item.name}</h4>
-                <p>${date} • Dibuka ${item.count}x</p>
-              </div>
+              <div class="hi-text"><h4>${item.name}</h4><p>${date} • ${item.count}x</p></div>
             </div>
-            <button class="btn-delete" onclick="historyManager.confirmDelete('${item.name}')"><i class="fas fa-trash"></i></button>
+            <button class="btn-delete" onclick="historyManager.delete('${item.name}')"><i class="fas fa-trash"></i></button>
           `;
           list.appendChild(el);
+        });
+      },
+      delete: (name) => {
+        if(confirm("Hapus log ini?")) {
+          Storage.remove('hist_' + name);
+          historyManager.render();
+          app.toast("Log dihapus");
+        }
+      },
+      confirmClearAll: () => {
+        Modal.showForm("Reset Data?", "<p>Apakah Anda yakin ingin menghapus SEMUA riwayat akses?</p>", () => {
+          // Clear only history
+          const keys = Object.keys(localStorage).filter(k => k.startsWith(Storage.PREFIX + 'hist_'));
+          keys.forEach(k => localStorage.removeItem(k));
+          historyManager.render();
+          app.toast("Data direset");
         });
       }
     };
 
+    // --- APP CONTROLLER ---
     const app = {
-      lastActivity: Date.now(),
-      lockTimer: null,
       init: () => {
+        configManager.init();
         historyManager.render();
-        app.startSecurityTimer();
         setInterval(app.updateClock, 1000);
         app.updateClock();
       },
       open: (title, url) => {
-        if(url === '#') { app.toast("Fitur ini sedang dalam pengembangan"); return; }
         document.getElementById('wb-title').innerText = title;
         document.getElementById('webview-overlay').classList.add('active');
         document.getElementById('app-frame').src = url;
         historyManager.add(title, url);
-        app.resetTimer();
       },
       close: () => {
         document.getElementById('webview-overlay').classList.remove('active');
@@ -520,23 +624,6 @@
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
-        if(id === 'view-history') historyManager.render();
-        app.resetTimer();
-      },
-      startSecurityTimer: () => {
-        app.lockTimer = setInterval(() => {
-          if (Date.now() - app.lastActivity > 5 * 60 * 1000) {
-            document.getElementById('lock-screen').classList.add('active');
-          }
-        }, 1000);
-      },
-      resetTimer: () => { app.lastActivity = Date.now(); },
-      unlock: () => {
-        document.getElementById('lock-screen').classList.remove('active');
-        app.resetTimer();
-      },
-      updateClock: () => {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
       },
       toast: (msg) => {
         const container = document.getElementById('toast-container');
@@ -545,11 +632,22 @@
         el.innerHTML = `<i class="fas fa-check-circle" style="color:#10B981"></i> ${msg}`;
         container.appendChild(el);
         setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 2500);
+      },
+      updateClock: () => {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+      },
+      clearCache: () => {
+        app.toast("Membersihkan cache...");
+        setTimeout(() => location.reload(true), 1000);
+      },
+      lockNow: () => {
+        document.getElementById('lock-screen').classList.add('active');
+      },
+      unlock: () => {
+        document.getElementById('lock-screen').classList.remove('active');
       }
     };
 
-    document.addEventListener('click', app.resetTimer);
-    document.addEventListener('touchstart', app.resetTimer);
     window.onload = app.init;
   </script>
 </body>
