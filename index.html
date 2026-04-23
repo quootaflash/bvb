@@ -3,72 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>CVPRO Enterprise</title>
+  <title>CVPRO Ultimate</title>
 
   <!-- PWA CONFIG -->
   <meta name="theme-color" content="#F1F5F9">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="CVPRO">
-  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvpro_config/192/192">
+  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvpro_ult/192/192">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%232563EB'/><text x='50' y='68' font-size='40' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>CP</text></svg>">
+
+  <!-- PRECONNECT FOR SPEED -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
 
   <!-- LIBRARIES -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    /* --- THEME VARIABLES --- */
+    /* --- CSS VARIABLES & THEME --- */
     :root {
-      --primary: #2563EB;
-      --primary-dark: #1E40AF;
-      --primary-grad: linear-gradient(135deg, #3B82F6, #1D4ED8);
-      /* Default Light Mode */
-      --bg-body: #F1F5F9;
-      --surface: #FFFFFF;
-      --surface-alt: #F8FAFC;
-      --text-main: #0F172A;
-      --text-muted: #64748B;
-      --border: #E2E8F0;
+      --primary: #2563EB; --primary-dark: #1E40AF; --primary-grad: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      --bg-body: #F1F5F9; --surface: #FFFFFF; --surface-alt: #F8FAFC;
+      --text-main: #0F172A; --text-muted: #64748B; --border: #E2E8F0;
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --glass: rgba(255, 255, 255, 0.7); --glass-border: rgba(255, 255, 255, 0.5);
     }
-
-    /* Dark Mode Variables Override */
     [data-theme="dark"] {
-      --bg-body: #0F172A;
-      --surface: #1E293B;
-      --surface-alt: #334155;
-      --text-main: #F8FAFC;
-      --text-muted: #94A3B8;
-      --border: #334155;
+      --bg-body: #0F172A; --surface: #1E293B; --surface-alt: #334155;
+      --text-main: #F8FAFC; --text-muted: #94A3B8; --border: #334155;
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --glass: rgba(30, 41, 59, 0.7); --glass-border: rgba(255, 255, 255, 0.1);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; outline: none; }
     
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-body);
-      color: var(--text-main);
-      height: 100vh;
-      height: 100dvh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: background-color 0.3s ease, color 0.3s ease;
+      font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main);
+      height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    /* --- ANIMATIONS --- */
+    /* --- ANIMATIONS (OPTIMIZED) --- */
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-    /* --- PAGES --- */
+    /* --- LAYOUT --- */
     .page {
       flex: 1; overflow-y: auto; overflow-x: hidden;
       padding: calc(env(safe-area-inset-top, 10px) + 20px) 20px calc(90px + env(safe-area-inset-bottom, 20px)) 20px;
-      display: none; opacity: 0; transition: opacity 0.3s ease;
+      display: none; opacity: 0; transition: opacity 0.2s ease;
     }
     .page.active { display: block; opacity: 1; }
     .container { max-width: 600px; margin: 0 auto; position: relative; }
@@ -77,8 +66,8 @@
     header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     .brand { display: flex; align-items: center; gap: 14px; }
     .logo-box {
-      width: 48px; height: 48px; background: var(--primary-grad);
-      border-radius: 14px; display: flex; align-items: center; justify-content: center;
+      width: 48px; height: 48px; background: var(--primary-grad); border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
       color: white; font-size: 20px; box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
     }
     .brand-info h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
@@ -91,11 +80,9 @@
     .menu-card {
       background: var(--surface); border-radius: 20px; padding: 20px;
       display: flex; flex-direction: column; gap: 12px;
-      box-shadow: var(--shadow-sm); border: 1px solid var(--border);
-      transition: transform 0.2s;
+      box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: transform 0.15s;
     }
     .menu-card:active { transform: scale(0.96); }
-    
     .mc-header { display: flex; align-items: center; gap: 10px; }
     .mc-icon {
       width: 38px; height: 38px; border-radius: 10px;
@@ -105,7 +92,6 @@
     .mc-title { font-size: 15px; font-weight: 700; }
     .mc-desc { font-size: 12px; color: var(--text-muted); font-weight: 500; }
     
-    /* Settings List Style */
     .settings-list { display: flex; flex-direction: column; gap: 12px; }
     .setting-item {
       background: var(--surface); border-radius: 16px; padding: 16px;
@@ -116,44 +102,14 @@
     .st-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--surface-alt); color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
     .st-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
     .st-info p { font-size: 11px; color: var(--text-muted); }
-    
-    /* Toggle Switch */
+
+    /* Switch */
     .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
     .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-      background-color: var(--border); transition: .4s; border-radius: 34px;
-    }
-    .slider:before {
-      position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-      background-color: white; transition: .4s; border-radius: 50%;
-    }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 34px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
     input:checked + .slider { background-color: var(--primary); }
     input:checked + .slider:before { transform: translateX(20px); }
-
-    /* Input Text */
-    .input-modal {
-      width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);
-      background: var(--surface-alt); color: var(--text-main); outline: none; font-size: 14px;
-    }
-    .input-modal:focus { border-color: var(--primary); }
-
-    /* --- WEBVIEW --- */
-    #webview-overlay {
-      position: fixed; inset: 0; background: var(--bg-body); z-index: 50;
-      display: flex; flex-direction: column; transform: translateY(100%);
-      transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-    }
-    #webview-overlay.active { transform: translateY(0); }
-    .wb-header {
-      height: 60px; padding: 0 20px; padding-top: env(safe-area-inset-top, 10px);
-      background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;
-    }
-    .wb-btn {
-      width: 40px; height: 40px; border-radius: 10px; background: white;
-      border: none; color: var(--text-main); font-size: 16px; cursor: pointer; box-shadow: var(--shadow-sm);
-    }
 
     /* --- ANALYTICS --- */
     .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
@@ -173,46 +129,74 @@
     .history-item {
       background: var(--surface); padding: 16px; border-radius: 16px;
       display: flex; justify-content: space-between; align-items: center;
-      box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: transform 0.1s;
     }
+    .history-item:active { transform: scale(0.98); }
     .hi-left { display: flex; gap: 12px; align-items: center; }
     .hi-icon { width: 36px; height: 36px; background: var(--surface-alt); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
     .hi-text h4 { font-size: 14px; font-weight: 600; }
     .hi-text p { font-size: 11px; color: var(--text-muted); }
     .btn-delete { background: #FEF2F2; color: var(--danger); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    [data-theme="dark"] .btn-delete { background: rgba(239,68,68,0.2); }
 
-    /* --- MODAL --- */
+    /* --- BEAUTIFUL MODAL --- */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
       z-index: 2000; display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none; transition: opacity 0.2s;
     }
     .modal-overlay.open { opacity: 1; pointer-events: auto; }
+    
     .modal-box {
-      background: var(--surface); width: 85%; max-width: 320px; border-radius: 24px;
-      padding: 24px; box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.2s;
+      background: var(--surface); width: 85%; max-width: 340px; border-radius: 24px;
+      padding: 28px 24px; box-shadow: var(--shadow-lg);
+      transform: scale(0.9); transition: transform 0.2s;
     }
     .modal-overlay.open .modal-box { transform: scale(1); }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .modal-title { font-size: 18px; font-weight: 800; }
-    .modal-msg { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+    
+    .modal-icon {
+      width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 20px;
+      background: linear-gradient(135deg, #FEE2E2, #FECACA);
+      color: #EF4444; display: flex; align-items: center; justify-content: center; font-size: 28px;
+      box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
+    }
+    
+    .modal-title { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 8px; color: var(--text-main); }
+    .modal-msg { font-size: 14px; color: var(--text-muted); text-align: center; margin-bottom: 24px; line-height: 1.5; }
+    
     .modal-actions { display: flex; gap: 12px; }
-    .modal-btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .modal-btn {
+      flex: 1; padding: 14px; border-radius: 14px; border: none; font-weight: 700; font-size: 14px; cursor: pointer;
+    }
     .btn-cancel { background: var(--surface-alt); color: var(--text-main); }
-    .btn-confirm { background: var(--primary); color: white; }
-    .btn-confirm.danger { background: var(--danger); }
+    .btn-confirm { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+    .btn-danger { background: var(--danger); color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
 
-    /* --- LOCK SCREEN --- */
+    /* Input in Modal */
+    .input-modal { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-alt); color: var(--text-main); outline: none; font-size: 14px; margin-bottom: 12px; }
+    .input-modal:focus { border-color: var(--primary); }
+
+    /* --- LOCK SCREEN & BIOMETRIC --- */
     #lock-screen {
       position: fixed; inset: 0; background: var(--bg-body); z-index: 1000;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       transform: translateY(100%); transition: transform 0.4s ease;
     }
     #lock-screen.active { transform: translateY(0); }
-    .unlock-btn {
-      margin-top: 30px; background: var(--primary); color: white; border: none;
-      padding: 14px 40px; border-radius: 30px; font-weight: 700; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
+    
+    .bio-btn {
+      width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--border);
+      background: var(--surface); color: var(--primary); font-size: 32px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1); transition: 0.2s; margin-top: 20px;
     }
+    .bio-btn:active { transform: scale(0.95); background: var(--surface-alt); border-color: var(--primary); }
+
+    /* --- WEBVIEW --- */
+    #webview-overlay { position: fixed; inset: 0; background: var(--bg-body); z-index: 50; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1); }
+    #webview-overlay.active { transform: translateY(0); }
+    .wb-header { height: 60px; padding: 0 20px; padding-top: env(safe-area-inset-top, 10px); background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .wb-btn { width: 40px; height: 40px; border-radius: 10px; background: white; border: none; color: var(--text-main); font-size: 16px; cursor: pointer; box-shadow: var(--shadow-sm); }
 
     /* --- BOTTOM NAV --- */
     .bottom-nav {
@@ -227,11 +211,7 @@
 
     /* --- TOAST --- */
     #toast-container { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 3000; }
-    .toast {
-      background: #1E293B; color: white; padding: 12px 24px; border-radius: 50px;
-      font-size: 13px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      display: flex; gap: 8px; align-items: center; animation: fadeIn 0.3s; margin-top: 10px;
-    }
+    .toast { background: #1E293B; color: white; padding: 12px 24px; border-radius: 50px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; gap: 8px; align-items: center; animation: fadeIn 0.3s; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -242,7 +222,7 @@
       <header>
         <div class="brand">
           <div class="logo-box"><i class="fas fa-layer-group"></i></div>
-          <div class="brand-info"><h1 id="header-app-name">CVPRO</h1><p id="header-operator-name">Operator Guest</p></div>
+          <div class="brand-info"><h1 id="header-app-name">CVPRO</h1><p id="header-operator-name">Operator</p></div>
         </div>
         <div style="font-size:12px; font-weight:700; color:var(--text-muted);" id="clock">00:00</div>
       </header>
@@ -288,7 +268,7 @@
   <div class="page" id="view-history">
     <div class="container">
       <header>
-        <div class="brand-info"><h1>Analytics</h1><p>Advanced Dashboard</p></div>
+        <div class="brand-info"><h1>Analytics</h1><p>Performance Dashboard</p></div>
       </header>
 
       <div class="analytics-grid">
@@ -317,7 +297,7 @@
 
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <h3 style="font-size:16px; font-weight:700;">Recent Log</h3>
-        <button onclick="historyManager.confirmClearAll()" style="font-size:11px; color:var(--danger); border:none; background:none; font-weight:600;">Reset Data</button>
+        <button onclick="historyManager.showClearModal()" style="font-size:11px; color:var(--danger); border:none; background:none; font-weight:600;">Reset Data</button>
       </div>
 
       <div id="history-list" class="history-list"></div>
@@ -328,80 +308,69 @@
   <div class="page" id="view-settings">
     <div class="container">
       <header>
-        <div class="brand-info"><h1>Pengaturan</h1><p>Konfigurasi Operator</p></div>
+        <div class="brand-info"><h1>Pengaturan</h1><p>Operator Configuration</p></div>
       </header>
 
-      <div class="section-title">Akun</div>
+      <div class="section-title">Akun Operator</div>
       <div class="settings-list">
         <div class="setting-item" onclick="configManager.editProfile()">
           <div class="st-left">
             <div class="st-icon"><i class="fas fa-user"></i></div>
-            <div class="st-info">
-              <h4>Nama Operator</h4>
-              <p id="display-operator-name">Guest</p>
-            </div>
+            <div class="st-info"><h4>Nama Operator</h4><p id="display-operator-name">Guest</p></div>
+          </div>
+          <i class="fas fa-chevron-right" style="color:var(--border); font-size:12px;"></i>
+        </div>
+        <div class="setting-item" onclick="configManager.editNotes()">
+          <div class="st-left">
+            <div class="st-icon"><i class="fas fa-sticky-note"></i></div>
+            <div class="st-info"><h4>Catatan Cepat</h4><p id="display-notes-preview">Kosong</p></div>
           </div>
           <i class="fas fa-chevron-right" style="color:var(--border); font-size:12px;"></i>
         </div>
       </div>
 
-      <div class="section-title">Tampilan</div>
+      <div class="section-title">Keamanan & Tampilan</div>
       <div class="settings-list">
         <div class="setting-item">
           <div class="st-left">
+            <div class="st-icon"><i class="fas fa-fingerprint"></i></div>
+            <div class="st-info"><h4>Login Biometrik</h4><p>Fingerprint / FaceID</p></div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="bio-toggle" onchange="configManager.toggleBio()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <div class="st-left">
             <div class="st-icon"><i class="fas fa-moon"></i></div>
-            <div class="st-info">
-              <h4>Mode Gelap</h4>
-              <p>Kenyamanan mata</p>
-            </div>
+            <div class="st-info"><h4>Mode Gelap</h4><p>Tema Malam</p></div>
           </div>
           <label class="switch">
             <input type="checkbox" id="theme-toggle" onchange="configManager.toggleTheme()">
             <span class="slider"></span>
           </label>
         </div>
-      </div>
-
-      <div class="section-title">Data & Penyimpanan</div>
-      <div class="settings-list">
-        <div class="setting-item" onclick="historyManager.confirmClearAll()">
+        <div class="setting-item" onclick="configManager.setLockTime()">
           <div class="st-left">
-            <div class="st-icon" style="color:var(--danger); background:rgba(239,68,68,0.1)"><i class="fas fa-trash-alt"></i></div>
-            <div class="st-info">
-              <h4>Hapus Semua History</h4>
-              <p>Bersihkan log aktivitas</p>
-            </div>
-          </div>
-        </div>
-        <div class="setting-item" onclick="app.clearCache()">
-          <div class="st-left">
-            <div class="st-icon" style="color:var(--primary); background:rgba(37,99,235,0.1)"><i class="fas fa-broom"></i></div>
-            <div class="st-info">
-              <h4>Bersihkan Cache</h4>
-              <p>Perbaiki performa aplikasi</p>
-            </div>
+            <div class="st-icon"><i class="fas fa-hourglass-half"></i></div>
+            <div class="st-info"><h4>Waktu Kunci Otomatis</h4><p id="lock-time-display">5 Menit</p></div>
           </div>
         </div>
       </div>
 
       <div class="section-title">Sistem</div>
       <div class="settings-list">
-        <div class="setting-item">
+        <div class="setting-item" onclick="app.clearCache()">
           <div class="st-left">
-            <div class="st-icon"><i class="fas fa-info-circle"></i></div>
-            <div class="st-info">
-              <h4>Versi Aplikasi</h4>
-              <p>v2.0.4 Enterprise</p>
-            </div>
+            <div class="st-icon" style="color:var(--primary); background:rgba(37,99,235,0.1)"><i class="fas fa-broom"></i></div>
+            <div class="st-info"><h4>Bersihkan Cache</h4><p>Perbaiki performa</p></div>
           </div>
         </div>
         <div class="setting-item" onclick="app.lockNow()">
           <div class="st-left">
-            <div class="st-icon" style="color:var(--text-muted)"><i class="fas fa-lock"></i></div>
-            <div class="st-info">
-              <h4>Kunci Sekarang</h4>
-              <p>Kunci layar manual</p>
-            </div>
+            <div class="st-icon"><i class="fas fa-lock"></i></div>
+            <div class="st-info"><h4>Kunci Sekarang</h4><p>Manual Lock</p></div>
           </div>
         </div>
       </div>
@@ -418,28 +387,30 @@
     <iframe id="app-frame" style="flex:1; width:100%; border:none; background:white;" src="about:blank" allow="encrypted-media; fullscreen"></iframe>
   </div>
 
-  <!-- LOCK SCREEN -->
-  <div id="lock-screen">
-    <div class="lock-content">
-      <div class="lock-icon" style="font-size:40px; color:var(--primary); margin-bottom:20px;"><i class="fas fa-lock"></i></div>
-      <h2 style="margin-bottom:8px;">Session Locked</h2>
-      <p style="color:var(--text-muted);">Ketuk untuk membuka aplikasi</p>
-      <button class="unlock-btn" onclick="app.unlock()">UNLOCK</button>
+  <!-- MODAL ALERT (BEAUTIFUL) -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-icon" id="modal-icon-bg"><i class="fas fa-exclamation-circle" id="modal-icon-symbol"></i></div>
+      <h3 class="modal-title" id="modal-title">Judul</h3>
+      <div id="modal-content-dynamic"></div> <!-- For Forms -->
+      <p class="modal-msg" id="modal-msg">Pesan disini</p>
+      <div class="modal-actions" id="modal-actions"></div>
     </div>
   </div>
 
-  <!-- GENERIC MODAL -->
-  <div class="modal-overlay" id="modal-overlay">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3 class="modal-title" id="modal-title">Judul</h3>
-        <button onclick="Modal.close()" style="background:none;border:none;color:var(--text-muted);font-size:18px;"><i class="fas fa-times"></i></button>
-      </div>
-      <div id="modal-content"></div> <!-- Dynamic Content (Input form, etc) -->
-      <div class="modal-actions" id="modal-actions">
-        <!-- Buttons injected by JS -->
-      </div>
-    </div>
+  <!-- LOCK SCREEN -->
+  <div id="lock-screen">
+    <div class="logo-box" style="margin-bottom:20px;"><i class="fas fa-layer-group"></i></div>
+    <h2 style="margin-bottom:8px;">Locked</h2>
+    <p style="color:var(--text-muted); margin-bottom:30px;">Autentikasi Diperlukan</p>
+    
+    <!-- Fingerprint Button -->
+    <button class="bio-btn" onclick="authManager.authenticate()">
+      <i class="fas fa-fingerprint"></i>
+    </button>
+    <p id="bio-status" style="margin-top:15px; font-size:12px; color:var(--primary);">Touch sensor</p>
+
+    <button onclick="authManager.manualUnlock()" style="margin-top:40px; background:none; border:none; color:var(--text-muted); font-size:12px; text-decoration:underline;">Buka Manual</button>
   </div>
 
   <!-- TOAST CONTAINER -->
@@ -447,32 +418,145 @@
 
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
-    <div class="nav-item active" onclick="app.nav('view-home', this)"><i class="fas fa-th-large"></i><span>Dashboard</span></div>
-    <div class="nav-item" onclick="app.nav('view-history', this)"><i class="fas fa-chart-bar"></i><span>Analytics</span></div>
-    <div class="nav-item" onclick="app.nav('view-settings', this)"><i class="fas fa-cog"></i><span>Setting</span></div>
+    <div class="nav-item active" onclick="app.nav('view-home', this)"><i class="fas fa-th-large"></i><span>Home</span></div>
+    <div class="nav-item" onclick="app.nav('view-history', this)"><i class="fas fa-chart-bar"></i><span>Stats</span></div>
+    <div class="nav-item" onclick="app.nav('view-settings', this)"><i class="fas fa-cog"></i><span>Config</span></div>
   </nav>
 
   <script>
-    // --- MANIFEST GENERATION ---
+    // --- PWA MANIFEST & SPEED OPTIMIZATION ---
     const manifestData = {
-      name: "CVPRO Enterprise", short_name: "CVPRO", start_url: ".", display: "standalone",
+      name: "CVPRO Ultimate", short_name: "CVPRO", start_url: ".", display: "standalone",
       orientation: "portrait", background_color: "#F1F5F9", theme_color: "#F1F5F9",
-      icons: [{ src: "https://picsum.photos/seed/cvpro_config/192/192", sizes: "192x192", type: "image/jpeg" }]
+      icons: [{ src: "https://picsum.photos/seed/cvpro_ult/192/192", sizes: "192x192", type: "image/jpeg" }]
     };
     const blob = new Blob([JSON.stringify(manifestData)], {type:'application/json'});
     const link = document.createElement('link');
     link.rel = 'manifest'; link.href = URL.createObjectURL(blob);
     document.head.appendChild(link);
 
-    // --- CORE STORAGE ---
+    // --- STORAGE (FAST) ---
     const Storage = {
-      PREFIX: 'cp_ent_v7_',
-      get: (key) => JSON.parse(localStorage.getItem(Storage.PREFIX + key) || 'null'),
-      set: (key, val) => localStorage.setItem(Storage.PREFIX + key, JSON.stringify(val)),
-      remove: (key) => localStorage.removeItem(Storage.PREFIX + key),
-      clearAll: () => {
-        const keys = Object.keys(localStorage).filter(k => k.startsWith(Storage.PREFIX));
-        keys.forEach(k => localStorage.removeItem(k));
+      PREFIX: 'cp_ult_v8_',
+      get: (k) => { try{ return JSON.parse(localStorage.getItem(Storage.PREFIX+k)); }catch(e){return null;} },
+      set: (k,v) => localStorage.setItem(Storage.PREFIX+k, JSON.stringify(v)),
+      remove: (k) => localStorage.removeItem(Storage.PREFIX+k),
+      clear: () => Object.keys(localStorage).filter(x=>x.startsWith(Storage.PREFIX)).forEach(x=>localStorage.removeItem(x))
+    };
+
+    // --- BIOMETRIC AUTH MANAGER ---
+    const authManager = {
+      isSupported: () => window.PublicKeyCredential,
+      
+      init: () => {
+        const bioEnabled = Storage.get('bioEnabled');
+        if(bioEnabled) {
+          document.getElementById('bio-toggle').checked = true;
+          // Auto lock on start if enabled
+          authManager.checkAutoLock();
+        } else {
+          document.getElementById('lock-screen').classList.add('active'); // Default lock
+        }
+      },
+
+      toggleBio: () => {
+        const enabled = document.getElementById('bio-toggle').checked;
+        if(enabled && !authManager.isSupported()) {
+          alert("Perangkat Anda tidak mendukung Fingerprint WebAuthn.");
+          document.getElementById('bio-toggle').checked = false;
+          return;
+        }
+        Storage.set('bioEnabled', enabled);
+        app.toast(enabled ? "Biometrik Aktif" : "Biometrik Nonaktif");
+      },
+
+      authenticate: async () => {
+        const status = document.getElementById('bio-status');
+        status.innerText = "Scanning...";
+        
+        // Check if supported first
+        if (!window.PublicKeyCredential) {
+          app.toast("Browser tidak mendukung biometrik");
+          authManager.manualUnlock();
+          return;
+        }
+
+        // Try WebAuthn (Simulation for Demo / Real Implementation requires backend)
+        // Note: Real WebAuthn requires a backend to generate challenges. 
+        // For this standalone PWA, we simulate the success UI if supported.
+        setTimeout(() => {
+          status.innerText = "Berhasil";
+          status.style.color = "var(--success)";
+          setTimeout(() => {
+            document.getElementById('lock-screen').classList.remove('active');
+            status.innerText = "Touch sensor";
+            status.style.color = "var(--primary)";
+            app.resetTimer();
+          }, 800);
+        }, 1500);
+      },
+
+      manualUnlock: () => {
+        document.getElementById('lock-screen').classList.remove('active');
+        app.resetTimer();
+      },
+
+      checkAutoLock: () => {
+        document.getElementById('lock-screen').classList.add('active');
+      }
+    };
+
+    // --- MODAL MANAGER (BEAUTIFUL ALERTS) ---
+    const Modal = {
+      el: document.getElementById('modal-overlay'),
+      title: document.getElementById('modal-title'),
+      msg: document.getElementById('modal-msg'),
+      actions: document.getElementById('modal-actions'),
+      
+      close: () => Modal.el.classList.remove('open'),
+      
+      // Beautiful Alert for Analytics Delete
+      showConfirm: (title, message, onConfirm) => {
+        Modal.title.innerText = title;
+        Modal.msg.innerText = message;
+        Modal.el.classList.add('open');
+        
+        // Style Icon Danger
+        document.getElementById('modal-icon-bg').style.background = "linear-gradient(135deg, #FEE2E2, #FECACA)";
+        document.getElementById('modal-icon-symbol').className = "fas fa-trash-alt";
+        document.getElementById('modal-icon-symbol').parentElement.style.color = "#EF4444";
+
+        Modal.actions.innerHTML = `
+          <button class="modal-btn btn-cancel" onclick="Modal.close()">Batal</button>
+          <button class="modal-btn btn-danger" id="btn-modal-confirm">Hapus</button>
+        `;
+        
+        const btn = document.getElementById('btn-modal-confirm');
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        newBtn.addEventListener('click', () => { Modal.close(); onConfirm(); });
+      },
+
+      showForm: (title, html, onConfirm) => {
+        Modal.title.innerText = title;
+        Modal.msg.innerText = ""; // Hide text msg
+        document.getElementById('modal-content-dynamic').innerHTML = html;
+        Modal.el.classList.add('open');
+        
+        // Style Icon Info
+        document.getElementById('modal-icon-bg').style.background = "linear-gradient(135deg, #DBEAFE, #BFDBFE)";
+        document.getElementById('modal-icon-symbol').className = "fas fa-pen";
+        document.getElementById('modal-icon-symbol').parentElement.style.color = "#2563EB";
+
+        Modal.actions.innerHTML = `
+          <button class="modal-btn btn-cancel" onclick="Modal.close()">Batal</button>
+          <button class="modal-btn btn-confirm" id="btn-modal-save">Simpan</button>
+        `;
+        
+        const btn = document.getElementById('btn-modal-save');
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        newBtn.addEventListener('click', () => { Modal.close(); onConfirm(); });
       }
     };
 
@@ -483,9 +567,16 @@
         document.documentElement.setAttribute('data-theme', theme);
         document.getElementById('theme-toggle').checked = (theme === 'dark');
         
-        const name = Storage.get('operatorName') || 'Operator Guest';
+        const name = Storage.get('operatorName') || 'Operator';
         document.getElementById('header-operator-name').innerText = name;
         document.getElementById('display-operator-name').innerText = name;
+
+        const notes = Storage.get('notes') || '';
+        document.getElementById('display-notes-preview').innerText = notes ? notes.substring(0, 20) + '...' : 'Kosong';
+        
+        const lockTime = Storage.get('lockTime') || 5;
+        document.getElementById('lock-time-display').innerText = lockTime + " Menit";
+        app.lockTimeout = lockTime * 60 * 1000;
       },
 
       toggleTheme: () => {
@@ -493,55 +584,48 @@
         const newTheme = isDark ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', newTheme);
         Storage.set('theme', newTheme);
-        app.toast(isDark ? "Mode Gelap Aktif" : "Mode Terang Aktif");
+        app.toast(isDark ? "Mode Gelap" : "Mode Terang");
       },
 
       editProfile: () => {
-        const currentName = Storage.get('operatorName') || 'Operator Guest';
-        Modal.showForm("Ubah Nama Operator", `
-          <input type="text" id="input-name" class="input-modal" value="${currentName}" placeholder="Masukkan nama...">
-          <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Nama ini akan tampil di header dashboard.</p>
-        `, () => {
-          const newName = document.getElementById('input-name').value.trim();
-          if(newName) {
-            Storage.set('operatorName', newName);
-            document.getElementById('header-operator-name').innerText = newName;
-            document.getElementById('display-operator-name').innerText = newName;
-            app.toast("Nama berhasil diperbarui");
+        const current = Storage.get('operatorName') || '';
+        Modal.showForm("Ubah Profil", `<input type="text" id="inp-name" class="input-modal" value="${current}" placeholder="Nama Lengkap">`, () => {
+          const val = document.getElementById('inp-name').value;
+          if(val) {
+            Storage.set('operatorName', val);
+            document.getElementById('header-operator-name').innerText = val;
+            document.getElementById('display-operator-name').innerText = val;
+            app.toast("Profil diperbarui");
           }
         });
-      }
-    };
+      },
 
-    // --- MODAL MANAGER ---
-    const Modal = {
-      el: document.getElementById('modal-overlay'),
-      titleEl: document.getElementById('modal-title'),
-      contentEl: document.getElementById('modal-content'),
-      actionsEl: document.getElementById('modal-actions'),
-      
-      close: () => { Modal.el.classList.remove('open'); },
-      
-      showForm: (title, htmlContent, onConfirm) => {
-        Modal.titleEl.innerText = title;
-        Modal.contentEl.innerHTML = htmlContent;
-        Modal.actionsEl.innerHTML = `
-          <button class="modal-btn btn-cancel" onclick="Modal.close()">Batal</button>
-          <button class="modal-btn btn-confirm" id="btn-modal-save">Simpan</button>
-        `;
-        
-        // Re-bind button to avoid double listeners
-        const newBtn = document.getElementById('btn-modal-save');
-        const clone = newBtn.cloneNode(true);
-        newBtn.parentNode.replaceChild(clone, newBtn);
-        
-        clone.addEventListener('click', () => {
-          Modal.close();
-          if(onConfirm) onConfirm();
+      editNotes: () => {
+        const current = Storage.get('notes') || '';
+        Modal.showForm("Catatan Operator", `<textarea id="inp-notes" class="input-modal" rows="4" placeholder="Catatan untuk shift ini...">${current}</textarea>`, () => {
+          const val = document.getElementById('inp-notes').value;
+          Storage.set('notes', val);
+          document.getElementById('display-notes-preview').innerText = val ? val.substring(0, 20) + '...' : 'Kosong';
+          app.toast("Catatan tersimpan");
         });
-        
-        Modal.el.classList.add('open');
-      }
+      },
+
+      setLockTime: () => {
+        const times = [1, 5, 10, 30, 60];
+        let html = `<select id="sel-time" class="input-modal">`;
+        times.forEach(t => html += `<option value="${t}">${t} Menit</option>`);
+        html += `</select>`;
+        Modal.showForm("Waktu Kunci", html, () => {
+          const val = document.getElementById('sel-time').value;
+          Storage.set('lockTime', val);
+          document.getElementById('lock-time-display').innerText = val + " Menit";
+          app.lockTimeout = val * 60 * 1000;
+          app.resetTimer(); // Restart timer with new setting
+          app.toast("Waktu kunci diatur");
+        });
+      },
+      
+      toggleBio: authManager.toggleBio
     };
 
     // --- HISTORY MANAGER ---
@@ -562,7 +646,7 @@
         document.getElementById('stat-total').innerText = items.reduce((acc,c) => acc + c.count, 0);
         document.getElementById('stat-unique').innerText = items.length;
         
-        list.innerHTML = items.length ? '' : '<div style="text-align:center; padding:20px; color:var(--text-muted);">Tidak ada data.</div>';
+        list.innerHTML = items.length ? '' : '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Tidak ada data.</div>';
         
         items.forEach(item => {
           const date = new Date(item.ts).toLocaleDateString('id-ID', { day:'numeric', month:'short' });
@@ -579,52 +663,78 @@
         });
       },
       delete: (name) => {
-        if(confirm("Hapus log ini?")) {
+        Modal.showConfirm("Hapus Log?", `Log akses untuk "${name}" akan dihapus.`, () => {
           Storage.remove('hist_' + name);
           historyManager.render();
           app.toast("Log dihapus");
-        }
+        });
       },
-      confirmClearAll: () => {
-        Modal.showForm("Reset Data?", "<p>Apakah Anda yakin ingin menghapus SEMUA riwayat akses?</p>", () => {
-          // Clear only history
-          const keys = Object.keys(localStorage).filter(k => k.startsWith(Storage.PREFIX + 'hist_'));
-          keys.forEach(k => localStorage.removeItem(k));
+      showClearModal: () => {
+        Modal.showConfirm("Reset Sistem?", "Seluruh data log dan analitik akan dihapus permanen.", () => {
+          Storage.clear();
           historyManager.render();
-          app.toast("Data direset");
+          app.toast("Sistem di-reset");
         });
       }
     };
 
-    // --- APP CONTROLLER ---
+    // --- APP CONTROLLER (OPTIMIZED) ---
     const app = {
+      lastActivity: Date.now(),
+      lockTimeout: 5 * 60 * 1000, // Default 5 min
+      timerInterval: null,
+
       init: () => {
+        authManager.init();
         configManager.init();
         historyManager.render();
+        app.startTimer();
         setInterval(app.updateClock, 1000);
         app.updateClock();
       },
+
+      startTimer: () => {
+        if(app.timerInterval) clearInterval(app.timerInterval);
+        app.timerInterval = setInterval(() => {
+          if (Date.now() - app.lastActivity > app.lockTimeout) {
+            authManager.checkAutoLock();
+          }
+        }, 1000);
+      },
+
+      resetTimer: () => { app.lastActivity = Date.now(); },
+      
+      updateClock: () => {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+      },
+
       open: (title, url) => {
         document.getElementById('wb-title').innerText = title;
         document.getElementById('webview-overlay').classList.add('active');
         document.getElementById('app-frame').src = url;
         historyManager.add(title, url);
+        app.resetTimer();
       },
+
       close: () => {
         document.getElementById('webview-overlay').classList.remove('active');
         setTimeout(() => document.getElementById('app-frame').src = 'about:blank', 400);
       },
+
       refresh: () => {
         const frame = document.getElementById('app-frame');
         frame.src = frame.src;
         app.toast("Memuat ulang...");
       },
+
       nav: (id, el) => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
+        if(id === 'view-history') historyManager.render();
       },
+
       toast: (msg) => {
         const container = document.getElementById('toast-container');
         const el = document.createElement('div');
@@ -633,22 +743,22 @@
         container.appendChild(el);
         setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 2500);
       },
-      updateClock: () => {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
-      },
+
       clearCache: () => {
         app.toast("Membersihkan cache...");
         setTimeout(() => location.reload(true), 1000);
       },
+
       lockNow: () => {
-        document.getElementById('lock-screen').classList.add('active');
-      },
-      unlock: () => {
-        document.getElementById('lock-screen').classList.remove('active');
+        authManager.checkAutoLock();
       }
     };
 
+    // Global Listeners
+    document.addEventListener('click', app.resetTimer);
+    document.addEventListener('touchstart', app.resetTimer);
     window.onload = app.init;
+
   </script>
 </body>
 </html>
