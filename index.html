@@ -3,51 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>CVPRO Operator</title>
+  <title>CVPRO Master</title>
 
-  <!-- PWA & ICON SETTINGS -->
-  <meta name="theme-color" content="#ffffff">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <!-- PWA & METADATA -->
+  <meta name="theme-color" content="#F8FAFC">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="CVPRO">
   
-  <!-- Favicon & Icon (Tema Terang - Cyan) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%2306B6D4'/><text x='50' y='68' font-size='40' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>CP</text></svg>">
-  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvpro_v2/180/180">
-
-  <!-- FONTS & ICONS -->
+  <!-- ICONS -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%2306B6D4'/><text x='50' y='68' font-size='38' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>CP</text></svg>">
+  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvproui/180/180">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      /* TEMA FRESH LIGHT - CYAN */
-      --primary: #06B6D4; /* Cyan 500 */
-      --primary-dark: #0891b2;
-      --primary-light: #ecfeff;
-      --bg: #F8FAFC;      /* Slate 50 */
-      --surface: #FFFFFF; /* Putih */
-      --border: #E2E8F0;  /* Slate 200 */
-      --text-main: #0F172A; /* Slate 900 */
-      --text-sub: #64748B;  /* Slate 500 */
-      --success: #10B981;
-      --warning: #F59E0B;
+      /* MODERN LIGHT THEME - CYAN/SYSTEM UI */
+      --primary: #0EA5E9; /* Sky 500 */
+      --primary-dark: #0284C7;
+      --primary-light: #E0F2FE;
+      --bg-body: #F1F5F9; /* Slate 100 */
+      --surface: #FFFFFF;
+      --text-main: #0F172A;
+      --text-sec: #64748B;
       --danger: #EF4444;
+      --success: #10B981;
       
       --safe-bottom: env(safe-area-inset-bottom, 20px);
       --safe-top: env(safe-area-inset-top, 10px);
-      
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05);
-      --shadow-float: 0 10px 15px -3px rgba(6, 182, 212, 0.15);
+
+      /* Glassmorphism & Shadows */
+      --glass: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.5);
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --shadow-float: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+      --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.03);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; outline: none; }
     
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg);
+      background-color: var(--bg-body);
       color: var(--text-main);
       height: 100vh;
       height: 100dvh;
@@ -56,192 +54,224 @@
       flex-direction: column;
     }
 
-    /* --- UTILITIES --- */
-    .fade-in { animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
+    /* --- UTILS & ANIMATIONS --- */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
     /* --- PAGES --- */
     .page {
       flex: 1; overflow-y: auto; overflow-x: hidden;
-      padding: calc(var(--safe-top) + 20px) 20px calc(90px + var(--safe-bottom)) 20px;
-      display: none; opacity: 0; transition: opacity 0.2s ease;
+      padding: calc(var(--safe-top) + 24px) 20px calc(100px + var(--safe-bottom)) 20px;
+      display: none; opacity: 0; transition: opacity 0.3s ease;
     }
     .page.active { display: block; opacity: 1; }
-
     .container { max-width: 600px; margin: 0 auto; position: relative; }
 
     /* --- HEADER --- */
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-    .brand { display: flex; align-items: center; gap: 15px; }
+    header { 
+      display: flex; justify-content: space-between; align-items: center; 
+      margin-bottom: 24px; position: sticky; top: 0; z-index: 10; 
+    }
     
+    .brand { display: flex; align-items: center; gap: 14px; }
     .logo-box {
-      width: 48px; height: 48px; 
-      background: var(--primary);
-      border-radius: 14px; 
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: var(--shadow-float);
+      width: 46px; height: 46px; background: var(--primary);
+      border-radius: 14px; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 16px -4px rgba(14, 165, 233, 0.4);
+      position: relative; overflow: hidden;
     }
-    .logo-box svg { width: 26px; height: 26px; color: white; }
+    .logo-box::after {
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform: rotate(45deg); animation: shine 3s infinite;
+    }
+    @keyframes shine { 0% { transform: translateX(-100%) rotate(45deg); } 100% { transform: translateX(100%) rotate(45deg); } }
 
-    .brand-info h1 { font-size: 20px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; line-height: 1.2; }
-    .brand-info p { font-size: 10px; font-weight: 700; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+    .brand-info h1 { font-size: 20px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+    .brand-info p { font-size: 10px; font-weight: 700; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
 
-    .clock-display {
-      font-family: monospace; font-size: 13px; font-weight: 700; 
-      background: var(--surface); padding: 8px 12px; border-radius: 12px; 
-      border: 1px solid var(--border); color: var(--text-sub);
-      box-shadow: var(--shadow-sm);
+    .clock-badge {
+      background: var(--surface); padding: 8px 14px; border-radius: 12px;
+      font-family: monospace; font-weight: 700; font-size: 13px; color: var(--text-sec);
+      box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.05);
     }
 
-    /* --- FRESH MENU LIST STYLE --- */
-    .menu-list { display: flex; flex-direction: column; gap: 16px; }
+    /* --- PROFESSIONAL MENU LIST --- */
+    .menu-list { display: grid; gap: 14px; padding-bottom: 20px; }
     
     .menu-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 20px; 
-      padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;
-      transition: all 0.2s; position: relative; overflow: hidden;
-      box-shadow: var(--shadow-sm);
+      background: var(--surface); border-radius: 20px; padding: 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: var(--shadow-sm); border: 1px solid rgba(255,255,255,0.8);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      cursor: pointer; position: relative; overflow: hidden;
     }
-    .menu-card:active { transform: scale(0.98); border-color: var(--primary); }
-    
-    .m-left { display: flex; align-items: center; gap: 16px; flex: 1; }
-    .m-icon {
-      width: 48px; height: 48px; border-radius: 14px; 
-      background: var(--bg); color: var(--primary); 
-      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    /* Ripple Effect Area */
+    .menu-card::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle, var(--primary-light) 10%, transparent 10.01%);
+      background-size: 1000% 1000%; opacity: 0; transform: scale(10); transition: transform 0.5s, opacity 0.5s;
+      pointer-events: none;
+    }
+    .menu-card:active::before { opacity: 1; transform: scale(0); transition: 0s; }
+    .menu-card:active { transform: scale(0.98); box-shadow: none; border-color: var(--primary-light); }
+
+    .mc-left { display: flex; align-items: center; gap: 16px; z-index: 2; }
+    .mc-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: #F1F5F9; color: var(--primary);
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
       transition: 0.3s;
     }
-    .menu-card:active .m-icon { background: var(--primary); color: white; }
+    .menu-card:hover .mc-icon { background: var(--primary); color: white; }
     
-    .m-info { display: flex; flex-direction: column; gap: 4px; }
-    .m-label { font-size: 16px; font-weight: 700; color: var(--text-main); }
-    .m-desc { font-size: 12px; color: var(--text-sub); display: flex; align-items: center; gap: 6px; }
+    .mc-info { display: flex; flex-direction: column; gap: 2px; z-index: 2; }
+    .mc-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
+    .mc-desc { font-size: 11px; color: var(--text-sec); display: flex; align-items: center; gap: 6px; }
     
-    /* Status Indicators */
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-    .status-online { background-color: var(--success); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
-    .status-busy { background-color: var(--warning); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
-
-    .m-arrow { color: #CBD5E1; font-size: 14px; transition: 0.3s; }
-    .menu-card:active .m-arrow { transform: translateX(4px); color: var(--primary); }
+    /* Status Badge */
+    .status-pill {
+      font-size: 9px; padding: 2px 8px; border-radius: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .pill-green { background: #DCFCE7; color: #166534; }
+    .pill-blue { background: #DBEAFE; color: #1E40AF; }
+    .pill-gray { background: #F1F5F9; color: #475569; }
 
     /* --- WEBVIEW --- */
     #webview-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: #fff; z-index: 9999; display: flex; flex-direction: column;
-      transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: fixed; inset: 0; background: var(--bg-body); z-index: 50;
+      display: flex; flex-direction: column; transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
     }
     #webview-overlay.active { transform: translateY(0); }
 
     .wb-header {
       height: 60px; padding: 0 20px; padding-top: var(--safe-top);
-      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;
-      box-shadow: var(--shadow-sm);
+      background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between;
+      position: relative; z-index: 51;
     }
-    .wb-title { font-size: 15px; font-weight: 800; color: var(--text-main); }
+    .wb-title { font-size: 14px; font-weight: 800; color: var(--text-main); }
     
-    .wb-btn-back {
-      display: flex; align-items: center; gap: 8px; color: var(--text-main); font-size: 14px; font-weight: 700;
-      background: #F1F5F9; padding: 8px 16px; border-radius: 10px; border: none; cursor: pointer;
-    }
-    .wb-btn-back:active { background: var(--primary); color: white; }
-
-    .wb-content { flex: 1; width: 100%; height: 100%; border: none; background: #F8FAFC; }
-
-    /* --- HISTORY --- */
-    .search-bar {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-      padding: 14px 18px; display: flex; align-items: center; gap: 12px; color: var(--text-sub); margin-bottom: 20px;
-      box-shadow: var(--shadow-sm);
-    }
-    .search-bar input { background: transparent; border: none; color: var(--text-main); width: 100%; outline: none; font-family: inherit; font-size: 14px; }
-
-    .stats-box {
-      background: linear-gradient(135deg, var(--primary), #3b82f6); 
-      border-radius: 24px; padding: 24px; margin-bottom: 25px; 
-      display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 10px 20px -5px rgba(6, 182, 212, 0.4);
-      color: white;
-    }
-    .stats-info h2 { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
-    .stats-info p { font-size: 12px; opacity: 0.9; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-
-    .history-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px;
-      margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
-      transition: 0.2s; box-shadow: var(--shadow-sm);
-    }
-    .history-card:active { transform: scale(0.98); background: #f8fafc; }
-    
-    .h-left { display: flex; align-items: center; gap: 14px; flex: 1; }
-    .h-icon { width: 38px; height: 38px; background: #F1F5F9; border-radius: 10px; color: var(--text-sub); display: flex; align-items: center; justify-content: center; font-size: 14px; }
-    .h-info h4 { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 2px; }
-    .h-info p { font-size: 11px; color: var(--text-sub); }
-    
-    /* Tombol Delete Kecil */
-    .btn-delete-small {
-      width: 32px; height: 32px; border-radius: 8px; border: none; 
-      background: transparent; color: #CBD5E1; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
-    .btn-delete-small:hover { color: var(--danger); background: #FEF2F2; }
-
-    /* --- CUSTOM MODAL --- */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 2000;
+    .btn-icon {
+      width: 38px; height: 38px; border-radius: 10px; border: none;
+      background: white; color: var(--text-sec); font-size: 14px;
       display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+      box-shadow: var(--shadow-sm); cursor: pointer; transition: 0.2s;
+    }
+    .btn-icon:active { background: var(--primary); color: white; transform: scale(0.95); }
+
+    .wb-content { flex: 1; width: 100%; height: 100%; border: none; background: white; }
+
+    /* --- HISTORY & STATS --- */
+    .stats-card {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 24px; padding: 24px; margin-bottom: 24px;
+      color: white; position: relative; overflow: hidden;
+      box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.4);
+    }
+    .stats-card::before {
+      content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(255,255,255,0.2), transparent); border-radius: 50%;
+    }
+    .stats-num { font-size: 36px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .stats-label { font-size: 12px; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+
+    .search-wrap {
+      background: var(--surface); border-radius: 16px; padding: 14px 18px;
+      display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-inner);
+      margin-bottom: 20px; border: 1px solid transparent; transition: 0.2s;
+    }
+    .search-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+    .search-wrap input { border: none; background: transparent; width: 100%; font-size: 14px; color: var(--text-main); outline: none; }
+
+    .history-item {
+      background: var(--surface); border-radius: 16px; padding: 16px;
+      margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: var(--shadow-sm); border: 1px solid rgba(255,255,255,0.6);
+      transition: 0.2s;
+    }
+    .history-item:active { background: #F8FAFC; }
+    
+    .hi-content { display: flex; align-items: center; gap: 14px; flex: 1; }
+    .hi-icon { width: 36px; height: 36px; background: #F1F5F9; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--text-sec); }
+    .hi-text h4 { font-size: 14px; font-weight: 700; color: var(--text-main); }
+    .hi-text p { font-size: 11px; color: var(--text-sec); margin-top: 2px; }
+    
+    .btn-trash {
+      width: 32px; height: 32px; border-radius: 8px; border: none;
+      background: transparent; color: #CBD5E1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    }
+    .btn-trash:hover { background: #FEF2F2; color: var(--danger); }
+
+    /* --- MODAL ALERT (ROBUST) --- */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);
+      z-index: 2000; display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
     }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     
     .modal-box {
-      background: white; width: 85%; max-width: 320px; border-radius: 24px;
+      background: var(--surface); width: 85%; max-width: 340px; border-radius: 24px;
       padding: 28px 24px; text-align: center;
-      transform: scale(0.9); transition: transform 0.2s; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+      transform: scale(0.9); opacity: 0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: var(--shadow-float);
     }
-    .modal-overlay.active .modal-box { transform: scale(1); }
+    .modal-overlay.active .modal-box { transform: scale(1); opacity: 1; }
     
-    .modal-icon {
-      width: 56px; height: 56px; background: #FEF2F2; color: #EF4444; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px;
+    .modal-icon-circle {
+      width: 56px; height: 56px; background: #FEF2F2; color: var(--danger);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px; font-size: 24px;
     }
     
     .modal-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
-    .modal-msg { font-size: 14px; color: var(--text-sub); margin-bottom: 24px; line-height: 1.5; }
+    .modal-desc { font-size: 14px; color: var(--text-sec); margin-bottom: 24px; line-height: 1.5; }
 
     .modal-actions { display: flex; gap: 12px; }
     .modal-btn {
-      flex: 1; padding: 14px; border-radius: 14px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s;
+      flex: 1; padding: 14px; border-radius: 12px; border: none;
+      font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s;
     }
-    .btn-cancel { background: #F1F5F9; color: var(--text-sub); }
-    .btn-confirm { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3); }
-    .btn-confirm:active { background: var(--primary-dark); transform: scale(0.98); }
+    .btn-cancel { background: #F1F5F9; color: var(--text-sec); }
+    .btn-cancel:active { background: #E2E8F0; }
+    
+    .btn-confirm { background: var(--danger); color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+    .btn-confirm:active { background: #DC2626; transform: scale(0.97); }
 
-    /* --- BOTTOM NAV --- */
+    /* --- BOTTOM NAV (GLASS) --- */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; width: 100%; height: calc(70px + var(--safe-bottom));
-      padding-bottom: var(--safe-bottom); background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(12px); border-top: 1px solid var(--border);
-      display: flex; justify-content: space-around; align-items: center; z-index: 100;
+      padding-bottom: var(--safe-bottom);
+      background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255,255,255,0.8);
+      display: flex; justify-content: space-around; align-items: center; z-index: 40;
       box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
     }
-    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94A3B8; transition: 0.3s; cursor: pointer; height: 100%; }
-    .nav-item i { font-size: 20px; margin-bottom: 4px; transition: 0.3s; }
+    .nav-item { 
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+      gap: 4px; color: #94A3B8; transition: 0.3s; cursor: pointer; height: 100%; position: relative;
+    }
+    .nav-item i { font-size: 20px; transition: 0.3s; }
     .nav-item span { font-size: 10px; font-weight: 600; }
     .nav-item.active { color: var(--primary); }
-    .nav-item.active i { transform: translateY(-2px); }
+    .nav-item.active::after {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 40px; height: 3px; background: var(--primary); border-radius: 0 0 4px 4px;
+    }
 
     /* --- TOAST --- */
     .toast {
-      position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
-      background: #1E293B; color: white; padding: 12px 24px; 
-      border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
-      opacity: 0; pointer-events: none; transition: 0.3s; z-index: 200; white-space: nowrap;
-      display: flex; align-items: center; gap: 8px;
+      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #1E293B; color: white; padding: 12px 24px; border-radius: 50px;
+      font-size: 13px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+      display: flex; align-items: center; gap: 8px; z-index: 200;
+      opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -249,167 +279,160 @@
 </head>
 <body>
 
-  <!-- PAGE: HOME -->
+  <!-- HOME PAGE -->
   <div class="page active no-scrollbar" id="view-home">
     <div class="container">
       <header>
         <div class="brand">
           <div class="logo-box">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="24" height="24" rx="6" fill="white"/>
-              <path d="M7 7H10V17H7V7Z" fill="currentColor"/>
-              <path d="M14 7H17V17H14V7Z" fill="currentColor"/>
-            </svg>
+            <i class="fas fa-layer-group" style="color: white; font-size: 20px;"></i>
           </div>
-          <div class="brand-info"><h1>CVPRO</h1><p>Operator v967</p></div>
+          <div class="brand-info">
+            <h1>CVPRO</h1>
+            <p>System Operator</p>
+          </div>
         </div>
-        <div class="clock-display" id="clock">--:--</div>
+        <div class="clock-badge" id="clock">--:--</div>
       </header>
 
-      <!-- FRESH MENU LAYOUT (List Style) -->
-      <div class="menu-list fade-in">
+      <!-- GRID MENU (Fresh Style) -->
+      <div class="menu-list" style="animation: slideUp 0.5s ease;">
         
-        <!-- ATS -->
         <div class="menu-card" onclick="openApp('ATS Portal', 'https://45.dunnak.com')">
-          <div class="m-left">
-            <div class="m-icon"><i class="fas fa-briefcase"></i></div>
-            <div class="m-info">
-              <div class="m-label">ATS Portal</div>
-              <div class="m-desc"><span class="status-dot status-online"></span> Sistem Rekrutmen</div>
+          <div class="mc-left">
+            <div class="mc-icon"><i class="fas fa-briefcase"></i></div>
+            <div class="mc-info">
+              <div class="mc-title">ATS Portal</div>
+              <div class="mc-desc"><span class="status-pill pill-green">Online</span> Recruitment</div>
             </div>
           </div>
-          <i class="fas fa-chevron-right m-arrow"></i>
+          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
         </div>
 
-        <!-- LAMARAN -->
         <div class="menu-card" onclick="openApp('Lamaran', 'https://46.dunnak.com')">
-          <div class="m-left">
-            <div class="m-icon"><i class="fas fa-file-signature"></i></div>
-            <div class="m-info">
-              <div class="m-label">Lamaran</div>
-              <div class="m-desc">Manajemen Dokumen</div>
+          <div class="mc-left">
+            <div class="mc-icon"><i class="fas fa-file-signature"></i></div>
+            <div class="mc-info">
+              <div class="mc-title">Lamaran</div>
+              <div class="mc-desc"><span class="status-pill pill-blue">Docs</span> Dokumen</div>
             </div>
           </div>
-          <i class="fas fa-chevron-right m-arrow"></i>
+          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
         </div>
 
-        <!-- RESIGN -->
         <div class="menu-card" onclick="openApp('Resign', 'https://47.dunnak.com')">
-          <div class="m-left">
-            <div class="m-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
-            <div class="m-info">
-              <div class="m-label">Resign</div>
-              <div class="m-desc"><span class="status-dot status-busy"></span> HR System</div>
+          <div class="mc-left">
+            <div class="mc-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
+            <div class="mc-info">
+              <div class="mc-title">Resign</div>
+              <div class="mc-desc"><span class="status-pill pill-gray">HR</span> System</div>
             </div>
           </div>
-          <i class="fas fa-chevron-right m-arrow"></i>
+          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
         </div>
 
-        <!-- CREATIVE 1 -->
         <div class="menu-card" onclick="openApp('Creative 1', 'https://51.dunnak.com')">
-          <div class="m-left">
-            <div class="m-icon"><i class="fas fa-palette"></i></div>
-            <div class="m-info">
-              <div class="m-label">Creative 1</div>
-              <div class="m-desc">Design Team Alpha</div>
+          <div class="mc-left">
+            <div class="mc-icon"><i class="fas fa-palette"></i></div>
+            <div class="mc-info">
+              <div class="mc-title">Creative 1</div>
+              <div class="mc-desc">Design Team A</div>
             </div>
           </div>
-          <i class="fas fa-chevron-right m-arrow"></i>
+          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
         </div>
 
-        <!-- CREATIVE 2 -->
         <div class="menu-card" onclick="openApp('Creative 2', 'https://52.dunnak.com')">
-          <div class="m-left">
-            <div class="m-icon"><i class="fas fa-layer-group"></i></div>
-            <div class="m-info">
-              <div class="m-label">Creative 2</div>
-              <div class="m-desc">Design Team Beta</div>
+          <div class="mc-left">
+            <div class="mc-icon"><i class="fas fa-layer-group"></i></div>
+            <div class="mc-info">
+              <div class="mc-title">Creative 2</div>
+              <div class="mc-desc">Design Team B</div>
             </div>
           </div>
-          <i class="fas fa-chevron-right m-arrow"></i>
+          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
         </div>
 
-        <!-- CREATIVE 3 -->
         <div class="menu-card" onclick="openApp('Creative 3', 'https://53.dunnak.com')">
-          <div class="m-left">
-            <div class="m-icon"><i class="fas fa-bezier-curve"></i></div>
-            <div class="m-info">
-              <div class="m-label">Creative 3</div>
-              <div class="m-desc">Design Team Gamma</div>
+          <div class="mc-left">
+            <div class="mc-icon"><i class="fas fa-bezier-curve"></i></div>
+            <div class="mc-info">
+              <div class="mc-title">Creative 3</div>
+              <div class="mc-desc">Design Team C</div>
             </div>
           </div>
-          <i class="fas fa-chevron-right m-arrow"></i>
+          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
         </div>
 
-        <!-- SCANNER -->
-        <div class="menu-card" onclick="openApp('Scanner Entry', 'https://school.dunnak.com')">
-          <div class="m-left">
-            <div class="m-icon"><i class="fas fa-camera-retro"></i></div>
-            <div class="m-info">
-              <div class="m-label">Entry Scanner</div>
-              <div class="m-desc">Input Data Cepat</div>
+        <div class="menu-card" onclick="openApp('Entry Scanner', 'https://school.dunnak.com')">
+          <div class="mc-left">
+            <div class="mc-icon"><i class="fas fa-camera-retro"></i></div>
+            <div class="mc-info">
+              <div class="mc-title">Entry</div>
+              <div class="mc-desc">Data Scanner</div>
             </div>
           </div>
-          <i class="fas fa-chevron-right m-arrow"></i>
+          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
         </div>
 
       </div>
     </div>
   </div>
 
-  <!-- PAGE: HISTORY -->
+  <!-- HISTORY PAGE -->
   <div class="page no-scrollbar" id="view-history">
     <div class="container">
       <header>
-        <div class="brand-info"><h1>Riwayat</h1><p>Log Aktivitas Terakhir</p></div>
+        <div class="brand-info">
+          <h1>Riwayat</h1>
+          <p>Log Aktivitas</p>
+        </div>
       </header>
 
-      <div class="stats-box fade-in">
-        <div class="stats-info">
-          <h2 id="total-access">0</h2>
-          <p>Total Akses</p>
-        </div>
-        <i class="fas fa-chart-pie" style="font-size: 36px; opacity: 0.3;"></i>
+      <div class="stats-card">
+        <div class="stats-num" id="total-access">0</div>
+        <div class="stats-label">Total Akses Modul</div>
       </div>
 
-      <div class="search-bar fade-in" style="animation-delay: 0.1s;">
-        <i class="fas fa-search"></i>
-        <input type="text" id="search-input" placeholder="Cari modul..." onkeyup="filterHistory()">
+      <div class="search-wrap">
+        <i class="fas fa-search" style="color:#94A3B8;"></i>
+        <input type="text" id="search-input" placeholder="Cari riwayat akses..." onkeyup="filterHistory()">
       </div>
 
       <div id="history-list">
-        <!-- List by JS -->
+        <!-- JS Render -->
       </div>
 
-      <div style="text-align:center; margin-top:30px; padding-bottom: 20px;">
-        <button onclick="confirmClearHistory()" style="background:transparent; border:1px solid var(--border); color:var(--text-sub); padding:12px 24px; border-radius:12px; font-weight:600; font-size:13px;">Reset Data</button>
+      <div style="text-align:center; margin-top:20px;">
+        <button onclick="confirmClearAll()" style="background:transparent; border:none; color:var(--text-sec); font-size:12px; font-weight:600;">Hapus Semua Data</button>
       </div>
     </div>
   </div>
 
-  <!-- WEBVIEW OVERLAY -->
+  <!-- WEBVIEW -->
   <div id="webview-overlay">
     <div class="wb-header">
-      <button class="wb-btn-back" onclick="closeWebview()">
-        <i class="fas fa-chevron-left"></i> Kembali
+      <button class="btn-icon" onclick="closeWebview()">
+        <i class="fas fa-arrow-left"></i>
       </button>
       <div class="wb-title" id="wb-title">Modul Aktif</div>
-      <!-- Tombol Refresh Saja (Share Dihapus) -->
-      <button class="wb-btn-back" onclick="refreshWebview()" style="padding: 8px 12px;">
+      <button class="btn-icon" onclick="refreshWebview()">
         <i class="fas fa-sync-alt"></i>
       </button>
     </div>
-    <iframe id="app-frame" class="wb-content" src="about:blank" allow="encrypted-media; fullscreen; clipboard-read; clipboard-write"></iframe>
+    <iframe id="app-frame" class="wb-content" src="about:blank" allow="encrypted-media; fullscreen"></iframe>
   </div>
 
-  <!-- CUSTOM ALERT MODAL -->
-  <div class="modal-overlay" id="custom-modal">
+  <!-- MODAL ALERT (ROBUST SYSTEM) -->
+  <div class="modal-overlay" id="modal-alert">
     <div class="modal-box">
-      <div class="modal-icon"><i class="fas fa-trash-alt"></i></div>
-      <h3 class="modal-title" id="modal-title">Hapus Data?</h3>
-      <p class="modal-msg" id="modal-msg">Tindakan ini tidak dapat dibatalkan.</p>
+      <div class="modal-icon-circle">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title" id="modal-title">Konfirmasi</h3>
+      <p class="modal-desc" id="modal-msg">Apakah Anda yakin?</p>
       <div class="modal-actions">
-        <button class="modal-btn btn-cancel" onclick="closeModal()">Batal</button>
+        <button class="modal-btn btn-cancel" onclick="Modal.close()">Batal</button>
         <button class="modal-btn btn-confirm" id="modal-confirm-btn">Hapus</button>
       </div>
     </div>
@@ -425,57 +448,67 @@
     </div>
   </nav>
 
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span>Notifikasi</span></div>
+  <!-- TOAST -->
+  <div id="toast" class="toast">
+    <i class="fas fa-check-circle" style="color:var(--success);"></i> <span id="toast-msg">Berhasil</span>
+  </div>
 
   <script>
-    // --- CONFIG ---
-    const STORAGE_PREFIX = 'cp_hist_967_';
-    let modalCallback = null;
+    /* 
+     * CVPRO CORE LOGIC
+     * Fokus: Stabilitas Modal & UX Premium
+     */
 
-    // --- ELEMENTS ---
+    // --- MODAL MANAGER SYSTEM (ROBUST) ---
+    const Modal = {
+      overlay: document.getElementById('modal-alert'),
+      title: document.getElementById('modal-title'),
+      msg: document.getElementById('modal-msg'),
+      confirmBtn: document.getElementById('modal-confirm-btn'),
+      callback: null, // Menyimpan fungsi yang akan dijalankan
+
+      show: function(title, message, onConfirm) {
+        this.title.innerText = title;
+        this.msg.innerText = message;
+        this.callback = onConfirm; // Simpan callback
+        
+        // Reset event listener lama agar tidak double fire
+        const newBtn = this.confirmBtn.cloneNode(true);
+        this.confirmBtn.parentNode.replaceChild(newBtn, this.confirmBtn);
+        this.confirmBtn = newBtn;
+
+        // Tambahkan event listener baru
+        this.confirmBtn.addEventListener('click', () => {
+          this.close();
+          if (this.callback) this.callback(); // JALANKAN FUNGSI
+        });
+
+        this.overlay.classList.add('active');
+      },
+
+      close: function() {
+        this.overlay.classList.remove('active');
+        this.callback = null;
+      }
+    };
+
+    // --- TOAST MANAGER ---
+    const Toast = {
+      el: document.getElementById('toast'),
+      msgEl: document.getElementById('toast-msg'),
+      show: function(text) {
+        this.msgEl.innerText = text;
+        this.el.classList.add('show');
+        setTimeout(() => { this.el.classList.remove('show'); }, 3000);
+      }
+    };
+
+    // --- NAVIGATION LOGIC ---
     const webviewOverlay = document.getElementById('webview-overlay');
     const appFrame = document.getElementById('app-frame');
     const wbTitle = document.getElementById('wb-title');
-    const toastEl = document.getElementById('toast');
     let currentUrl = '';
 
-    // --- CUSTOM ALERT SYSTEM (FIXED LOGIC) ---
-    function showAlert(title, message, onConfirmCallback) {
-      const modal = document.getElementById('custom-modal');
-      const confirmBtn = document.getElementById('modal-confirm-btn');
-
-      document.getElementById('modal-title').innerText = title;
-      document.getElementById('modal-msg').innerText = message;
-      
-      // Simpan referensi fungsi callback ke variabel global
-      modalCallback = onConfirmCallback;
-      
-      // Setup tombol Konfirmasi
-      // Saat diklik, jalankan closeModal dulu, lalu cek callback
-      confirmBtn.onclick = function() {
-        closeModal();
-        if (modalCallback) {
-          modalCallback(); // Jalankan fungsi hapus
-        }
-      };
-
-      modal.classList.add('active');
-    }
-
-    function closeModal() {
-      document.getElementById('custom-modal').classList.remove('active');
-      modalCallback = null; // Reset callback
-    }
-
-    function showToast(msg) {
-      const span = toastEl.querySelector('span');
-      span.innerText = msg;
-      toastEl.classList.add('show');
-      setTimeout(() => toastEl.classList.remove('show'), 2500);
-    }
-
-    // --- NAVIGATION ---
     function openApp(title, url) {
       currentUrl = url;
       wbTitle.innerText = title;
@@ -491,17 +524,32 @@
 
     function refreshWebview() {
       appFrame.src = appFrame.src;
-      showToast("Memuat ulang...");
+      Toast.show("Memuat ulang...");
     }
 
-    // --- HISTORY ENGINE ---
+    function switchPage(pageId, navEl) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      navEl.classList.add('active');
+
+      if (pageId === 'view-history') renderHistory();
+    }
+
+    // --- HISTORY LOGIC ---
+    const PREFIX = 'cp_hist_v3_';
+
     function saveHistory(name, url) {
-      const key = STORAGE_PREFIX + name.replace(/\s+/g, '');
-      let data = JSON.parse(localStorage.getItem(key)) || { count: 0, ts: 0 };
+      const key = PREFIX + name.replace(/\s+/g, '');
+      const raw = localStorage.getItem(key);
+      const data = raw ? JSON.parse(raw) : { count: 0, ts: 0 };
+      
       data.count++;
       data.ts = Date.now();
       data.name = name;
       data.url = url;
+      
       localStorage.setItem(key, JSON.stringify(data));
       updateStats();
       renderHistory();
@@ -510,117 +558,103 @@
     function updateStats() {
       let total = 0;
       Object.keys(localStorage).forEach(k => {
-        if(k.startsWith(STORAGE_PREFIX)) {
-          try {
-            total += JSON.parse(localStorage.getItem(k)).count;
-          } catch(e) {}
+        if (k.startsWith(PREFIX)) {
+          try { total += JSON.parse(localStorage.getItem(k)).count; } catch(e){}
         }
       });
       document.getElementById('total-access').innerText = total;
     }
 
-    function renderHistory(filterText = '') {
+    function renderHistory(filter = '') {
       const list = document.getElementById('history-list');
       list.innerHTML = '';
       let items = [];
-      
+
       Object.keys(localStorage).forEach(k => {
-        if(k.startsWith(STORAGE_PREFIX)) {
-          try {
-            items.push(JSON.parse(localStorage.getItem(k)));
-          } catch(e) {}
+        if (k.startsWith(PREFIX)) {
+          try { items.push(JSON.parse(localStorage.getItem(k))); } catch(e){}
         }
       });
 
-      if(filterText) items = items.filter(i => i.name.toLowerCase().includes(filterText.toLowerCase()));
-      items.sort((a,b) => b.ts - a.ts);
+      if (filter) items = items.filter(i => i.name.toLowerCase().includes(filter.toLowerCase()));
+      items.sort((a, b) => b.ts - a.ts);
 
-      if(items.length === 0) {
-        list.innerHTML = '<div style="text-align:center; color:#94A3B8; padding:40px; font-size:13px;"><i class="fas fa-folder-open" style="font-size:24px; margin-bottom:10px; display:block;"></i>Belum ada riwayat.</div>';
+      if (items.length === 0) {
+        list.innerHTML = '<div style="text-align:center; color:#94A3B8; padding:40px; font-size:13px;">Belum ada data.</div>';
         return;
       }
 
-      items.forEach((item, index) => {
-        const date = new Date(item.ts).toLocaleDateString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
-        
+      items.forEach((item, idx) => {
+        const date = new Date(item.ts).toLocaleDateString('id-ID', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
         const div = document.createElement('div');
-        div.className = 'history-card fade-in';
-        div.style.animationDelay = `${index * 0.05}s`;
+        div.className = 'history-item';
+        div.style.animation = `fadeIn 0.3s ease forwards ${idx * 0.05}s`;
+        div.style.opacity = '0'; // Untuk animasi
+        
         div.innerHTML = `
-          <div class="h-left" onclick="openApp('${item.name}', '${item.url}')">
-            <div class="h-icon"><i class="fas fa-clock"></i></div>
-            <div class="h-info">
+          <div class="hi-content" onclick="openApp('${item.name}', '${item.url}')">
+            <div class="hi-icon"><i class="fas fa-clock"></i></div>
+            <div class="hi-text">
               <h4>${item.name}</h4>
               <p>${date} • ${item.count}x</p>
             </div>
           </div>
-          <button class="btn-delete-small" onclick="confirmDelete('${STORAGE_PREFIX}${item.name.replace(/\s+/g,'')}')"><i class="fas fa-trash-alt"></i></button>
+          <button class="btn-trash" onclick="confirmDelete('${PREFIX}${item.name.replace(/\s+/g,'')}')"><i class="fas fa-trash"></i></button>
         `;
         list.appendChild(div);
       });
     }
 
-    // --- DELETE ACTIONS ---
+    // --- DELETE ACTIONS (MENGHUBUNGKAN KE MODAL) ---
     function confirmDelete(key) {
-      showAlert("Hapus Riwayat?", "Apakah Anda yakin ingin menghapus log akses ini?", () => {
-        localStorage.removeItem(key);
-        updateStats();
-        renderHistory(document.getElementById('search-input').value);
-        showToast("Riwayat dihapus");
-      });
+      // Perhatikan: Kita memanggil Modal.show dan melempar FUNGSI ANONYMOUS
+      Modal.show(
+        "Hapus Item?", 
+        "Log akses untuk modul ini akan dihapus.", 
+        () => { // Ini adalah CALLBACK
+          localStorage.removeItem(key);
+          updateStats();
+          renderHistory(document.getElementById('search-input').value);
+          Toast.show("Item dihapus");
+        }
+      );
     }
 
-    function confirmClearHistory() {
-      showAlert("Reset Semua?", "Semua data riwayat akan dihapus permanen.", () => {
-        Object.keys(localStorage).forEach(k => {
-          if(k.startsWith(STORAGE_PREFIX)) localStorage.removeItem(k);
-        });
-        updateStats();
-        renderHistory();
-        showToast("Data berhasil direset");
-      });
+    function confirmClearAll() {
+      Modal.show(
+        "Reset Data?", 
+        "Semua riwayat akan dihapus permanen.", 
+        () => {
+          Object.keys(localStorage).forEach(k => {
+            if(k.startsWith(PREFIX)) localStorage.removeItem(k);
+          });
+          updateStats();
+          renderHistory();
+          Toast.show("Data direset");
+        }
+      );
     }
 
     function filterHistory() {
       renderHistory(document.getElementById('search-input').value);
     }
 
-    // --- TAB SWITCHING ---
-    function switchPage(id, el) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      el.classList.add('active');
-      if(id === 'view-history') renderHistory();
-    }
-
     // --- CLOCK ---
     setInterval(() => {
-      const now = new Date();
-      document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+      document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
     }, 1000);
-    document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
 
     // --- INIT ---
     updateStats();
+    document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
 
     // --- PWA MANIFEST ---
-    const manifestData = {
-      name: "CVPRO Operator",
-      short_name: "CVPRO",
-      start_url: ".",
-      display: "standalone",
-      background_color: "#F8FAFC",
-      theme_color: "#ffffff",
-      icons: [{ src: "https://picsum.photos/seed/cvpro_v2/192/192", sizes: "192x192", type: "image/jpeg" }]
+    const manifest = {
+      name: "CVPRO Operator", short_name: "CVPRO", start_url: ".", display: "standalone",
+      background_color: "#F1F5F9", theme_color: "#F1F5F9",
+      icons: [{ src: "https://picsum.photos/seed/cvproui/192/192", sizes: "192x192", type: "image/jpeg" }]
     };
-    const stringManifest = JSON.stringify(manifestData);
-    const blob = new Blob([stringManifest], {type: 'application/json'});
-    const manifestURL = URL.createObjectURL(blob);
-    const link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = manifestURL;
-    document.head.appendChild(link);
+    document.head.appendChild(Object.assign(document.createElement('link'), {rel:'manifest', href:URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type:'application/json'}))}));
 
   </script>
 </body>
