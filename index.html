@@ -2,509 +2,538 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <!-- Meta PWA Mode APK -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>HR Scanner Native</title>
+  <title>CVPRO Operator</title>
 
-  <meta name="theme-color" content="#0f172a">
+  <!-- PWA & ICON SETTINGS -->
+  <meta name="theme-color" content="#111827">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="HR Scanner">
+  <meta name="apple-mobile-web-app-title" content="CVPRO">
   
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='30' fill='%230f172a'/><text x='50' y='68' font-size='45' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>HR</text></svg>">
+  <!-- 1. FAVICON untuk Browser Tab -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%234F46E5'/><text x='50' y='68' font-size='40' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>CP</text></svg>">
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: { slate: { 850: '#151e32', 900: '#0f172a' }, primary: { 500: '#3b82f6', 600: '#2563eb' }, success: '#10b981', danger: '#ef4444' },
-          fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }
-        }
-      }
-    }
-  </script>
+  <!-- 2. APPLE TOUCH ICON untuk iOS Home Screen -->
+  <!-- Menggunakan placeholder gambar yang konsisten agar icon terbaca saat "Add to Home Screen" -->
+  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvproicon2024/180/180">
 
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
-
+  <!-- FONTS & ICONS LIBRARY -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    body { -webkit-tap-highlight-color: transparent; user-select: none; }
-    .page-transition { display: none; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; }
-    .page-transition.active { display: block; opacity: 1; transform: translateY(0); }
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .splash-loader { animation: pulse-ring 2s infinite; }
-    @keyframes pulse-ring { 0% { transform: scale(0.33); } 80%, 100% { opacity: 0; } }
+    :root {
+      --primary: #4F46E5; /* Indigo 600 */
+      --primary-dark: #312E81;
+      --bg: #111827;      /* Gray 900 */
+      --card: #1F2937;    /* Gray 800 */
+      --border: #374151;  /* Gray 700 */
+      --text: #F9FAFB;
+      --text-muted: #9CA3AF;
+      --danger: #EF4444;
+      --safe-bottom: env(safe-area-inset-bottom, 20px);
+      --safe-top: env(safe-area-inset-top, 10px);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; outline: none; }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- UTILITIES --- */
+    .fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* --- SCROLLBAR HIDE --- */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* --- PAGES --- */
+    .page {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      padding: calc(var(--safe-top) + 20px) 20px calc(90px + var(--safe-bottom)) 20px;
+      display: none; opacity: 0; transition: opacity 0.2s ease;
+    }
+    .page.active { display: block; opacity: 1; }
+
+    .container { max-width: 600px; margin: 0 auto; position: relative; }
+
+    /* --- HEADER & LOGO --- */
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .brand { display: flex; align-items: center; gap: 15px; }
+    
+    /* Logo Box SVG Inline */
+    .logo-box {
+      width: 50px; height: 50px; 
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 14px; 
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+    /* Efek kilau pada logo */
+    .logo-box::after {
+      content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+      transform: skewX(-25deg);
+      animation: shine 3s infinite;
+    }
+    @keyframes shine { 0%, 80% { left: -100%; } 100% { left: 200%; } }
+
+    .brand-info h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; }
+    .brand-info p { font-size: 10px; font-weight: 700; color: var(--primary); letter-spacing: 1.2px; text-transform: uppercase; margin-top: 4px; }
+
+    .clock-display {
+      font-family: 'Plus Jakarta Sans', monospace; font-size: 14px; font-weight: 700; 
+      background: var(--card); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); color: white;
+    }
+
+    /* --- MENU GRID --- */
+    .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    .menu-item {
+      background: var(--card); border: 1px solid var(--border); border-radius: 18px; 
+      padding: 18px; display: flex; align-items: center; gap: 14px; 
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); position: relative; overflow: hidden; cursor: pointer;
+    }
+    .menu-item:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+    .menu-item:active { transform: scale(0.96); }
+    
+    .icon-box { 
+      width: 44px; height: 44px; border-radius: 12px; 
+      background: rgba(79, 70, 229, 0.1); color: var(--primary); 
+      display: flex; align-items: center; justify-content: center; font-size: 18px; 
+      transition: 0.3s;
+    }
+    .menu-item:hover .icon-box { background: var(--primary); color: white; }
+    
+    .menu-text { display: flex; flex-direction: column; }
+    .menu-label { font-size: 15px; font-weight: 700; color: var(--text); }
+    .menu-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
+
+    /* --- WEBVIEW OVERLAY --- */
+    #webview-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: #000; z-index: 9999; display: flex; flex-direction: column;
+      transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #webview-overlay.active { transform: translateY(0); }
+
+    .wb-header {
+      height: 70px; padding: 0 20px; padding-top: var(--safe-top);
+      background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;
+    }
+    .wb-title { font-size: 14px; font-weight: 700; color: white; }
+    
+    .wb-btn-back {
+      display: flex; align-items: center; gap: 8px; color: white; font-size: 14px; font-weight: 600;
+      background: rgba(255,255,255,0.1); padding: 8px 14px; border-radius: 10px; border: none; cursor: pointer;
+    }
+    .wb-btn-back:active { background: var(--primary); }
+    
+    .wb-actions { display: flex; gap: 10px; }
+    .wb-icon-btn {
+      width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.1);
+      color: white; border: none; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .wb-icon-btn:active { background: var(--primary); }
+
+    .wb-content { flex: 1; width: 100%; height: 100%; border: none; background: white; }
+
+    /* --- HISTORY PAGE --- */
+    .search-bar {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px 16px; display: flex; align-items: center; gap: 12px; color: var(--text-muted); margin-bottom: 20px;
+    }
+    .search-bar input { background: transparent; border: none; color: white; width: 100%; outline: none; font-family: inherit; font-size: 14px; }
+
+    .stats-box {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+      border-radius: 18px; padding: 22px; margin-bottom: 25px; 
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+    }
+    .stats-info h2 { font-size: 32px; font-weight: 800; color: white; line-height: 1; margin-bottom: 4px; }
+    .stats-info p { font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .history-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px;
+      margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
+      transition: 0.2s;
+    }
+    .history-card:active { background: #2d3748; }
+    .h-left { display: flex; align-items: center; gap: 14px; flex: 1; }
+    .h-icon { width: 40px; height: 40px; background: rgba(255,255,255,0.05); border-radius: 10px; color: #9CA3AF; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .h-info h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .h-info p { font-size: 11px; color: var(--text-muted); }
+    .h-btns { display: flex; gap: 8px; }
+    .h-btn {
+      width: 36px; height: 36px; border-radius: 10px; border: none; 
+      background: rgba(255,255,255,0.05); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .h-btn.share:hover { color: var(--primary); background: rgba(79, 70, 229, 0.1); }
+    .h-btn.delete:hover { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+
+    /* --- BOTTOM NAV --- */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; width: 100%; height: calc(70px + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom); background: rgba(17, 24, 39, 0.9);
+      backdrop-filter: blur(12px); border-top: 1px solid var(--border);
+      display: flex; justify-content: space-around; align-items: center; z-index: 100;
+    }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #6B7280; transition: 0.3s; cursor: pointer; height: 100%; }
+    .nav-item i { font-size: 20px; margin-bottom: 4px; transition: 0.3s; }
+    .nav-item span { font-size: 10px; font-weight: 600; }
+    .nav-item.active { color: var(--primary); }
+    .nav-item.active i { transform: translateY(-2px); }
+
+    /* --- TOAST NOTIFICATION --- */
+    .toast {
+      position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: rgba(255,255,255,0.95); color: #111827; padding: 10px 20px; 
+      border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      opacity: 0; pointer-events: none; transition: 0.3s; z-index: 200; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
   </style>
 </head>
-<body class="bg-slate-900 text-slate-200 font-sans h-screen flex flex-col overflow-hidden">
+<body>
 
-  <!-- SPLASH SCREEN (Native Feel) -->
-  <div id="splashScreen" class="fixed inset-0 bg-slate-900 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500">
-    <div class="relative w-32 h-32 mb-6">
-      <div class="absolute inset-0 bg-primary-500/20 rounded-full splash-loader"></div>
-      <div class="absolute inset-0 bg-primary-500/20 rounded-full splash-loader" style="animation-delay: 0.5s"></div>
-      <div class="absolute inset-0 bg-slate-700 rounded-2xl flex items-center justify-center shadow-2xl">
-        <i class="fas fa-brain text-4xl text-white relative z-10"></i>
+  <!-- PAGE: HOME -->
+  <div class="page active no-scrollbar" id="view-home">
+    <div class="container">
+      <header>
+        <div class="brand">
+          <div class="logo-box">
+            <!-- Inline SVG Logo agar tajam dan ringan -->
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="24" height="24" rx="6" fill="white"/>
+              <path d="M7 7H10V17H7V7Z" fill="#4F46E5"/>
+              <path d="M14 7H17V17H14V7Z" fill="#4F46E5"/>
+            </svg>
+          </div>
+          <div class="brand-info"><h1>CVPRO</h1><p>Operator v967</p></div>
+        </div>
+        <div class="clock-display" id="clock">--:--</div>
+      </header>
+
+      <div class="menu-grid fade-in">
+        <div class="menu-item" onclick="openApp('ATS Portal', 'https://45.dunnak.com')">
+          <div class="icon-box"><i class="fas fa-briefcase"></i></div>
+          <div class="menu-text"><div class="menu-label">ATS</div><div class="menu-sub">Rekrutmen</div></div>
+        </div>
+        <div class="menu-item" onclick="openApp('Lamaran', 'https://46.dunnak.com')">
+          <div class="icon-box"><i class="fas fa-file-signature"></i></div>
+          <div class="menu-text"><div class="menu-label">Lamaran</div><div class="menu-sub">Dokumen</div></div>
+        </div>
+        <div class="menu-item" onclick="openApp('Resign', 'https://47.dunnak.com')">
+          <div class="icon-box"><i class="fa-solid fa-envelope-open-text"></i></div>
+          <div class="menu-text"><div class="menu-label">Resign</div><div class="menu-sub">HR System</div></div>
+        </div>
+        <div class="menu-item" onclick="openApp('Creative 1', 'https://51.dunnak.com')">
+          <div class="icon-box"><i class="fas fa-palette"></i></div>
+          <div class="menu-text"><div class="menu-label">Creative 1</div><div class="menu-sub">Design</div></div>
+        </div>
+        <div class="menu-item" onclick="openApp('Creative 2', 'https://52.dunnak.com')">
+          <div class="icon-box"><i class="fas fa-layer-group"></i></div>
+          <div class="menu-text"><div class="menu-label">Creative 2</div><div class="menu-sub">Design</div></div>
+        </div>
+        <div class="menu-item" onclick="openApp('Creative 3', 'https://53.dunnak.com')">
+          <div class="icon-box"><i class="fas fa-bezier-curve"></i></div>
+          <div class="menu-text"><div class="menu-label">Creative 3</div><div class="menu-sub">Design</div></div>
+        </div>
+        <div class="menu-item" onclick="openApp('Scanner Entry', 'https://school.dunnak.com')">
+          <div class="icon-box"><i class="fas fa-camera-retro"></i></div>
+          <div class="menu-text"><div class="menu-label">Scanner</div><div class="menu-sub">Entry Data</div></div>
+        </div>
       </div>
     </div>
-    <h1 class="text-2xl font-bold text-white tracking-widest">HR SCANNER</h1>
-    <p class="text-slate-500 text-xs mt-2 uppercase tracking-widest">Native Engine V19</p>
   </div>
 
-  <!-- HEADER FIXED -->
-  <header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700/50 z-40 px-6 py-4 flex justify-between items-center sticky top-0">
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 bg-slate-700 rounded-xl flex items-center justify-center text-white font-bold border border-slate-600 shadow-lg">
-        <i class="fas fa-brain"></i>
+  <!-- PAGE: HISTORY -->
+  <div class="page no-scrollbar" id="view-history">
+    <div class="container">
+      <header>
+        <div class="brand-info"><h1>Riwayat</h1><p>Manajemen Proyek</p></div>
+      </header>
+
+      <div class="stats-box fade-in">
+        <div class="stats-info">
+          <h2 id="total-access">0</h2>
+          <p>Total Akses Modul</p>
+        </div>
+        <i class="fas fa-chart-pie" style="font-size: 40px; color: rgba(255,255,255,0.2);"></i>
       </div>
-      <div>
-        <h1 class="text-base font-bold text-white tracking-tight">HR Neural</h1>
-        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Mode APK</p>
+
+      <div class="search-bar fade-in" style="animation-delay: 0.1s;">
+        <i class="fas fa-search"></i>
+        <input type="text" id="search-input" placeholder="Cari history proyek..." onkeyup="filterHistory()">
+      </div>
+
+      <div id="history-list">
+        <!-- List akan diisi oleh JavaScript -->
+      </div>
+
+      <div style="text-align:center; margin-top:30px; padding-bottom: 20px;">
+        <button onclick="clearAllHistory()" style="background:transparent; border:1px solid #374151; color:#9CA3AF; padding:12px 24px; border-radius:12px; font-weight:600; font-size:13px;">Reset Semua Data</button>
       </div>
     </div>
-    <div class="bg-slate-700/50 px-3 py-1 rounded-lg border border-slate-600">
-      <span class="text-[9px] font-bold text-slate-300 tracking-wider">PRO</span>
-    </div>
-  </header>
+  </div>
 
-  <!-- MAIN CONTENT -->
-  <main class="flex-1 overflow-y-auto scrollbar-hide p-6 pb-32 relative">
-    <div class="max-w-4xl mx-auto space-y-6">
-
-      <!-- PAGE UPLOAD -->
-      <div id="page-upload" class="page-transition active">
-        <div class="bg-slate-800 rounded-3xl border border-slate-700 p-1 shadow-2xl relative group">
-          <input type="file" id="pdfInput" accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
-          <div class="border-2 border-dashed border-slate-600 rounded-2xl p-10 text-center transition-all duration-300 group-hover:border-primary-500 group-hover:bg-slate-800/90" id="dropZone">
-            <div class="w-24 h-24 bg-slate-700 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-105 transition-transform shadow-2xl">
-              <i class="fas fa-microchip text-5xl text-primary-500"></i>
-            </div>
-            <h3 class="text-white font-bold text-xl mb-2">Unggah Dokumen CV</h3>
-            <p class="text-slate-400 text-sm" id="fileName">Sistem Siap Menganalisis</p>
-          </div>
-        </div>
-        
-        <!-- Fullscreen Trigger -->
-        <div class="bg-slate-800/50 rounded-2xl border border-slate-700/50 p-4 mt-6 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-              <i class="fas fa-expand text-primary-500"></i>
-            </div>
-            <div>
-              <h4 class="text-white font-bold text-sm">Mode Layar Penuh</h4>
-              <p class="text-xs text-slate-400">Hilangkan address bar browser</p>
-            </div>
-          </div>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="fullscreenToggle" class="sr-only peer">
-            <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
-          </label>
-        </div>
-      </div>
-
-      <!-- PAGE RESULT -->
-      <div id="page-result" class="page-transition">
-        
-        <!-- SCORE CARD -->
-        <div class="bg-slate-800 rounded-3xl border border-slate-700 p-6 shadow-2xl relative overflow-hidden">
-          <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          
-          <div class="flex justify-between items-start mb-6 relative z-10">
-            <div>
-              <h2 class="text-white font-bold text-lg">Hasil Neural Scan</h2>
-              <p class="text-xs text-slate-400 mt-1">Analisis Konteks & Data</p>
-            </div>
-            <div id="statusBadge" class="px-4 py-2 rounded-lg text-sm font-bold bg-slate-700 text-slate-300 border border-slate-600">INIT</div>
-          </div>
-          
-          <div class="flex items-end gap-4 mb-4 relative z-10">
-            <div class="flex-1">
-              <div class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">Probabilitas Ke cocokan</div>
-              <div class="text-7xl font-black text-white font-mono tracking-tighter" id="scoreValue">0%</div>
-            </div>
-          </div>
-
-          <div class="h-4 bg-slate-700 rounded-full overflow-hidden relative z-10 mb-6">
-            <div id="progressBar" class="h-full bg-slate-600 transition-all duration-1500 ease-out w-0 relative">
-              <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
-            </div>
-          </div>
-
-          <!-- Stats Grid -->
-          <div class="grid grid-cols-3 gap-3 mb-6 relative z-10">
-            <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
-              <div class="text-xl font-bold text-green-400" id="structYear">0</div>
-              <div class="text-[9px] uppercase text-slate-500 font-bold tracking-wider">Tahun</div>
-            </div>
-            <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
-              <div class="text-xl font-bold text-blue-400" id="structEmail">0</div>
-              <div class="text-[9px] uppercase text-slate-500 font-bold tracking-wider">Email</div>
-            </div>
-            <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
-              <div class="text-xl font-bold text-purple-400" id="structWords">0</div>
-              <div class="text-[9px] uppercase text-slate-500 font-bold tracking-wider">Kata</div>
-            </div>
-          </div>
-
-          <div id="finalVerdict" class="p-4 rounded-xl bg-slate-900/50 text-sm text-slate-300 border border-slate-700/50 backdrop-blur-sm">
-            Menunggu input data...
-          </div>
-        </div>
-
-        <!-- LOGS -->
-        <div class="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden mt-6 shadow-2xl">
-          <div class="px-6 py-4 border-b border-slate-700 bg-slate-800/50">
-            <h3 class="font-bold text-white text-sm">Log Pemindaian</h3>
-          </div>
-          <div class="max-h-[400px] overflow-y-auto scrollbar-hide" id="logList"></div>
-        </div>
-
-        <button onclick="resetApp()" class="w-full mt-6 py-4 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl border border-slate-600 transition-all active:scale-95 shadow-xl flex items-center justify-center gap-2">
-          <i class="fas fa-redo"></i> Scan Ulang
+  <!-- WEBVIEW OVERLAY -->
+  <div id="webview-overlay">
+    <div class="wb-header">
+      <button class="wb-btn-back" onclick="closeWebview()">
+        <i class="fas fa-chevron-left"></i> Kembali
+      </button>
+      
+      <div class="wb-title" id="wb-title">Modul Aktif</div>
+      
+      <div class="wb-actions">
+        <button class="wb-icon-btn" onclick="shareCurrentUrl()" title="Bagikan Link">
+          <i class="fas fa-share-alt"></i>
+        </button>
+        <button class="wb-icon-btn" onclick="refreshWebview()" title="Refresh">
+          <i class="fas fa-sync-alt"></i>
         </button>
       </div>
-
     </div>
-  </main>
+    
+    <!-- Allow Popups and Same Origin for better compatibility -->
+    <iframe id="app-frame" class="wb-content" src="about:blank" allow="encrypted-media; fullscreen; clipboard-read; clipboard-write"></iframe>
+  </div>
 
-  <!-- FLOATING BOTTOM NAV (Native APK Style) -->
-  <nav class="fixed bottom-0 left-0 w-full px-6 pb-6 pt-2 z-50 pointer-events-none">
-    <div class="bg-slate-800/90 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl flex justify-around items-center py-3 relative pointer-events-auto max-w-md mx-auto">
-      <button onclick="switchTab('upload')" class="nav-btn active flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-colors text-primary-500">
-        <i class="fas fa-home text-lg"></i>
-        <span class="text-[10px] font-bold">Beranda</span>
-      </button>
-      <button onclick="switchTab('result')" class="nav-btn flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-colors text-slate-400 hover:text-white">
-        <i class="fas fa-chart-bar text-lg"></i>
-        <span class="text-[10px] font-bold">Hasil</span>
-      </button>
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="switchPage('view-home', this)">
+      <i class="fas fa-home"></i><span>Beranda</span>
+    </div>
+    <div class="nav-item" onclick="switchPage('view-history', this)">
+      <i class="fas fa-history"></i><span>Riwayat</span>
     </div>
   </nav>
 
-  <!-- INSTALL PROMPT (PWA) -->
-  <div id="installPrompt" class="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-slate-800 border border-slate-600 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 z-[100] hidden transition-all duration-300">
-    <i class="fas fa-download text-white"></i>
-    <div class="text-xs text-white font-bold">Install Aplikasi</div>
-    <button id="installBtn" class="bg-primary-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Pasang</button>
-    <button onclick="dismissInstall()" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
-  </div>
-
-  <!-- LOADING OVERLAY -->
-  <div id="loader" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md z-[200] hidden flex-col items-center justify-center">
-    <div class="w-20 h-20 mb-6 relative">
-      <div class="absolute inset-0 border-4 border-slate-700 rounded-full"></div>
-      <div class="absolute inset-0 border-4 border-primary-500 rounded-full border-t-transparent animate-spin"></div>
-      <div class="absolute inset-0 flex items-center justify-center text-primary-500 font-bold text-xs animate-pulse">AI</div>
-    </div>
-    <h2 class="text-white font-bold text-xl tracking-wide">Neural Parsing...</h2>
-    <p class="text-slate-400 text-sm mt-2">Membaca konteks kalimat</p>
-  </div>
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast">Notifikasi</div>
 
   <script>
-    // ==========================================
-    // DATABASE KATA KUNCI (TETAP V18 - AKURASI TINGGI)
-    // ==========================================
+    // --- CONFIG ---
+    const STORAGE_PREFIX = 'cp_hist_967_';
     
-    const keywordDatabase = [
-      // --- 1. PENDIDIKAN ---
-      { id: 1, keyword: "S1", weight: 60, category: "Pendidikan", synonyms: ["sarjana", "bachelor", "strata 1", "gelar", "universitas", "kampus", "institut"] },
-      { id: 2, keyword: "S2", weight: 40, category: "Pendidikan", synonyms: ["magister", "master", "strata 2", "s-2", "pasca sarjana"] },
-      { id: 3, keyword: "S3", weight: 60, category: "Pendidikan", synonyms: ["doktor", "phd", "doctor", "dr"] },
-      { id: 4, keyword: "D3", weight: 30, category: "Pendidikan", synonyms: ["diploma 3", "ahli madya", "akademi"] },
-      { id: 5, keyword: "SMK", weight: 20, category: "Pendidikan", synonyms: ["sekolah menengah kejuruan", "vokasi"] },
+    // --- ELEMENTS ---
+    const webviewOverlay = document.getElementById('webview-overlay');
+    const appFrame = document.getElementById('app-frame');
+    const wbTitle = document.getElementById('wb-title');
+    const toastEl = document.getElementById('toast');
+    let currentUrl = '';
 
-      // --- 2. BAHASA ---
-      { id: 6, keyword: "Bahasa Inggris", weight: 50, category: "Bahasa", synonyms: ["english", "toefl", "ielts", "toeic", "inggris"] },
-      { id: 7, keyword: "Mandarin", weight: 40, category: "Bahasa", synonyms: ["cina", "chinese", "hanyu", "pu tong hua"] },
-      { id: 8, keyword: "Jepang", weight: 30, category: "Bahasa", synonyms: ["nihongo", "japanese"] },
-      { id: 9, keyword: "Jerman", weight: 30, category: "Bahasa", synonyms: ["deutsch", "german"] },
+    // --- NAVIGATION LOGIC ---
+    function openApp(title, url) {
+      currentUrl = url;
+      wbTitle.innerText = title;
+      webviewOverlay.classList.add('active');
+      appFrame.src = url;
+      saveHistory(title, url);
+    }
 
-      // --- 3. PENGALAMAN ---
-      { id: 10, keyword: "Pengalaman Kerja", weight: 60, category: "Pengalaman", synonyms: ["work experience", "employment", "pekerjaan", "history", "career", "karir", "riwayat kerja"] },
-      { id: 11, keyword: "Magang", weight: 30, category: "Pengalaman", synonyms: ["internship", "trainee", "internee"] },
-      { id: 12, keyword: "Freelance", weight: 30, category: "Pengalaman", synonyms: ["project", "lepas", "mandiri", "independen"] },
-      { id: 13, keyword: "Kontrak", weight: 20, category: "Pengalaman", synonyms: ["contract", "project based", "pkwt"] },
+    function closeWebview() {
+      webviewOverlay.classList.remove('active');
+      // Delay clear src agar animasi transisi lebih mulus
+      setTimeout(() => { appFrame.src = 'about:blank'; }, 300);
+    }
 
-      // --- 4. IT ---
-      { id: 14, keyword: "Javascript", weight: 30, category: "IT", synonyms: ["js", "nodejs", "react", "vue", "angular", "ecmascript", "typescript"] },
-      { id: 15, keyword: "PHP", weight: 25, category: "IT", synonyms: ["laravel", "codeigniter", "ci", "backend", "web"] },
-      { id: 16, keyword: "Python", weight: 30, category: "IT", synonyms: ["django", "flask", "fastapi", "data science", "machine learning", "ai"] },
-      { id: 17, keyword: "Java", weight: 30, category: "IT", synonyms: ["spring boot", "maven", "jdk", "enterprise"] },
-      { id: 18, keyword: "Golang", weight: 25, category: "IT", synonyms: ["go", "google language", "golang"] },
-      { id: 19, keyword: "C++", weight: 20, category: "IT", synonyms: ["cpp", "cplusplus", "object oriented"] },
-      { id: 20, keyword: "SQL", weight: 25, category: "IT", synonyms: ["mysql", "postgresql", "oracle", "database", "query"] },
-      { id: 21, keyword: "Linux", weight: 20, category: "IT", synonyms: ["ubuntu", "debian", "server", "bash", "terminal", "command line"] },
-      { id: 22, keyword: "Docker", weight: 20, category: "IT", synonyms: ["container", "containerization", "kubernetes"] },
-      { id: 23, keyword: "Git", weight: 20, category: "IT", synonyms: ["version control", "github", "gitlab", "bitbucket"] },
-      { id: 24, keyword: "Cloud", weight: 25, category: "IT", synonyms: ["aws", "google cloud", "azure", "computing", "serverless"] },
-      { id: 25, keyword: "UI/UX", weight: 25, category: "IT", synonyms: ["design", "figma", "sketch", "adobe xd", "prototyping", "wireframe"] },
+    function refreshWebview() {
+      appFrame.src = appFrame.src;
+      showToast("Memuat ulang halaman...");
+    }
 
-      // --- 5. MARKETING ---
-      { id: 26, keyword: "SEO", weight: 30, category: "Marketing", synonyms: ["search engine optimization", "ranking", "organic search", "onpage", "offpage"] },
-      { id: 27, keyword: "SEM", weight: 30, category: "Marketing", synonyms: ["google ads", "ppc", "paid search", "adwords"] },
-      { id: 28, keyword: "Social Media", weight: 25, category: "Marketing", synonyms: ["sosmed", "instagram", "tiktok", "facebook", "content creator", "influencer"] },
-      { id: 29, keyword: "Copywriting", weight: 25, category: "Marketing", synonyms: ["copy", "nulis", "content writing", "ads copy", "creative writing"] },
-      { id: 30, keyword: "Email Marketing", weight: 20, category: "Marketing", synonyms: ["newsletter", "blast", "edm", "campaign"] },
-
-      // --- 6. ADMIN ---
-      { id: 31, keyword: "Microsoft Office", weight: 25, category: "Admin", synonyms: ["excel", "word", "powerpoint", "ppt", "office 365", "spreadsheet", "word processor"] },
-      { id: 32, keyword: "Akuntansi", weight: 30, category: "Finance", synonyms: ["accounting", "keuangan", "pajak", "perpajakan", "audit", "jurnal", "neraca"] },
-      { id: 33, keyword: "SAP", weight: 30, category: "Admin", synonyms: ["erp", "system aplikasi", "enterprise resource planning"] },
-      { id: 34, keyword: "Zahir", weight: 20, category: "Finance", synonyms: ["software akuntansi", "laporan keuangan"] },
-      { id: 35, keyword: "MYOB", weight: 20, category: "Finance", synonyms: ["akuntansi australia"] },
-
-      // --- 7. CREATIVE ---
-      { id: 36, keyword: "Adobe Photoshop", weight: 20, category: "Creative", synonyms: ["photoshop", "edit foto", "image editing", "ps", "retouching"] },
-      { id: 37, keyword: "Video Editing", weight: 20, category: "Creative", synonyms: ["premiere pro", "after effect", "final cut", "capcut", "filmora", "multimedia"] },
-      { id: 38, keyword: "Illustrator", weight: 20, category: "Creative", synonyms: ["vector", "ai", "graphic design", "logo", "illustration"] },
-      { id: 39, keyword: "3D Modeling", weight: 25, category: "Creative", synonyms: ["blender", "maya", "3ds max", "c4d", "render"] },
-
-      // --- 8. ENGINEERING ---
-      { id: 40, keyword: "AutoCAD", weight: 30, category: "Engineering", synonyms: ["cad", "autocad", "2d", "3d", "technical drawing", "gambar teknik"] },
-      { id: 41, keyword: "Solidworks", weight: 30, category: "Engineering", synonyms: ["sw", "3d modeling", "mekanikal", "cad design"] },
-      { id: 42, keyword: "PLC", weight: 25, category: "Engineering", synonyms: ["programmable logic controller", "otomasi", "ladder diagram"] },
-      { id: 43, keyword: "Mesin", weight: 20, category: "Engineering", synonyms: ["motor", "engine", "otomotif", "alat berat", "perawatan"] },
-      { id: 44, keyword: "Listrik", weight: 25, category: "Engineering", synonyms: ["kelistrikan", "electrical", "panel", "instalasi", "arus kuat/lemah"] },
-
-      // --- 9. SALES ---
-      { id: 45, keyword: "Sales", weight: 30, category: "Sales", synonyms: ["penjualan", "closing", "marketing", "deal", "konsultan", "business development"] },
-      { id: 46, keyword: "Negosiasi", weight: 25, category: "Sales", synonyms: ["negosiasi", "tawar menawar", "negotiation", "bargaining"] },
-      { id: 47, keyword: "Customer Service", weight: 25, category: "Sales", synonyms: ["cs", "pelayanan", "service", "suport", "call center"] },
-
-      // --- 10. SOFT SKILLS ---
-      { id: 48, keyword: "Komunikasi", weight: 25, category: "Soft Skill", synonyms: ["communication", "public speaking", "presentasi", "interpersonal", "hubungan"] },
-      { id: 49, keyword: "Kepemimpinan", weight: 30, category: "Soft Skill", synonyms: ["leadership", "memimpin", "manager", "lead", "supervisor", "pimpinan"] },
-      { id: 50, keyword: "Teamwork", weight: 20, category: "Soft Skill", synonyms: ["kerja tim", "tim", "team", "kolaborasi", "kerja sama", "cooperation"] },
-      { id: 51, keyword: "Problem Solving", weight: 25, category: "Soft Skill", synonyms: ["memecahkan masalah", "trouble shooting", "analisis"] },
-      { id: 52, keyword: "Adaptabilitas", weight: 20, category: "Soft Skill", synonyms: ["adapt", "fleksibel", "beradaptasi"] },
-
-      // --- [ZONA TAMBAH KEYWORD] ---
-      // Programmer bisa tambah di sini
-    ];
-
-    // --- LOGIC VARIABLES ---
-    let rawText = "";
-    const pdfInput = document.getElementById('pdfInput');
-    const loader = document.getElementById('loader');
-    const pageUpload = document.getElementById('page-upload');
-    const pageResult = document.getElementById('page-result');
-    
-    // --- UI INTERACTION VARIABLES ---
-    const splashScreen = document.getElementById('splashScreen');
-    const fullscreenToggle = document.getElementById('fullscreenToggle');
-
-    // --- 1. SPLASH SCREEN LOGIC ---
-    window.onload = () => {
-      setTimeout(() => {
-        splashScreen.style.opacity = '0';
-        setTimeout(() => { splashScreen.style.display = 'none'; }, 500);
-      }, 2000); // Splash selama 2 detik
-    };
-
-    // --- 2. FULLSCREEN LOGIC ---
-    fullscreenToggle.addEventListener('change', (e) => {
-      if (e.target.checked) {
-        document.documentElement.requestFullscreen().catch(err => {
-          console.log("Fullscreen blocked");
-          e.target.checked = false;
-        });
+    function shareCurrentUrl() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'CVPRO Project Link',
+          text: 'Buka proyek ini di CVPRO:',
+          url: currentUrl
+        }).catch(console.error);
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
-      }
-    });
-
-    // --- 3. NAVIGATION SWITCHING ---
-    function switchTab(tab) {
-      if(tab === 'upload') {
-        pageResult.classList.remove('active');
-        setTimeout(() => { pageResult.style.display = 'none'; pageUpload.style.display = 'block'; setTimeout(() => pageUpload.classList.add('active'), 50); }, 300);
-      } else {
-        pageUpload.classList.remove('active');
-        setTimeout(() => { pageUpload.style.display = 'none'; pageResult.style.display = 'block'; setTimeout(() => pageResult.classList.add('active'), 50); }, 300);
+        // Fallback copy
+        navigator.clipboard.writeText(currentUrl);
+        showToast("Link disalin ke clipboard");
       }
     }
 
-    // --- 4. PDF HANDLER ---
-    pdfInput.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if(!file) return;
+    function showToast(msg) {
+      toastEl.innerText = msg;
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), 2500);
+    }
 
-      document.getElementById('fileName').innerText = `Memproses: ${file.name}`;
-      loader.classList.remove('hidden');
-      loader.classList.add('flex');
+    // --- HISTORY ENGINE ---
+    function saveHistory(name, url) {
+      const key = STORAGE_PREFIX + name.replace(/\s+/g, '');
+      let data = JSON.parse(localStorage.getItem(key)) || { count: 0, ts: 0 };
+      data.count++;
+      data.ts = Date.now();
+      data.name = name;
+      data.url = url;
+      localStorage.setItem(key, JSON.stringify(data));
+      updateStats();
+      renderHistory();
+    }
 
-      try {
-        const buffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({data: buffer}).promise;
-        let text = "";
-        for(let i=1; i<=pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
-          text += content.items.map(item => item.str).join(" ");
+    function updateStats() {
+      let total = 0;
+      Object.keys(localStorage).forEach(k => {
+        if(k.startsWith(STORAGE_PREFIX)) {
+          try {
+            total += JSON.parse(localStorage.getItem(k)).count;
+          } catch(e) {}
         }
+      });
+      document.getElementById('total-access').innerText = total;
+    }
 
-        rawText = text.toLowerCase().replace(/[\n\r\t]+/g, ' ').replace(/[^\w\s\-\.\@]/g, '').replace(/\s+/g, ' ').trim();
-
-        setTimeout(() => {
-          loader.classList.add('hidden');
-          loader.classList.remove('flex');
-          switchTab('result');
-          runNeuralAnalysis();
-        }, 1500);
-
-      } catch (err) {
-        alert("Gagal membaca PDF.");
-        loader.classList.add('hidden');
-      }
-    });
-
-    // --- 5. NEURAL ANALYSIS ENGINE (SAMA DENGAN V18) ---
-    function runNeuralAnalysis() {
-      let totalWeight = 0;
-      let earnedWeight = 0;
-      const logList = document.getElementById('logList');
-      logList.innerHTML = "";
-
-      // 1. STRUCTURE VALIDATION
-      const yearCount = (rawText.match(/\b(19|20)\d{2}\b/g) || []).length;
-      const emailCount = (rawText.match(/[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}/g) || []).length;
-      const wordCount = rawText.split(' ').length;
-
-      document.getElementById('structYear').innerText = yearCount;
-      document.getElementById('structEmail').innerText = emailCount;
-      document.getElementById('structWords').innerText = wordCount;
-
-      // 2. KEYWORD SCAN
-      keywordDatabase.forEach(k => {
-        totalWeight += k.weight;
-        let found = false;
-        let method = "Exact";
-        const key = k.keyword.toLowerCase();
-
-        if(rawText.includes(key)) found = true;
-        else if(k.synonyms) {
-          if(k.synonyms.some(s => rawText.includes(s))) {
-            found = true;
-            method = "Semantic";
-          }
-        }
-
-        // RENDER LOG
-        if(found) {
-          earnedWeight += k.weight;
-          logList.innerHTML += `
-            <div class="p-5 flex justify-between items-center bg-green-500/5 hover:bg-slate-700/30 border-b border-slate-700/50">
-              <div>
-                <div class="text-white font-bold text-base">${k.keyword}</div>
-                <div class="text-xs text-slate-400 mt-1">${k.category} • Poin: ${k.weight}</div>
-              </div>
-              <div class="text-right">
-                <div class="text-sm font-bold text-green-400">TERDETEKSI</div>
-                <div class="text-[10px] text-slate-500 mt-0.5 uppercase font-bold">${method}</div>
-              </div>
-            </div>
-          `;
-        } else {
-          logList.innerHTML += `
-            <div class="p-5 flex justify-between items-center opacity-40 hover:bg-slate-700/30 border-b border-slate-700/50">
-              <div>
-                <div class="text-slate-300 font-medium text-base">${k.keyword}</div>
-                <div class="text-xs text-slate-500 mt-1">${k.category} • Poin: ${k.weight}</div>
-              </div>
-              <div class="text-right">
-                <div class="text-sm font-medium text-slate-500">0 Poin</div>
-                <div class="text-[10px] text-slate-600 mt-0.5 uppercase font-bold">MISSING</div>
-              </div>
-            </div>
-          `;
+    function renderHistory(filterText = '') {
+      const list = document.getElementById('history-list');
+      list.innerHTML = '';
+      let items = [];
+      
+      Object.keys(localStorage).forEach(k => {
+        if(k.startsWith(STORAGE_PREFIX)) {
+          try {
+            items.push(JSON.parse(localStorage.getItem(k)));
+          } catch(e) {}
         }
       });
 
-      // 3. CALCULATION
-      let finalScore = 0;
-      if(totalWeight > 0) {
-        finalScore = Math.round((earnedWeight / totalWeight) * 100);
+      // Filter & Sort (Latest first)
+      if(filterText) items = items.filter(i => i.name.toLowerCase().includes(filterText.toLowerCase()));
+      items.sort((a,b) => b.ts - a.ts);
+
+      if(items.length === 0) {
+        list.innerHTML = '<div style="text-align:center; color:#4B5563; padding:50px 20px; font-size:13px; display:flex; flex-direction:column; align-items:center; gap:10px;"><i class="fas fa-folder-open" style="font-size:30px; margin-bottom:10px;"></i><br>Belum ada riwayat akses.</div>';
+        return;
       }
 
-      // 4. UI UPDATE
-      document.getElementById('scoreValue').innerText = finalScore + "%";
-      const bar = document.getElementById('progressBar');
-      bar.style.width = finalScore + "%";
-      
-      let verdictColor = "bg-slate-600";
-      let statusText = "EVALUASI SELESAI";
-      let verdictDesc = "";
+      items.forEach((item, index) => {
+        const date = new Date(item.ts).toLocaleDateString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+        
+        const div = document.createElement('div');
+        div.className = 'history-card fade-in';
+        div.style.animationDelay = `${index * 0.05}s`; // Stagger effect
+        div.innerHTML = `
+          <div class="h-left" onclick="openApp('${item.name}', '${item.url}')">
+            <div class="h-icon"><i class="fas fa-history"></i></div>
+            <div class="h-info">
+              <h4>${item.name}</h4>
+              <p>${date} • Dibuka <b>${item.count}x</b></p>
+            </div>
+          </div>
+          <div class="h-btns">
+            <button class="h-btn share" onclick="shareItem('${item.url}')"><i class="fas fa-share-alt"></i></button>
+            <button class="h-btn delete" onclick="deleteHistory('${STORAGE_PREFIX}${item.name.replace(/\s+/g,'')}')"><i class="fas fa-trash"></i></button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
 
-      if(finalScore >= 85) {
-        verdictColor = "bg-green-500";
-        statusText = "SANGAT KOMPETEN";
-        verdictDesc = "Kandidat memiliki probabilitas kecocokan sangat tinggi berdasarkan data semantik.";
-      } else if(finalScore >= 60) {
-        verdictColor = "bg-blue-500";
-        statusText = "KOMPETEN";
-        verdictDesc = "Kandidat memiliki kompetensi yang solid dan relevan.";
-      } else if(finalScore >= 40) {
-        verdictColor = "bg-yellow-500";
-        statusText = "CUKUP KOMPETEN";
-        verdictDesc = "Kandidat memiliki beberapa kompetensi, namun perlu evaluasi lebih lanjut.";
-      } else {
-        verdictColor = "bg-red-500";
-        statusText = "KURANG KOMPETEN";
-        verdictDesc = "Kompetensi kandidat belum memenuhi standar minimum.";
+    function shareItem(url) {
+      if (navigator.share) navigator.share({ url: url }).catch(()=>{});
+      else {
+        navigator.clipboard.writeText(url);
+        showToast("Link disalin");
       }
-
-      bar.className = `h-full transition-all duration-1500 ease-out relative ${verdictColor}`;
-      
-      const badge = document.getElementById('statusBadge');
-      badge.innerText = statusText;
-      badge.className = `px-4 py-2 rounded-lg text-sm font-bold border ${verdictColor === 'bg-green-500' ? 'bg-green-500/10 border-green-500 text-green-400' : (verdictColor === 'bg-blue-500' ? 'bg-blue-500/10 border-blue-500 text-blue-400' : 'bg-red-500/10 border-red-500 text-red-400')}`;
-      
-      document.getElementById('finalVerdict').innerHTML = `<span class="${verdictColor === 'bg-green-500' ? 'text-green-400' : (verdictColor === 'bg-blue-500' ? 'text-blue-400' : 'text-red-400')} font-bold">${verdictDesc}</span>`;
     }
 
-    function resetApp() {
-      pdfInput.value = '';
-      rawText = '';
-      switchTab('upload');
-      document.getElementById('fileName').innerText = "Sistem Siap Menganalisis";
-    }
-
-    // --- PWA INSTALL PROMPT LOGIC ---
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      setTimeout(() => { document.getElementById('installPrompt').classList.remove('hidden'); }, 3000);
-    });
-
-    document.getElementById('installBtn').addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt = null;
-        document.getElementById('installPrompt').classList.add('hidden');
+    function deleteHistory(key) {
+      if(confirm("Hapus history ini?")) {
+        localStorage.removeItem(key);
+        updateStats();
+        renderHistory(document.getElementById('search-input').value);
+        showToast("History dihapus");
       }
-    });
-
-    function dismissInstall() {
-      document.getElementById('installPrompt').classList.add('hidden');
     }
 
-    // --- INJECT MANIFEST ---
-    const manifest = {
-      name: "HR Scanner Neural", short_name: "HR Scan", start_url: ".", display: "standalone",
-      background_color: "#0f172a", theme_color: "#0f172a",
-      icons: [{ src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%230f172a'/><text x='256' y='350' font-size='260' font-family='sans-serif' font-weight='800' fill='white' text-anchor='middle'>HR</text></svg>", sizes: "512x512", type: "image/svg+xml"}]
+    function clearAllHistory() {
+      if(confirm("Apakah Anda yakin ingin menghapus semua riwayat?")) {
+        Object.keys(localStorage).forEach(k => {
+          if(k.startsWith(STORAGE_PREFIX)) localStorage.removeItem(k);
+        });
+        updateStats();
+        renderHistory();
+        showToast("Semua data direset");
+      }
+    }
+
+    function filterHistory() {
+      renderHistory(document.getElementById('search-input').value);
+    }
+
+    // --- TAB SWITCHING ---
+    function switchPage(id, el) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      el.classList.add('active');
+      
+      if(id === 'view-history') renderHistory();
+    }
+
+    // --- CLOCK ---
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+    }, 1000);
+    // Set immediate
+    document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+
+    // --- INIT ---
+    updateStats();
+
+    // --- PWA MANIFEST DYNAMIC INJECTION ---
+    // Menggunakan icon eksternal agar terdeteksi sebagai "App Icon" saat install PWA
+    const manifestData = {
+      name: "CVPRO Operator",
+      short_name: "CVPRO",
+      start_url: ".",
+      display: "standalone",
+      background_color: "#111827",
+      theme_color: "#111827",
+      description: "Aplikasi Manajemen Operator CVPRO",
+      icons: [
+        {
+          src: "https://picsum.photos/seed/cvproicon2024/192/192",
+          sizes: "192x192",
+          type: "image/jpeg"
+        },
+        {
+          src: "https://picsum.photos/seed/cvproicon2024/512/512",
+          sizes: "512x512",
+          type: "image/jpeg"
+        }
+      ]
     };
-    const link = document.createElement('link'); link.rel = 'manifest'; link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/json' })); document.head.appendChild(link);
+    
+    const stringManifest = JSON.stringify(manifestData);
+    const blob = new Blob([stringManifest], {type: 'application/json'});
+    const manifestURL = URL.createObjectURL(blob);
+    
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = manifestURL;
+    document.head.appendChild(link);
 
   </script>
 </body>
