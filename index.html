@@ -3,48 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>CVPRO Master</title>
+  <title>CVPRO Enterprise</title>
 
-  <!-- PWA & METADATA -->
+  <!-- PWA & META -->
   <meta name="theme-color" content="#F8FAFC">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="CVPRO">
   
-  <!-- ICONS -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%2306B6D4'/><text x='50' y='68' font-size='38' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>CP</text></svg>">
-  <link rel="apple-touch-icon" href="https://picsum.photos/seed/cvproui/180/180">
+  <!-- ICONS & FONTS -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%233B82F6'/><text x='50' y='68' font-size='40' font-family='Arial,sans-serif' font-weight='900' fill='white' text-anchor='middle'>CP</text></svg>">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      /* MODERN LIGHT THEME - CYAN/SYSTEM UI */
-      --primary: #0EA5E9; /* Sky 500 */
-      --primary-dark: #0284C7;
-      --primary-light: #E0F2FE;
-      --bg-body: #F1F5F9; /* Slate 100 */
+      /* ENTERPRISE THEME - ROYAL BLUE */
+      --primary: #2563EB;       /* Royal Blue */
+      --primary-grad: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      --secondary: #64748B;
+      --bg-body: #F1F5F9;
       --surface: #FFFFFF;
       --text-main: #0F172A;
-      --text-sec: #64748B;
+      --text-muted: #94A3B8;
       --danger: #EF4444;
       --success: #10B981;
       
       --safe-bottom: env(safe-area-inset-bottom, 20px);
       --safe-top: env(safe-area-inset-top, 10px);
-
-      /* Glassmorphism & Shadows */
-      --glass: rgba(255, 255, 255, 0.85);
-      --glass-border: rgba(255, 255, 255, 0.5);
+      
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-      --shadow-float: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-      --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.03);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --glass: rgba(255, 255, 255, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.6);
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; outline: none; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
     
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       background-color: var(--bg-body);
       color: var(--text-main);
       height: 100vh;
@@ -54,92 +50,55 @@
       flex-direction: column;
     }
 
-    /* --- UTILS & ANIMATIONS --- */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    /* --- ANIMATIONS --- */
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes modalPop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
     /* --- PAGES --- */
     .page {
       flex: 1; overflow-y: auto; overflow-x: hidden;
-      padding: calc(var(--safe-top) + 24px) 20px calc(100px + var(--safe-bottom)) 20px;
+      padding: calc(var(--safe-top) + 20px) 20px calc(90px + var(--safe-bottom)) 20px;
       display: none; opacity: 0; transition: opacity 0.3s ease;
     }
     .page.active { display: block; opacity: 1; }
     .container { max-width: 600px; margin: 0 auto; position: relative; }
 
     /* --- HEADER --- */
-    header { 
-      display: flex; justify-content: space-between; align-items: center; 
-      margin-bottom: 24px; position: sticky; top: 0; z-index: 10; 
-    }
-    
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     .brand { display: flex; align-items: center; gap: 14px; }
+    
     .logo-box {
-      width: 46px; height: 46px; background: var(--primary);
+      width: 48px; height: 48px; background: var(--primary-grad);
       border-radius: 14px; display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 8px 16px -4px rgba(14, 165, 233, 0.4);
-      position: relative; overflow: hidden;
+      color: white; font-size: 20px; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
     }
-    .logo-box::after {
-      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-      transform: rotate(45deg); animation: shine 3s infinite;
-    }
-    @keyframes shine { 0% { transform: translateX(-100%) rotate(45deg); } 100% { transform: translateX(100%) rotate(45deg); } }
+    .brand-info h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+    .brand-info p { font-size: 10px; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
 
-    .brand-info h1 { font-size: 20px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
-    .brand-info p { font-size: 10px; font-weight: 700; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
-
-    .clock-badge {
-      background: var(--surface); padding: 8px 14px; border-radius: 12px;
-      font-family: monospace; font-weight: 700; font-size: 13px; color: var(--text-sec);
-      box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.05);
-    }
-
-    /* --- PROFESSIONAL MENU LIST --- */
-    .menu-list { display: grid; gap: 14px; padding-bottom: 20px; }
-    
+    /* --- PROFESSIONAL MENU --- */
+    .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
     .menu-card {
-      background: var(--surface); border-radius: 20px; padding: 18px;
-      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface); border-radius: 20px; padding: 20px;
+      display: flex; flex-direction: column; gap: 12px;
       box-shadow: var(--shadow-sm); border: 1px solid rgba(255,255,255,0.8);
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      cursor: pointer; position: relative; overflow: hidden;
+      transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; overflow: hidden;
     }
-    /* Ripple Effect Area */
-    .menu-card::before {
-      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle, var(--primary-light) 10%, transparent 10.01%);
-      background-size: 1000% 1000%; opacity: 0; transform: scale(10); transition: transform 0.5s, opacity 0.5s;
-      pointer-events: none;
-    }
-    .menu-card:active::before { opacity: 1; transform: scale(0); transition: 0s; }
-    .menu-card:active { transform: scale(0.98); box-shadow: none; border-color: var(--primary-light); }
-
-    .mc-left { display: flex; align-items: center; gap: 16px; z-index: 2; }
+    .menu-card:active { transform: scale(0.96); }
+    
+    .mc-header { display: flex; align-items: center; gap: 10px; }
     .mc-icon {
-      width: 44px; height: 44px; border-radius: 12px;
-      background: #F1F5F9; color: var(--primary);
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
-      transition: 0.3s;
+      width: 40px; height: 40px; border-radius: 10px;
+      background: #EFF6FF; color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
     }
-    .menu-card:hover .mc-icon { background: var(--primary); color: white; }
+    .mc-title { font-size: 15px; font-weight: 700; }
+    .mc-desc { font-size: 12px; color: var(--text-muted); font-weight: 500; }
     
-    .mc-info { display: flex; flex-direction: column; gap: 2px; z-index: 2; }
-    .mc-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
-    .mc-desc { font-size: 11px; color: var(--text-sec); display: flex; align-items: center; gap: 6px; }
-    
-    /* Status Badge */
-    .status-pill {
-      font-size: 9px; padding: 2px 8px; border-radius: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .pill-green { background: #DCFCE7; color: #166534; }
-    .pill-blue { background: #DBEAFE; color: #1E40AF; }
-    .pill-gray { background: #F1F5F9; color: #475569; }
+    /* Status Dot */
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    .status-dot.green { background: var(--success); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+    .status-dot.blue { background: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2); }
 
     /* --- WEBVIEW --- */
     #webview-overlay {
@@ -151,510 +110,497 @@
 
     .wb-header {
       height: 60px; padding: 0 20px; padding-top: var(--safe-top);
-      background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between;
-      position: relative; z-index: 51;
     }
-    .wb-title { font-size: 14px; font-weight: 800; color: var(--text-main); }
-    
-    .btn-icon {
-      width: 38px; height: 38px; border-radius: 10px; border: none;
-      background: white; color: var(--text-sec); font-size: 14px;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: var(--shadow-sm); cursor: pointer; transition: 0.2s;
+    .wb-btn {
+      width: 40px; height: 40px; border-radius: 10px; background: white;
+      border: none; color: var(--text-main); font-size: 16px; cursor: pointer;
+      box-shadow: var(--shadow-sm);
     }
-    .btn-icon:active { background: var(--primary); color: white; transform: scale(0.95); }
+    .wb-btn:active { background: #F1F5F9; }
 
-    .wb-content { flex: 1; width: 100%; height: 100%; border: none; background: white; }
-
-    /* --- HISTORY & STATS --- */
-    .stats-card {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border-radius: 24px; padding: 24px; margin-bottom: 24px;
-      color: white; position: relative; overflow: hidden;
-      box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.4);
+    /* --- HISTORY & ANALYTICS --- */
+    .analytics-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;
     }
-    .stats-card::before {
-      content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px;
-      background: radial-gradient(circle, rgba(255,255,255,0.2), transparent); border-radius: 50%;
+    .stat-card {
+      background: var(--surface); padding: 16px; border-radius: 16px;
+      box-shadow: var(--shadow-sm); display: flex; flex-direction: column;
     }
-    .stats-num { font-size: 36px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
-    .stats-label { font-size: 12px; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+    .stat-val { font-size: 24px; font-weight: 800; color: var(--text-main); }
+    .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 4px; }
 
-    .search-wrap {
-      background: var(--surface); border-radius: 16px; padding: 14px 18px;
-      display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-inner);
-      margin-bottom: 20px; border: 1px solid transparent; transition: 0.2s;
+    /* Visual Bar Chart (CSS Only) */
+    .chart-container {
+      background: white; padding: 20px; border-radius: 20px; margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
     }
-    .search-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
-    .search-wrap input { border: none; background: transparent; width: 100%; font-size: 14px; color: var(--text-main); outline: none; }
+    .chart-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); }
+    .bars { display: flex; align-items: flex-end; gap: 8px; height: 60px; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .bar { width: 100%; background: #E2E8F0; border-radius: 4px; transition: height 1s ease; min-height: 4px; }
+    .bar.active { background: var(--primary); }
+    .bar-label { font-size: 9px; color: var(--text-muted); }
 
+    .history-list { display: flex; flex-direction: column; gap: 12px; }
     .history-item {
-      background: var(--surface); border-radius: 16px; padding: 16px;
-      margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;
-      box-shadow: var(--shadow-sm); border: 1px solid rgba(255,255,255,0.6);
-      transition: 0.2s;
+      background: var(--surface); padding: 16px; border-radius: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: var(--shadow-sm); border-left: 4px solid transparent;
     }
-    .history-item:active { background: #F8FAFC; }
+    .history-item:hover { border-left-color: var(--primary); }
+    .hi-left { display: flex; gap: 12px; align-items: center; }
+    .hi-icon { width: 36px; height: 36px; background: #F1F5F9; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+    .hi-text h4 { font-size: 14px; font-weight: 600; }
+    .hi-text p { font-size: 11px; color: var(--text-muted); }
     
-    .hi-content { display: flex; align-items: center; gap: 14px; flex: 1; }
-    .hi-icon { width: 36px; height: 36px; background: #F1F5F9; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--text-sec); }
-    .hi-text h4 { font-size: 14px; font-weight: 700; color: var(--text-main); }
-    .hi-text p { font-size: 11px; color: var(--text-sec); margin-top: 2px; }
-    
-    .btn-trash {
-      width: 32px; height: 32px; border-radius: 8px; border: none;
-      background: transparent; color: #CBD5E1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    .btn-delete {
+      background: #FEF2F2; color: var(--danger); border: none;
+      width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;
     }
-    .btn-trash:hover { background: #FEF2F2; color: var(--danger); }
+    .btn-delete:active { background: var(--danger); color: white; }
 
-    /* --- MODAL ALERT (ROBUST) --- */
+    /* --- MODAL ALERT (ENTERPRISE) --- */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px);
       z-index: 2000; display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
     }
-    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
     
     .modal-box {
-      background: var(--surface); width: 85%; max-width: 340px; border-radius: 24px;
-      padding: 28px 24px; text-align: center;
-      transform: scale(0.9); opacity: 0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: var(--shadow-float);
+      background: var(--surface); width: 85%; max-width: 320px; border-radius: 24px;
+      padding: 30px 24px; text-align: center;
+      box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.2s;
     }
-    .modal-overlay.active .modal-box { transform: scale(1); opacity: 1; }
+    .modal-overlay.open .modal-box { transform: scale(1); }
     
-    .modal-icon-circle {
+    .modal-icon {
       width: 56px; height: 56px; background: #FEF2F2; color: var(--danger);
       border-radius: 50%; display: flex; align-items: center; justify-content: center;
       margin: 0 auto 20px; font-size: 24px;
     }
-    
-    .modal-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
-    .modal-desc { font-size: 14px; color: var(--text-sec); margin-bottom: 24px; line-height: 1.5; }
+    .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .modal-msg { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
 
     .modal-actions { display: flex; gap: 12px; }
     .modal-btn {
-      flex: 1; padding: 14px; border-radius: 12px; border: none;
-      font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s;
+      flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 700; font-size: 14px; cursor: pointer;
     }
-    .btn-cancel { background: #F1F5F9; color: var(--text-sec); }
-    .btn-cancel:active { background: #E2E8F0; }
-    
+    .btn-cancel { background: #F1F5F9; color: var(--text-main); }
     .btn-confirm { background: var(--danger); color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
-    .btn-confirm:active { background: #DC2626; transform: scale(0.97); }
 
-    /* --- BOTTOM NAV (GLASS) --- */
+    /* --- LOCK SCREEN (SECURITY) --- */
+    #lock-screen {
+      position: fixed; inset: 0; background: var(--bg-body); z-index: 1000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transform: translateY(100%); transition: transform 0.4s ease;
+    }
+    #lock-screen.active { transform: translateY(0); }
+    .lock-content { text-align: center; animation: slideUp 0.5s; }
+    .lock-icon { font-size: 40px; color: var(--primary); margin-bottom: 20px; }
+    .unlock-btn {
+      margin-top: 30px; background: var(--primary); color: white; border: none;
+      padding: 14px 40px; border-radius: 30px; font-weight: 700; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
+    }
+
+    /* --- BOTTOM NAV --- */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; width: 100%; height: calc(70px + var(--safe-bottom));
-      padding-bottom: var(--safe-bottom);
-      background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255,255,255,0.8);
+      padding-bottom: var(--safe-bottom); background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05);
       display: flex; justify-content: space-around; align-items: center; z-index: 40;
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
     }
-    .nav-item { 
-      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-      gap: 4px; color: #94A3B8; transition: 0.3s; cursor: pointer; height: 100%; position: relative;
-    }
-    .nav-item i { font-size: 20px; transition: 0.3s; }
-    .nav-item span { font-size: 10px; font-weight: 600; }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); transition: 0.3s; }
     .nav-item.active { color: var(--primary); }
-    .nav-item.active::after {
-      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 40px; height: 3px; background: var(--primary); border-radius: 0 0 4px 4px;
-    }
-
-    /* --- TOAST --- */
-    .toast {
-      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
-      background: #1E293B; color: white; padding: 12px 24px; border-radius: 50px;
-      font-size: 13px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
-      display: flex; align-items: center; gap: 8px; z-index: 200;
-      opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .nav-item i { font-size: 20px; }
+    .nav-item span { font-size: 10px; font-weight: 600; }
 
   </style>
 </head>
 <body>
 
-  <!-- HOME PAGE -->
-  <div class="page active no-scrollbar" id="view-home">
+  <!-- PAGE: HOME -->
+  <div class="page active" id="view-home">
     <div class="container">
       <header>
         <div class="brand">
-          <div class="logo-box">
-            <i class="fas fa-layer-group" style="color: white; font-size: 20px;"></i>
-          </div>
-          <div class="brand-info">
-            <h1>CVPRO</h1>
-            <p>System Operator</p>
-          </div>
+          <div class="logo-box"><i class="fas fa-layer-group"></i></div>
+          <div class="brand-info"><h1>CVPRO</h1><p>Enterprise Suite</p></div>
         </div>
-        <div class="clock-badge" id="clock">--:--</div>
+        <div style="font-size:12px; font-weight:700; color:var(--text-muted);" id="clock">00:00</div>
       </header>
 
-      <!-- GRID MENU (Fresh Style) -->
-      <div class="menu-list" style="animation: slideUp 0.5s ease;">
-        
-        <div class="menu-card" onclick="openApp('ATS Portal', 'https://45.dunnak.com')">
-          <div class="mc-left">
-            <div class="mc-icon"><i class="fas fa-briefcase"></i></div>
-            <div class="mc-info">
-              <div class="mc-title">ATS Portal</div>
-              <div class="mc-desc"><span class="status-pill pill-green">Online</span> Recruitment</div>
-            </div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
+      <div class="menu-grid" style="animation: slideUp 0.6s ease;">
+        <!-- Menu Items Generated by Logic to ensure clean code, but defined here for structure -->
+        <div class="menu-card" onclick="app.open('ATS Portal', 'https://45.dunnak.com')">
+          <div class="mc-header"><div class="mc-icon"><i class="fas fa-briefcase"></i></div><div class="mc-title">ATS Portal</div></div>
+          <div class="mc-desc"><span class="status-dot green"></span>System Ready</div>
         </div>
-
-        <div class="menu-card" onclick="openApp('Lamaran', 'https://46.dunnak.com')">
-          <div class="mc-left">
-            <div class="mc-icon"><i class="fas fa-file-signature"></i></div>
-            <div class="mc-info">
-              <div class="mc-title">Lamaran</div>
-              <div class="mc-desc"><span class="status-pill pill-blue">Docs</span> Dokumen</div>
-            </div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
+        <div class="menu-card" onclick="app.open('Lamaran', 'https://46.dunnak.com')">
+          <div class="mc-header"><div class="mc-icon"><i class="fas fa-file-signature"></i></div><div class="mc-title">Lamaran</div></div>
+          <div class="mc-desc"><span class="status-dot blue"></span>Docs Active</div>
         </div>
-
-        <div class="menu-card" onclick="openApp('Resign', 'https://47.dunnak.com')">
-          <div class="mc-left">
-            <div class="mc-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
-            <div class="mc-info">
-              <div class="mc-title">Resign</div>
-              <div class="mc-desc"><span class="status-pill pill-gray">HR</span> System</div>
-            </div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
+        <div class="menu-card" onclick="app.open('Resign', 'https://47.dunnak.com')">
+          <div class="mc-header"><div class="mc-icon"><i class="fa-solid fa-envelope-open-text"></i></div><div class="mc-title">Resign HR</div></div>
+          <div class="mc-desc">Admin Module</div>
         </div>
-
-        <div class="menu-card" onclick="openApp('Creative 1', 'https://51.dunnak.com')">
-          <div class="mc-left">
-            <div class="mc-icon"><i class="fas fa-palette"></i></div>
-            <div class="mc-info">
-              <div class="mc-title">Creative 1</div>
-              <div class="mc-desc">Design Team A</div>
-            </div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
+        <div class="menu-card" onclick="app.open('Creative 1', 'https://51.dunnak.com')">
+          <div class="mc-header"><div class="mc-icon"><i class="fas fa-palette"></i></div><div class="mc-title">Creative 1</div></div>
+          <div class="mc-desc">Design Team</div>
         </div>
-
-        <div class="menu-card" onclick="openApp('Creative 2', 'https://52.dunnak.com')">
-          <div class="mc-left">
-            <div class="mc-icon"><i class="fas fa-layer-group"></i></div>
-            <div class="mc-info">
-              <div class="mc-title">Creative 2</div>
-              <div class="mc-desc">Design Team B</div>
-            </div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
+        <div class="menu-card" onclick="app.open('Creative 2', 'https://52.dunnak.com')">
+          <div class="mc-header"><div class="mc-icon"><i class="fas fa-layer-group"></i></div><div class="mc-title">Creative 2</div></div>
+          <div class="mc-desc">Design Team</div>
         </div>
-
-        <div class="menu-card" onclick="openApp('Creative 3', 'https://53.dunnak.com')">
-          <div class="mc-left">
-            <div class="mc-icon"><i class="fas fa-bezier-curve"></i></div>
-            <div class="mc-info">
-              <div class="mc-title">Creative 3</div>
-              <div class="mc-desc">Design Team C</div>
-            </div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
+        <div class="menu-card" onclick="app.open('Creative 3', 'https://53.dunnak.com')">
+          <div class="mc-header"><div class="mc-icon"><i class="fas fa-bezier-curve"></i></div><div class="mc-title">Creative 3</div></div>
+          <div class="mc-desc">Design Team</div>
         </div>
-
-        <div class="menu-card" onclick="openApp('Entry Scanner', 'https://school.dunnak.com')">
-          <div class="mc-left">
-            <div class="mc-icon"><i class="fas fa-camera-retro"></i></div>
-            <div class="mc-info">
-              <div class="mc-title">Entry</div>
-              <div class="mc-desc">Data Scanner</div>
-            </div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:#CBD5E1; font-size:12px;"></i>
+        <div class="menu-card" onclick="app.open('Entry Scan', 'https://school.dunnak.com')">
+          <div class="mc-header"><div class="mc-icon"><i class="fas fa-camera-retro"></i></div><div class="mc-title">Scanner</div></div>
+          <div class="mc-desc">Data Input</div>
         </div>
-
+        <div class="menu-card" onclick="app.open('Settings', '#')">
+          <div class="mc-header"><div class="mc-icon"><i class="fas fa-cog"></i></div><div class="mc-title">Pengaturan</div></div>
+          <div class="mc-desc">System Config</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- HISTORY PAGE -->
-  <div class="page no-scrollbar" id="view-history">
+  <!-- PAGE: HISTORY & ANALYTICS -->
+  <div class="page" id="view-history">
     <div class="container">
       <header>
-        <div class="brand-info">
-          <h1>Riwayat</h1>
-          <p>Log Aktivitas</p>
-        </div>
+        <div class="brand-info"><h1>Analytics</h1><p>Advanced Dashboard</p></div>
       </header>
 
-      <div class="stats-card">
-        <div class="stats-num" id="total-access">0</div>
-        <div class="stats-label">Total Akses Modul</div>
+      <!-- Analytics Stats -->
+      <div class="analytics-grid">
+        <div class="stat-card">
+          <div class="stat-val" id="stat-total">0</div>
+          <div class="stat-label">Total Sessions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-unique">0</div>
+          <div class="stat-label">Unique Modules</div>
+        </div>
       </div>
 
-      <div class="search-wrap">
-        <i class="fas fa-search" style="color:#94A3B8;"></i>
-        <input type="text" id="search-input" placeholder="Cari riwayat akses..." onkeyup="filterHistory()">
+      <!-- Visual Chart -->
+      <div class="chart-container">
+        <div class="chart-title">Aktivitas Minggu Ini</div>
+        <div class="bars" id="activity-chart">
+          <!-- Bars generated by JS -->
+          <div class="bar-col"><div class="bar" style="height: 20%"></div><div class="bar-label">S</div></div>
+          <div class="bar-col"><div class="bar" style="height: 45%"></div><div class="bar-label">S</div></div>
+          <div class="bar-col"><div class="bar" style="height: 30%"></div><div class="bar-label">R</div></div>
+          <div class="bar-col"><div class="bar active" style="height: 80%"></div><div class="bar-label">K</div></div>
+          <div class="bar-col"><div class="bar" style="height: 50%"></div><div class="bar-label">J</div></div>
+          <div class="bar-col"><div class="bar" style="height: 60%"></div><div class="bar-label">S</div></div>
+          <div class="bar-col"><div class="bar" style="height: 40%"></div><div class="bar-label">M</div></div>
+        </div>
       </div>
 
-      <div id="history-list">
-        <!-- JS Render -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-size:16px; font-weight:700;">Recent Log</h3>
+        <button onclick="historyManager.confirmClearAll()" style="font-size:11px; color:var(--danger); border:none; background:none; font-weight:600;">Reset Data</button>
       </div>
 
-      <div style="text-align:center; margin-top:20px;">
-        <button onclick="confirmClearAll()" style="background:transparent; border:none; color:var(--text-sec); font-size:12px; font-weight:600;">Hapus Semua Data</button>
+      <div id="history-list" class="history-list">
+        <!-- List by JS -->
       </div>
     </div>
   </div>
 
-  <!-- WEBVIEW -->
+  <!-- WEBVIEW OVERLAY -->
   <div id="webview-overlay">
     <div class="wb-header">
-      <button class="btn-icon" onclick="closeWebview()">
-        <i class="fas fa-arrow-left"></i>
-      </button>
-      <div class="wb-title" id="wb-title">Modul Aktif</div>
-      <button class="btn-icon" onclick="refreshWebview()">
-        <i class="fas fa-sync-alt"></i>
-      </button>
+      <button class="wb-btn" onclick="app.close()"><i class="fas fa-chevron-left"></i></button>
+      <div style="font-weight:700; font-size:14px;" id="wb-title">Module</div>
+      <button class="wb-btn" onclick="app.refresh()"><i class="fas fa-sync-alt"></i></button>
     </div>
-    <iframe id="app-frame" class="wb-content" src="about:blank" allow="encrypted-media; fullscreen"></iframe>
+    <iframe id="app-frame" style="flex:1; width:100%; border:none; background:white;" src="about:blank" allow="encrypted-media; fullscreen"></iframe>
   </div>
 
-  <!-- MODAL ALERT (ROBUST SYSTEM) -->
-  <div class="modal-overlay" id="modal-alert">
+  <!-- LOCK SCREEN -->
+  <div id="lock-screen">
+    <div class="lock-content">
+      <div class="lock-icon"><i class="fas fa-lock"></i></div>
+      <h2>Session Locked</h2>
+      <p style="color:var(--text-muted); margin-top:8px;">Ketuk untuk membuka aplikasi</p>
+      <button class="unlock-btn" onclick="app.unlock()">UNLOCK</button>
+    </div>
+  </div>
+
+  <!-- MODAL ALERT -->
+  <div class="modal-overlay" id="modal-overlay">
     <div class="modal-box">
-      <div class="modal-icon-circle">
-        <i class="fas fa-exclamation-triangle"></i>
-      </div>
-      <h3 class="modal-title" id="modal-title">Konfirmasi</h3>
-      <p class="modal-desc" id="modal-msg">Apakah Anda yakin?</p>
+      <div class="modal-icon"><i class="fas fa-exclamation-circle"></i></div>
+      <h3 class="modal-title" id="modal-title">Confirm</h3>
+      <p class="modal-msg" id="modal-msg">Are you sure?</p>
       <div class="modal-actions">
-        <button class="modal-btn btn-cancel" onclick="Modal.close()">Batal</button>
-        <button class="modal-btn btn-confirm" id="modal-confirm-btn">Hapus</button>
+        <button class="modal-btn btn-cancel" id="btn-modal-cancel">Batal</button>
+        <button class="modal-btn btn-confirm" id="btn-modal-confirm">Hapus</button>
       </div>
     </div>
   </div>
 
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
-    <div class="nav-item active" onclick="switchPage('view-home', this)">
-      <i class="fas fa-home"></i><span>Beranda</span>
-    </div>
-    <div class="nav-item" onclick="switchPage('view-history', this)">
-      <i class="fas fa-history"></i><span>Riwayat</span>
-    </div>
+    <div class="nav-item active" onclick="app.nav('view-home', this)"><i class="fas fa-th-large"></i><span>Dashboard</span></div>
+    <div class="nav-item" onclick="app.nav('view-history', this)"><i class="fas fa-chart-bar"></i><span>Analytics</span></div>
   </nav>
 
-  <!-- TOAST -->
-  <div id="toast" class="toast">
-    <i class="fas fa-check-circle" style="color:var(--success);"></i> <span id="toast-msg">Berhasil</span>
-  </div>
-
   <script>
-    /* 
-     * CVPRO CORE LOGIC
-     * Fokus: Stabilitas Modal & UX Premium
+    /**
+     * CVPRO ENTERPRISE CORE
+     * Features: Secure Storage, Analytics, Modal System
      */
 
-    // --- MODAL MANAGER SYSTEM (ROBUST) ---
+    // --- 1. STORAGE & UTILS (SECURE) ---
+    const Storage = {
+      PREFIX: 'cp_ent_v4_',
+      // Obfuscate keys to prevent easy collision/conflicts
+      hash: (str) => btoa(str).replace(/=/g, ''), 
+      
+      get: (key) => {
+        const k = Storage.PREFIX + Storage.hash(key);
+        const raw = localStorage.getItem(k);
+        return raw ? JSON.parse(raw) : null;
+      },
+      
+      set: (key, val) => {
+        const k = Storage.PREFIX + Storage.hash(key);
+        localStorage.setItem(k, JSON.stringify(val));
+      },
+      
+      remove: (key) => {
+        const k = Storage.PREFIX + Storage.hash(key);
+        localStorage.removeItem(k);
+      },
+      
+      getAll: () => {
+        const items = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k.startsWith(Storage.PREFIX)) {
+            try {
+              items.push(JSON.parse(localStorage.getItem(k)));
+            } catch(e){}
+          }
+        }
+        return items;
+      },
+
+      clearAll: () => {
+        const keys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k.startsWith(Storage.PREFIX)) keys.push(k);
+        }
+        keys.forEach(k => localStorage.removeItem(k));
+      }
+    };
+
+    // --- 2. MODAL MANAGER (ROBUST) ---
     const Modal = {
-      overlay: document.getElementById('modal-alert'),
-      title: document.getElementById('modal-title'),
-      msg: document.getElementById('modal-msg'),
-      confirmBtn: document.getElementById('modal-confirm-btn'),
-      callback: null, // Menyimpan fungsi yang akan dijalankan
-
-      show: function(title, message, onConfirm) {
-        this.title.innerText = title;
-        this.msg.innerText = message;
-        this.callback = onConfirm; // Simpan callback
+      el: document.getElementById('modal-overlay'),
+      titleEl: document.getElementById('modal-title'),
+      msgEl: document.getElementById('modal-msg'),
+      confirmBtn: document.getElementById('btn-modal-confirm'),
+      cancelBtn: document.getElementById('btn-modal-cancel'),
+      
+      show: function(title, msg, onConfirm) {
+        this.titleEl.innerText = title;
+        this.msgEl.innerText = msg;
+        this.el.classList.add('open');
         
-        // Reset event listener lama agar tidak double fire
-        const newBtn = this.confirmBtn.cloneNode(true);
-        this.confirmBtn.parentNode.replaceChild(newBtn, this.confirmBtn);
-        this.confirmBtn = newBtn;
-
-        // Tambahkan event listener baru
+        // Clone button to remove old event listeners (Best Practice)
+        const newConfirm = this.confirmBtn.cloneNode(true);
+        this.confirmBtn.parentNode.replaceChild(newConfirm, this.confirmBtn);
+        this.confirmBtn = newConfirm;
+        
+        // Attach New Event
         this.confirmBtn.addEventListener('click', () => {
           this.close();
-          if (this.callback) this.callback(); // JALANKAN FUNGSI
+          if (onConfirm) onConfirm();
         });
 
-        this.overlay.classList.add('active');
+        // Close Logic
+        const newCancel = this.cancelBtn.cloneNode(true);
+        this.cancelBtn.parentNode.replaceChild(newCancel, this.cancelBtn);
+        this.cancelBtn = newCancel;
+        this.cancelBtn.addEventListener('click', () => this.close());
       },
 
       close: function() {
-        this.overlay.classList.remove('active');
-        this.callback = null;
+        this.el.classList.remove('open');
       }
     };
 
-    // --- TOAST MANAGER ---
-    const Toast = {
-      el: document.getElementById('toast'),
-      msgEl: document.getElementById('toast-msg'),
-      show: function(text) {
-        this.msgEl.innerText = text;
-        this.el.classList.add('show');
-        setTimeout(() => { this.el.classList.remove('show'); }, 3000);
-      }
-    };
+    // --- 3. HISTORY MANAGER ---
+    const historyManager = {
+      add: (name, url) => {
+        let data = Storage.get(name) || { name, url, count: 0, ts: 0 };
+        data.count++;
+        data.ts = Date.now();
+        Storage.set(name, data);
+        historyManager.render(); // Update UI immediately
+      },
 
-    // --- NAVIGATION LOGIC ---
-    const webviewOverlay = document.getElementById('webview-overlay');
-    const appFrame = document.getElementById('app-frame');
-    const wbTitle = document.getElementById('wb-title');
-    let currentUrl = '';
+      remove: (name) => {
+        Storage.remove(name);
+        historyManager.render();
+        showToast("Log berhasil dihapus");
+      },
 
-    function openApp(title, url) {
-      currentUrl = url;
-      wbTitle.innerText = title;
-      webviewOverlay.classList.add('active');
-      appFrame.src = url;
-      saveHistory(title, url);
-    }
+      confirmDelete: (name) => {
+        Modal.show(
+          "Hapus Log?", 
+          `Data akses untuk "${name}" akan dihapus permanen.`, 
+          () => historyManager.remove(name) // The Callback
+        );
+      },
 
-    function closeWebview() {
-      webviewOverlay.classList.remove('active');
-      setTimeout(() => { appFrame.src = 'about:blank'; }, 300);
-    }
+      confirmClearAll: () => {
+        Modal.show(
+          "Reset Sistem?", 
+          "Seluruh data analitik dan log akan dikosongkan.", 
+          () => {
+            Storage.clearAll();
+            historyManager.render();
+            showToast("Sistem di-reset");
+          }
+        );
+      },
 
-    function refreshWebview() {
-      appFrame.src = appFrame.src;
-      Toast.show("Memuat ulang...");
-    }
-
-    function switchPage(pageId, navEl) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
-      
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      navEl.classList.add('active');
-
-      if (pageId === 'view-history') renderHistory();
-    }
-
-    // --- HISTORY LOGIC ---
-    const PREFIX = 'cp_hist_v3_';
-
-    function saveHistory(name, url) {
-      const key = PREFIX + name.replace(/\s+/g, '');
-      const raw = localStorage.getItem(key);
-      const data = raw ? JSON.parse(raw) : { count: 0, ts: 0 };
-      
-      data.count++;
-      data.ts = Date.now();
-      data.name = name;
-      data.url = url;
-      
-      localStorage.setItem(key, JSON.stringify(data));
-      updateStats();
-      renderHistory();
-    }
-
-    function updateStats() {
-      let total = 0;
-      Object.keys(localStorage).forEach(k => {
-        if (k.startsWith(PREFIX)) {
-          try { total += JSON.parse(localStorage.getItem(k)).count; } catch(e){}
-        }
-      });
-      document.getElementById('total-access').innerText = total;
-    }
-
-    function renderHistory(filter = '') {
-      const list = document.getElementById('history-list');
-      list.innerHTML = '';
-      let items = [];
-
-      Object.keys(localStorage).forEach(k => {
-        if (k.startsWith(PREFIX)) {
-          try { items.push(JSON.parse(localStorage.getItem(k))); } catch(e){}
-        }
-      });
-
-      if (filter) items = items.filter(i => i.name.toLowerCase().includes(filter.toLowerCase()));
-      items.sort((a, b) => b.ts - a.ts);
-
-      if (items.length === 0) {
-        list.innerHTML = '<div style="text-align:center; color:#94A3B8; padding:40px; font-size:13px;">Belum ada data.</div>';
-        return;
-      }
-
-      items.forEach((item, idx) => {
-        const date = new Date(item.ts).toLocaleDateString('id-ID', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
-        const div = document.createElement('div');
-        div.className = 'history-item';
-        div.style.animation = `fadeIn 0.3s ease forwards ${idx * 0.05}s`;
-        div.style.opacity = '0'; // Untuk animasi
+      render: () => {
+        const list = document.getElementById('history-list');
+        const items = Storage.getAll().sort((a,b) => b.ts - a.ts);
         
-        div.innerHTML = `
-          <div class="hi-content" onclick="openApp('${item.name}', '${item.url}')">
-            <div class="hi-icon"><i class="fas fa-clock"></i></div>
-            <div class="hi-text">
-              <h4>${item.name}</h4>
-              <p>${date} • ${item.count}x</p>
+        // Update Stats
+        document.getElementById('stat-total').innerText = items.reduce((acc, curr) => acc + curr.count, 0);
+        document.getElementById('stat-unique').innerText = items.length;
+
+        // Render List
+        list.innerHTML = '';
+        if (items.length === 0) {
+          list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Tidak ada data aktivitas.</div>';
+          return;
+        }
+
+        items.forEach(item => {
+          const date = new Date(item.ts).toLocaleDateString('id-ID', { day:'numeric', month:'short' });
+          const el = document.createElement('div');
+          el.className = 'history-item';
+          el.innerHTML = `
+            <div class="hi-left">
+              <div class="hi-icon"><i class="fas fa-clock"></i></div>
+              <div class="hi-text">
+                <h4>${item.name}</h4>
+                <p>${date} • Dibuka ${item.count}x</p>
+              </div>
             </div>
-          </div>
-          <button class="btn-trash" onclick="confirmDelete('${PREFIX}${item.name.replace(/\s+/g,'')}')"><i class="fas fa-trash"></i></button>
-        `;
-        list.appendChild(div);
-      });
-    }
-
-    // --- DELETE ACTIONS (MENGHUBUNGKAN KE MODAL) ---
-    function confirmDelete(key) {
-      // Perhatikan: Kita memanggil Modal.show dan melempar FUNGSI ANONYMOUS
-      Modal.show(
-        "Hapus Item?", 
-        "Log akses untuk modul ini akan dihapus.", 
-        () => { // Ini adalah CALLBACK
-          localStorage.removeItem(key);
-          updateStats();
-          renderHistory(document.getElementById('search-input').value);
-          Toast.show("Item dihapus");
-        }
-      );
-    }
-
-    function confirmClearAll() {
-      Modal.show(
-        "Reset Data?", 
-        "Semua riwayat akan dihapus permanen.", 
-        () => {
-          Object.keys(localStorage).forEach(k => {
-            if(k.startsWith(PREFIX)) localStorage.removeItem(k);
-          });
-          updateStats();
-          renderHistory();
-          Toast.show("Data direset");
-        }
-      );
-    }
-
-    function filterHistory() {
-      renderHistory(document.getElementById('search-input').value);
-    }
-
-    // --- CLOCK ---
-    setInterval(() => {
-      document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
-    }, 1000);
-
-    // --- INIT ---
-    updateStats();
-    document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
-
-    // --- PWA MANIFEST ---
-    const manifest = {
-      name: "CVPRO Operator", short_name: "CVPRO", start_url: ".", display: "standalone",
-      background_color: "#F1F5F9", theme_color: "#F1F5F9",
-      icons: [{ src: "https://picsum.photos/seed/cvproui/192/192", sizes: "192x192", type: "image/jpeg" }]
+            <button class="btn-delete" onclick="historyManager.confirmDelete('${item.name}')"><i class="fas fa-trash"></i></button>
+          `;
+          list.appendChild(el);
+        });
+      }
     };
-    document.head.appendChild(Object.assign(document.createElement('link'), {rel:'manifest', href:URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type:'application/json'}))}));
+
+    // --- 4. APP CONTROLLER ---
+    const app = {
+      lastActivity: Date.now(),
+      lockTimer: null,
+
+      init: () => {
+        historyManager.render();
+        app.startSecurityTimer();
+        setInterval(app.updateClock, 1000);
+        app.updateClock();
+      },
+
+      open: (title, url) => {
+        if(url === '#') { showToast("Fitur ini sedang dalam pengembangan"); return; }
+        document.getElementById('wb-title').innerText = title;
+        document.getElementById('webview-overlay').classList.add('active');
+        document.getElementById('app-frame').src = url;
+        historyManager.add(title, url); // Log history
+        app.resetTimer(); // Reset lock timer on activity
+      },
+
+      close: () => {
+        document.getElementById('webview-overlay').classList.remove('active');
+        setTimeout(() => document.getElementById('app-frame').src = 'about:blank', 400);
+      },
+
+      refresh: () => {
+        const frame = document.getElementById('app-frame');
+        frame.src = frame.src;
+        showToast("Memuat ulang...");
+      },
+
+      nav: (id, el) => {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+        if(id === 'view-history') historyManager.render();
+        app.resetTimer();
+      },
+
+      // Security Features
+      startSecurityTimer: () => {
+        app.lockTimer = setInterval(() => {
+          const now = Date.now();
+          // Lock after 5 minutes of inactivity
+          if (now - app.lastActivity > 5 * 60 * 1000) {
+            document.getElementById('lock-screen').classList.add('active');
+          }
+        }, 1000);
+      },
+
+      resetTimer: () => {
+        app.lastActivity = Date.now();
+      },
+
+      unlock: () => {
+        document.getElementById('lock-screen').classList.remove('active');
+        app.resetTimer();
+      },
+
+      updateClock: () => {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+      }
+    };
+
+    // --- TOAST UTILITY ---
+    function showToast(msg) {
+      // Simple inline toast for speed
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+        background: #1E293B; color: white; padding: 12px 24px; border-radius: 50px;
+        font-size: 13px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        z-index: 3000; animation: fadeIn 0.3s; display: flex; gap:8px; align-items:center;
+      `;
+      toast.innerHTML = `<i class="fas fa-check-circle" style="color:#10B981"></i> ${msg}`;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+
+    // --- GLOBAL LISTENERS ---
+    document.addEventListener('click', app.resetTimer);
+    document.addEventListener('touchstart', app.resetTimer);
+
+    // --- BOOT ---
+    window.onload = app.init;
 
   </script>
 </body>
