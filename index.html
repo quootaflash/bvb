@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writehub System (With Photo)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+        
+        :root {
+            --accent: #0f766e;
+            --accent-lt: #ccfbf1;
+            --surface: #f1f5f9;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+        }
+        .dark-mode {
+            --surface: #0f172a;
+            --card: #1e293b;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --border: #334155;
+        }
+        .dark-mode .fi { background: #0f172a; color: #e2e8f0; border-color: #334155; }
+        .dark-mode .fi:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15,118,110,.15); }
+        .dark-mode .fi::placeholder { color: #475569; }
+        .dark-mode .tp-c { background: #1e293b; border-color: #334155; }
+        .dark-mode .tp-c:hover { border-color: var(--accent); background: rgba(15,118,110,.1); }
+        .dark-mode .tp-c.on { border-color: var(--accent); background: rgba(15,118,110,.15); }
+        .dark-mode .stat-bar { background: #0f172a; border-color: #334155; }
+        .dark-mode .sh-hd { border-color: var(--border); }
+        .dark-mode .pv-wrap { background: rgba(30,41,59,.5); border-color: #334155; }
+        .dark-mode .wc-b { background: #1e293b; }
+        .dark-mode .kb { background: #1e293b; border-color: #334155; color: #64748b; }
+        .dark-mode .tip-a { background: #451a03; border-color: #78350f; }
+        .dark-mode .tip-a p { color: #fbbf24; }
+        .dark-mode .tip-t { background: #042f2e; border-color: #115e59; }
+        .dark-mode .tip-t p { color: #5eead4; }
+        .dark-mode .linkedin-hint { color: #64748b; }
+        /* Dark mode for photo uploader */
+        .dark-mode .photo-upload-box {
+            background: #1e293b; border-color: #334155; color: #94a3b8;
+        }
+        .dark-mode .photo-upload-box:hover { border-color: var(--accent); background: rgba(15,118,110,.1); }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            background: var(--surface); color: var(--text);
+            overflow-x: hidden; transition: background .3s, color .3s;
+        }
+        .bg-dots {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background-image: radial-gradient(circle, #cbd5e1 0.8px, transparent 0.8px);
+            background-size: 28px 28px; opacity: 0.35;
+        }
+        .dark-mode .bg-dots { opacity: 0.12; }
+
+        .a4-cv {
+            width: 210mm; min-height: 297mm; background: #fff;
+            box-shadow: 0 10px 50px rgba(15,23,42,.08), 0 1px 4px rgba(15,23,42,.04);
+            margin: 0 auto; padding: 16mm 20mm 16mm 20mm;
+            color: #1a1a1a; position: relative;
+        }
+        .a4-cv.cv-inter { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; }
+        .a4-cv.cv-roboto { font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; }
+        .a4-cv.cv-jakarta { font-family: 'Plus Jakarta Sans', 'Helvetica Neue', Arial, sans-serif; }
+
+        .a4-page-guide {
+            position: absolute; top: 0; left: 0; right: 0; height: 297mm;
+            border: 1px dashed rgba(148,163,184,.4); border-radius: 2px;
+            pointer-events: none; z-index: 1;
+        }
+
+        /* ===== STYLING CV ATS (WITH PHOTO SUPPORT) ===== */
+        
+        /* Layout Container untuk Header Foto */
+        .cv-header-layout {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            gap: 15px;
+        }
+
+        .cv-main-info {
+            flex: 1;
+        }
+
+        .cv-name { font-size: 22pt; font-weight: 700; color: #111; margin-bottom: 2px; letter-spacing: -0.3px; line-height: 1.15; }
+        .cv-title { font-size: 11pt; color: #555; font-weight: 400; margin-bottom: 10px; }
+        .cv-contact { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 8.5pt; color: #444; margin-bottom: 14px; line-height: 1.6; }
+        .cv-contact span { white-space: nowrap; }
+        
+        /* Styling Foto CV ATS */
+        .cv-photo-container {
+            width: 70px;
+            height: 70px;
+            flex-shrink: 0;
+            border-radius: 50%; /* Bulat adalah standar paling aman ATS */
+            overflow: hidden;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            display: none; /* Hidden by default */
+        }
+        .cv-photo-container.visible { display: block; }
+        .cv-photo-container img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        .cv-sep { border: none; border-top: 1.5px solid #222; margin: 12px 0 10px; }
+        .cv-heading { font-size: 11pt; font-weight: 700; color: #111; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; padding-bottom: 3px; border-bottom: 1.5px solid #222; }
+        .cv-summary { font-size: 9.5pt; color: #333; line-height: 1.6; margin-bottom: 4px; text-align: justify; }
+        .cv-exp-item { margin-bottom: 10px; }
+        .cv-exp-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 2px; }
+        .cv-exp-role { font-size: 10pt; font-weight: 600; color: #111; }
+        .cv-exp-date { font-size: 8.5pt; color: #666; font-weight: 400; }
+        .cv-exp-company { font-size: 9pt; color: #444; font-style: italic; margin-bottom: 3px; }
+        .cv-bullet { font-size: 9.5pt; color: #333; line-height: 1.55; padding-left: 14px; position: relative; margin-bottom: 2px; }
+        .cv-bullet::before { content: '•'; position: absolute; left: 0; color: #333; }
+        .cv-edu-item { margin-bottom: 8px; }
+        .cv-edu-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 2px; }
+        .cv-edu-school { font-size: 10pt; font-weight: 600; color: #111; }
+        .cv-edu-date { font-size: 8.5pt; color: #666; }
+        .cv-edu-detail { font-size: 9pt; color: #444; }
+        .cv-skill-item { display: flex; align-items: baseline; margin-bottom: 3px; }
+        .cv-skill-name { font-size: 9.5pt; font-weight: 600; color: #111; min-width: 140px; flex-shrink: 0; }
+        .cv-skill-desc { font-size: 9pt; color: #444; }
+        .cv-cert-item { font-size: 9.5pt; color: #333; margin-bottom: 3px; line-height: 1.5; }
+        .cv-lang-item { display: flex; align-items: baseline; margin-bottom: 3px; }
+        .cv-lang-name { font-size: 9.5pt; font-weight: 600; color: #111; min-width: 110px; flex-shrink: 0; }
+        .cv-lang-level { font-size: 9pt; color: #444; }
+
+        .preview-only { pointer-events: none; }
+        .overflow-badge {
+            display: none; position: absolute; bottom: 8mm; left: 20mm; right: 20mm;
+            background: #fef2f2; border: 1px solid #fecaca; color: #dc2626;
+            font-size: 9pt; font-weight: 600; padding: 6px 12px; border-radius: 8px;
+            text-align: center; font-family: 'Plus Jakarta Sans', sans-serif; z-index: 2;
+        }
+        .overflow-badge.show { display: block; }
+
+        .fi {
+            width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+            border-radius: 10px; font-family: inherit; font-size: 12.5px;
+            color: var(--text); background: var(--card);
+            transition: border-color .2s, box-shadow .2s; outline: none;
+        }
+        .fi:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15,118,110,.08); }
+        .fi.err { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(239,68,68,.08); }
+        .fi::placeholder { color: #94a3b8; }
+        textarea.fi { resize: vertical; min-height: 64px; line-height: 1.5; }
+        select.fi {
+            cursor: pointer; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
+        }
+        .fl { display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 4px; }
+        .fl .req { color: var(--danger); }
+        .fe { font-size: 9.5px; color: var(--danger); margin-top: 2px; display: none; }
+        .fe.sh { display: block; }
+        .linkedin-hint { font-size: 9.5px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+
+        /* Photo Uploader Styles */
+        .photo-upload-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        .photo-upload-box {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            background: var(--surface);
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .photo-upload-box:hover {
+            border-color: var(--accent);
+            background: var(--accent-lt);
+        }
+        .photo-upload-box input[type="file"] {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .photo-preview-mini {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+            margin: 0 auto 8px auto;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .photo-preview-mini.show { display: block; }
+        .upload-text-icon { font-size: 20px; color: var(--accent); margin-bottom: 4px; }
+        .upload-text-main { font-size: 11px; font-weight: 600; color: var(--text); }
+        .upload-text-sub { font-size: 9px; color: var(--muted); }
+        .btn-remove-photo {
+            margin-top: 8px;
+            font-size: 9.5px;
+            color: var(--danger);
+            background: rgba(239,68,68,0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            cursor: pointer;
+            display: none; /* Hidden default */
+        }
+        .btn-remove-photo:hover { background: rgba(239,68,68,0.2); }
+
+        .print-indicator {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 99999; background: rgba(15,23,42,.85); backdrop-filter: blur(8px);
+            border-radius: 16px; padding: 28px 40px; text-align: center;
+            display: none; flex-direction: column; align-items: center; gap: 12px;
+        }
+        .print-indicator.show { display: flex; }
+        .print-indicator .pi-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(20,184,166,.2); display: flex; align-items: center; justify-content: center; }
+        .print-indicator .pi-icon i { color: #2dd4bf; font-size: 20px; }
+        .print-indicator .pi-text { color: #e2e8f0; font-size: 13px; font-weight: 600; }
+        .print-indicator .pi-sub { color: #94a3b8; font-size: 11px; }
+
+        .t-box { position: fixed; top: 72px; right: 18px; z-index: 9998; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+        .t-i {
+            padding: 12px 18px; border-radius: 12px; font-size: 12.5px; font-weight: 500;
+            color: #fff; box-shadow: 0 8px 28px rgba(0,0,0,.15); display: flex; align-items: center; gap: 8px;
+            animation: tIn .3s ease-out; max-width: 340px; pointer-events: auto;
+        }
+        .t-i.ok { background: #059669; }
+        .t-i.nf { background: #0284c7; }
+        .t-i.wr { background: #d97706; }
+        .t-i.bd { background: #dc2626; }
+        @keyframes tIn { from { opacity:0; transform:translateX(50px); } to { opacity:1; transform:translateX(0); } }
+
+        .tp-c { padding: 9px 10px; border: 1.5px solid var(--border); border-radius: 9px; cursor: pointer; transition: all .2s; background: var(--card); text-align: center; }
+        .tp-c:hover { border-color: var(--accent); background: var(--accent-lt); }
+        .tp-c.on { border-color: var(--accent); background: var(--accent-lt); box-shadow: 0 0 0 3px rgba(15,118,110,.1); }
+
+        .sh-hd { display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; padding: 7px 0; border-bottom: 1px solid var(--border); }
+        .sh-hd .cv2 { transition: transform .25s; font-size: 9px; color: #94a3b8; }
+        .sh-hd.op .cv2 { transform: rotate(180deg); }
+        .sh-bd { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+        .sh-bd.op { max-height: 6000px; }
+
+        .wc-b { display: inline-flex; align-items: center; gap: 4px; font-size: 9.5px; color: var(--muted); background: var(--surface); padding: 2px 7px; border-radius: 20px; }
+
+        .fsc::-webkit-scrollbar { width: 4px; }
+        .fsc::-webkit-scrollbar-track { background: transparent; }
+        .fsc::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark-mode .fsc::-webkit-scrollbar-thumb { background: #334155; }
+
+        @keyframes sPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(15,118,110,.3); } 50% { box-shadow: 0 0 0 5px rgba(15,118,110,0); } }
+        .bp { animation: sPulse 2.5s infinite; }
+        .kb { font-size: 9px; background: var(--surface); color: #94a3b8; padding: 1px 5px; border-radius: 4px; font-family: monospace; border: 1px solid var(--border); }
+
+        .stat-bar { display: flex; align-items: center; gap: 12px; padding: 7px 14px; background: var(--surface); border-top: 1px solid var(--border); font-size: 10px; color: var(--muted); }
+        .stat-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; animation: dotB 2s infinite; }
+        .stat-dot.idle { background: #94a3b8; animation: none; }
+        @keyframes dotB { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+
+        .tg-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .tg-track { width: 34px; height: 18px; border-radius: 9px; background: #cbd5e1; position: relative; transition: background .2s; flex-shrink: 0; }
+        .tg-track.on { background: var(--accent); }
+        .tg-track::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.15); transition: transform .2s; }
+        .tg-track.on::after { transform: translateX(16px); }
+        .tg-label { font-size: 10px; color: var(--muted); font-weight: 500; }
+
+        .q-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 1px 6px; border-radius: 5px; }
+        .q-badge.low { background: #fef3c7; color: #92400e; }
+        .q-badge.mid { background: #dbeafe; color: #1e40af; }
+        .q-badge.hi { background: #d1fae5; color: #065f46; }
+
+        @media print {
+            .no-print, .preview-only { display: none !important; }
+            .print-indicator, .t-box { display: none !important; }
+            body { background: #fff !important; }
+            .bg-dots { display: none !important; }
+            .pv-outer, .pv-wrap { box-shadow: none !important; padding: 0 !important; margin: 0 !important; background: #fff !important; border-radius: 0 !important; border: none !important; overflow: visible !important; max-height: none !important; }
+            .a4-cv { width: 210mm !important; min-height: 297mm !important; margin: 0 !important; padding: 14mm 18mm !important; box-shadow: none !important; page-break-inside: auto; }
+            /* Pastikan foto tercetak */
+            .cv-photo-container { display: block !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            @page { size: A4 portrait; margin: 0; }
+        }
+        @media (max-width: 1024px) { .hide-sm { display: none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="bg-dots"></div>
+<div class="t-box" id="tBox"></div>
+<div class="print-indicator no-print" id="printInd">
+    <div class="pi-icon"><i class="fa-solid fa-print"></i></div>
+    <div class="pi-text">Menyiapkan cetak...</div>
+    <div class="pi-sub">Pilih "Save as PDF" di dialog cetak</div>
+</div>
+
+<nav class="bg-slate-950 text-white sticky top-0 z-50 no-print">
+    <div class="max-w-[1560px] mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-9 h-9 rounded-lg bg-teal-500/15 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-file-lines text-teal-400 text-sm"></i></div>
+            <div class="min-w-0">
+                <h1 class="text-[15px] font-bold tracking-tight truncate">Writehub v12.3 (Photo)</h1>
+                <p class="text-[8px] text-slate-500 -mt-0.5 tracking-widest uppercase">Applicant Tracking System Optimized</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button id="btnDark" title="Mode Gelap (D)" class="flex items-center justify-center w-8 h-8 bg-white/8 hover:bg-white/14 rounded-lg transition text-slate-400 hover:text-white"><i class="fa-solid fa-moon text-xs"></i></button>
+            <button id="btnLoad" title="Muat Draft (Ctrl+M)" class="hide-sm flex items-center gap-1.5 px-3 h-8 bg-white/8 hover:bg-white/14 rounded-lg text-[10.5px] font-medium transition"><i class="fa-solid fa-folder-open"></i>Muat</button>
+            <button id="btnSave" title="Simpan Draft (Ctrl+S)" class="hide-sm flex items-center gap-1.5 px-3 h-8 bg-white/8 hover:bg-white/14 rounded-lg text-[10.5px] font-medium transition"><i class="fa-solid fa-floppy-disk"></i>Simpan</button>
+            <div class="w-px h-5 bg-white/10 mx-0.5 hide-sm"></div>
+            <button id="btnCopy" title="Salin Teks" class="hide-sm flex items-center gap-1.5 px-3 h-8 bg-white/8 hover:bg-white/14 rounded-lg text-[10.5px] font-medium transition"><i class="fa-solid fa-copy"></i>Salin</button>
+            <button id="btnPng" title="Unduh PNG" class="flex items-center gap-1.5 px-3.5 h-8 bg-violet-600 hover:bg-violet-700 rounded-lg text-[10.5px] font-semibold transition"><i class="fa-solid fa-image"></i><span class="hide-sm">PNG</span></button>
+            <button id="btnPdf" title="Cetak PDF (Ctrl+P)" class="flex items-center gap-1.5 px-3.5 h-8 bg-teal-600 hover:bg-teal-700 rounded-lg text-[10.5px] font-semibold transition bp"><i class="fa-solid fa-file-pdf"></i><span class="hide-sm">PDF</span></button>
+            <button id="btnPrint" class="flex items-center gap-1.5 px-3.5 h-8 bg-white text-slate-900 hover:bg-slate-100 rounded-lg text-[10.5px] font-semibold transition"><i class="fa-solid fa-print"></i><span class="hide-sm">Cetak</span></button>
+            <button id="btnReset" title="Reset" class="flex items-center justify-center w-8 h-8 text-red-400 hover:text-red-300 hover:bg-white/8 rounded-lg transition"><i class="fa-solid fa-rotate-left text-xs"></i></button>
+        </div>
+    </div>
+</nav>
+
+<div class="max-w-[1560px] mx-auto px-4 md:px-6 py-5">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+        <div class="lg:col-span-5 no-print">
+            <div class="bg-[var(--card)] rounded-2xl shadow-lg border border-[var(--border)] overflow-hidden flex flex-col" style="max-height:calc(100vh - 100px);">
+                <div class="px-5 pt-4 pb-3 border-b border-[var(--border)] flex-shrink-0">
+                    <div class="flex items-center justify-between">
+                        <div><h2 class="text-[16px] font-bold text-[var(--text)]">Isi Curriculum Vitae</h2><p class="text-[10px] text-[var(--muted)] mt-0.5">Format bersih, tanpa kolom, tanpa tabel — optimal ATS.</p></div>
+                        <div class="flex items-center gap-1"><span class="kb">Ctrl+S</span></div>
+                    </div>
+                </div>
+                <div class="fsc px-5 pb-5 overflow-y-auto flex-1">
+
+                    <div class="mt-3 mb-4">
+                        <label class="fl"><i class="fa-solid fa-bolt mr-1 text-amber-500"></i>Template Cepat</label>
+                        <div class="grid grid-cols-4 gap-1.5" id="tplRow">
+                            <div class="tp-c on" data-tpl="fresh"><div class="text-[9.5px] font-bold text-[var(--text)]">Lulusan Baru</div><div class="text-[7.5px] text-[var(--muted)]">SMK/SMA/S1</div></div>
+                            <div class="tp-c" data-tpl="exp"><div class="text-[9.5px] font-bold text-[var(--text)]">Pengalaman</div><div class="text-[7.5px] text-[var(--muted)]">1-3 tahun</div></div>
+                            <div class="tp-c" data-tpl="senior"><div class="text-[9.5px] font-bold text-[var(--text)]">Senior</div><div class="text-[7.5px] text-[var(--muted)]">3+ tahun</div></div>
+                            <div class="tp-c" data-tpl="magang"><div class="text-[9.5px] font-bold text-[var(--text)]">Magang</div><div class="text-[7.5px] text-[var(--muted)]">PKL/Intern</div></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-1">
+                        <div class="sh-hd op" data-sec><span class="text-[12px] font-bold text-[var(--text)]"><i class="fa-solid fa-user mr-1.5 text-teal-600 text-[10px]"></i>Data Diri</span><i class="fa-solid fa-chevron-down cv2"></i></div>
+                        <div class="sh-bd op"><div class="pt-3 space-y-2.5">
+                            
+                            <!-- NEW PHOTO UPLOADER -->
+                            <div class="photo-upload-wrapper">
+                                <label class="fl">Foto Profil (Opsional)</label>
+                                <div class="photo-upload-box" id="photoDropZone">
+                                    <input type="file" id="f_photo" accept="image/jpeg, image/png, image/jpg">
+                                    <img id="photoPreviewMini" class="photo-preview-mini" alt="Preview">
+                                    <div id="uploadPlaceholder">
+                                        <div class="upload-text-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                                        <div class="upload-text-main">Klik atau seret foto ke sini</div>
+                                        <div class="upload-text-sub">JPG/PNG (Max 2MB)</div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <div id="btnRemovePhoto" class="btn-remove-photo"><i class="fa-solid fa-trash mr-1"></i>Hapus Foto</div>
+                                </div>
+                            </div>
+
+                            <div><label class="fl" for="f_nama">Nama Lengkap <span class="req">*</span></label><input id="f_nama" class="fi cv-input" placeholder="Sesuai KTP" value="Muhammad Hafis"><div class="fe" id="e_nama">Wajib diisi</div></div>
+                            <div><label class="fl" for="f_title">Judul Profesional <span class="req">*</span></label><input id="f_title" class="fi cv-input" placeholder="Contoh: IT Support Specialist" value="IT Support Specialist"><div class="fe" id="e_title">Wajib diisi</div></div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="fl" for="f_email">Email <span class="req">*</span></label><input id="f_email" class="fi cv-input" type="email" placeholder="nama@email.com" value="hafis@email.com"><div class="fe" id="e_email">Format tidak valid</div></div>
+                                <div><label class="fl" for="f_phone">No. HP <span class="req">*</span></label><input id="f_phone" class="fi cv-input" placeholder="08xx-xxxx-xxxx" value="0856-1234-5678"></div>
+                            </div>
+                            <div><label class="fl" for="f_loc">Lokasi</label><input id="f_loc" class="fi cv-input" placeholder="Kota, Provinsi" value="Pekalongan, Jawa Tengah"></div>
+                            <div>
+                                <label class="fl" for="f_linkedin">LinkedIn URL <span class="req">*</span></label>
+                                <input id="f_linkedin" class="fi cv-input" placeholder="https://linkedin.com/in/namaprofil" value="https://linkedin.com/in/muhammadhafis">
+                                <div class="fe" id="e_linkedin">Format: https://linkedin.com/in/namaprofil</div>
+                                <div class="linkedin-hint"><i class="fa-solid fa-circle-info" style="font-size:8px;margin-right:3px"></i>Gunakan URL lengkap dengan https:// untuk memastikan ATS dapat mengenali profil Anda. Hindari hanya menulis username saja.</div>
+                            </div>
+                            <div><label class="fl" for="f_portfolio">Portfolio / Website</label><input id="f_portfolio" class="fi cv-input" placeholder="https://websiteanda.com" value=""></div>
+                        </div></div>
+                    </div>
+
+                    <div class="mb-1">
+                        <div class="sh-hd op" data-sec><span class="text-[12px] font-bold text-[var(--text)]"><i class="fa-solid fa-align-left mr-1.5 text-teal-600 text-[10px]"></i>Profil Profesional</span><i class="fa-solid fa-chevron-down cv2"></i></div>
+                        <div class="sh-bd op"><div class="pt-3 space-y-2.5">
+                            <div><label class="fl" for="f_summary">Ringkasan Profil <span class="req">*</span></label><textarea id="f_summary" class="fi cv-input" rows="3" placeholder="3-4 kalimat yang menjelaskan siapa Anda dan apa yang Anda tawarkan.">Lulusan SMK Teknik Jaringan Komputer dan Telekomunikasi dengan pemahaman kuat dalam administrasi sistem, pemeliharaan perangkat keras dan lunak, serta troubleshooting jaringan. Berpengalaman melalui Praktik Kerja Lapangan selama 3 bulan. Bertekad untuk berkembang di bidang IT Support.</textarea><div class="fe" id="e_summary">Wajib diisi</div></div>
+                        </div></div>
+                    </div>
+
+                    <div class="mb-1">
+                        <div class="sh-hd op" data-sec><span class="text-[12px] font-bold text-[var(--text)]"><i class="fa-solid fa-briefcase mr-1.5 text-teal-600 text-[10px]"></i>Pengalaman Kerja</span><i class="fa-solid fa-chevron-down cv2"></i></div>
+                        <div class="sh-bd op"><div class="pt-3 space-y-2.5">
+                            <p class="text-[9.5px] text-[var(--muted)] leading-relaxed">Baris 1: Jabatan. Baris 2: Perusahaan, Kota. Baris 3: Periode. Baris 4+: Poin pekerjaan.</p>
+                            <div><label class="fl" for="f_exp">Pengalaman 1</label><textarea id="f_exp" class="fi cv-input" rows="4" placeholder="Jabatan&#10;Perusahaan, Kota&#10;Jan 2025 – Mar 2025&#10;Melakukan instalasi jaringan LAN">Praktik Kerja Lapangan (PKL)&#10;PT. Teknologi Nusantara, Pekalongan&#10;Jan 2026 – Mar 2026&#10;Melakukan instalasi dan konfigurasi jaringan LAN untuk 50+ perangkat kantor&#10;Mendokumentasikan prosedur troubleshooting untuk tim IT internal</textarea></div>
+                            <div><label class="fl" for="f_exp2">Pengalaman 2 (opsional)</label><textarea id="f_exp2" class="fi cv-input" rows="3" placeholder="Format sama"></textarea></div>
+                            <div><label class="fl" for="f_exp3">Pengalaman 3 (opsional)</label><textarea id="f_exp3" class="fi cv-input" rows="3" placeholder="Format sama"></textarea></div>
+                        </div></div>
+                    </div>
+
+                    <div class="mb-1">
+                        <div class="sh-hd op" data-sec><span class="text-[12px] font-bold text-[var(--text)]"><i class="fa-solid fa-graduation-cap mr-1.5 text-teal-600 text-[10px]"></i>Pendidikan</span><i class="fa-solid fa-chevron-down cv2"></i></div>
+                        <div class="sh-bd op"><div class="pt-3 space-y-2.5">
+                            <div><label class="fl" for="f_edu">Pendidikan 1 <span class="req">*</span></label><textarea id="f_edu" class="fi cv-input" rows="3" placeholder="Nama Institusi, Kota&#10;Jurusan — Jenjang&#10;2022 – 2025">SMK Nurul Ummah Paninggaran, Pekalongan&#10;Teknik Jaringan Komputer dan Telekomunikasi — SMK&#10;2023 – 2026</textarea><div class="fe" id="e_edu">Wajib diisi</div></div>
+                            <div><label class="fl" for="f_edu2">Pendidikan 2 (opsional)</label><textarea id="f_edu2" class="fi cv-input" rows="3" placeholder="Format sama"></textarea></div>
+                        </div></div>
+                    </div>
+
+                    <div class="mb-1">
+                        <div class="sh-hd op" data-sec><span class="text-[12px] font-bold text-[var(--text)]"><i class="fa-solid fa-screwdriver-wrench mr-1.5 text-teal-600 text-[10px]"></i>Keahlian</span><i class="fa-solid fa-chevron-down cv2"></i></div>
+                        <div class="sh-bd op"><div class="pt-3 space-y-2.5">
+                            <p class="text-[9.5px] text-[var(--muted)] leading-relaxed">Format: <strong>Nama Keahlian</strong> — Deskripsi. Satu per baris.</p>
+                            <div><label class="fl" for="f_skills">Daftar Keahlian <span class="req">*</span></label><textarea id="f_skills" class="fi cv-input" rows="5" placeholder="Jaringan Komputer — TCP/IP, LAN/WAN">Jaringan Komputer — TCP/IP, LAN/WAN, troubleshooting, konfigurasi router&#10;Sistem Operasi — Windows 10/11, Linux dasar (Ubuntu)&#10;Perangkat Keras — Instalasi, maintenance, upgrade komputer dan laptop&#10;Microsoft Office — Word, Excel, PowerPoint tingkat mahir&#10;Administrasi Sistem — Manajemen user, backup data, monitoring jaringan</textarea><div class="fe" id="e_skills">Wajib diisi</div></div>
+                        </div></div>
+                    </div>
+
+                    <div class="mb-1">
+                        <div class="sh-hd op" data-sec><span class="text-[12px] font-bold text-[var(--text)]"><i class="fa-solid fa-certificate mr-1.5 text-teal-600 text-[10px]"></i>Sertifikasi</span><i class="fa-solid fa-chevron-down cv2"></i></div>
+                        <div class="sh-bd op"><div class="pt-3 space-y-2.5">
+                            <div><label class="fl" for="f_certs">Daftar Sertifikasi</label><textarea id="f_certs" class="fi cv-input" rows="3" placeholder="Nama Sertifikasi — Penerbit (Tahun)">Junior Network Administrator — Lembaga Sertifikasi Profesi (2025)</textarea></div>
+                        </div></div>
+                    </div>
+
+                    <div class="mb-1">
+                        <div class="sh-hd op" data-sec><span class="text-[12px] font-bold text-[var(--text)]"><i class="fa-solid fa-language mr-1.5 text-teal-600 text-[10px]"></i>Bahasa</span><i class="fa-solid fa-chevron-down cv2"></i></div>
+                        <div class="sh-bd op"><div class="pt-3 space-y-2.5">
+                            <div><label class="fl" for="f_langs">Daftar Bahasa</label><textarea id="f_langs" class="fi cv-input" rows="2" placeholder="Bahasa Indonesia — Native">Bahasa Indonesia — Native&#10;Bahasa Inggris — Intermediate</textarea></div>
+                        </div></div>
+                    </div>
+
+                    <div class="mb-1">
+                        <div class="sh-hd" data-sec><span class="text-[12px] font-bold text-[var(--text)]"><i class="fa-solid fa-sliders mr-1.5 text-slate-400 text-[10px]"></i>Pengaturan</span><i class="fa-solid fa-chevron-down cv2"></i></div>
+                        <div class="sh-bd"><div class="pt-3 space-y-2.5">
+                            <div>
+                                <label class="fl">Font CV</label>
+                                <div class="grid grid-cols-3 gap-1.5" id="fontRow">
+                                    <div class="tp-c on" data-font="cv-inter" style="padding:7px 4px"><div style="font-family:Inter,sans-serif;font-size:10px;font-weight:700;color:var(--text)">Inter</div></div>
+                                    <div class="tp-c" data-font="cv-roboto" style="padding:7px 4px"><div style="font-family:Roboto,sans-serif;font-size:10px;font-weight:700;color:var(--text)">Roboto</div></div>
+                                    <div class="tp-c" data-font="cv-jakarta" style="padding:7px 4px"><div style="font-family:Plus Jakarta Sans,sans-serif;font-size:10px;font-weight:700;color:var(--text)">Jakarta</div></div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="fl" for="f_fs">Ukuran Font</label><select id="f_fs" class="fi cv-input"><option value="0.88">Kecil</option><option value="0.92" selected>Standar</option><option value="0.96">Besar</option></select></div>
+                                <div><label class="fl" for="f_lh">Jarak Baris</label><select id="f_lh" class="fi cv-input"><option value="1.45">Rapat</option><option value="1.55" selected>Standar</option><option value="1.65">Longgar</option></select></div>
+                            </div>
+                            <div>
+                                <label class="fl">Kualitas PDF</label>
+                                <div class="grid grid-cols-3 gap-1.5" id="qualRow">
+                                    <div class="tp-c" data-qual="low" style="padding:7px 4px"><div class="text-[9.5px] font-bold text-[var(--text)]">Standar</div><span class="q-badge low">72 DPI</span></div>
+                                    <div class="tp-c on" data-qual="mid" style="padding:7px 4px"><div class="text-[9.5px] font-bold text-[var(--text)]">Tinggi</div><span class="q-badge mid">150 DPI</span></div>
+                                    <div class="tp-c" data-qual="hi" style="padding:7px 4px"><div class="text-[9.5px] font-bold text-[var(--text)]">Maksimal</div><span class="q-badge hi">300 DPI</span></div>
+                                </div>
+                            </div>
+                            <div class="space-y-2 pt-1">
+                                <div class="tg-wrap" id="tgAutoWrap"><div class="tg-track on" id="tgAutoSave"></div><span class="tg-label">Simpan Otomatis (30 detik)</span></div>
+                            </div>
+                        </div></div>
+                    </div>
+
+                    <div class="mt-4 mb-2 p-3 bg-amber-50 border border-amber-200/80 rounded-xl tip-a">
+                        <p class="text-[10px] text-amber-800 leading-relaxed"><i class="fa-solid fa-circle-info mr-1"></i><strong>Tips ATS:</strong> Gunakan kata kunci dari deskripsi pekerjaan. Hindari tabel, kolom, gambar, dan ikon.</p>
+                    </div>
+                    <div class="mb-2 p-3 bg-teal-50 border border-teal-200/80 rounded-xl tip-t">
+                        <p class="text-[10px] text-teal-800 leading-relaxed"><i class="fa-regular fa-keyboard mr-1"></i><strong>Pintasan:</strong> <span class="kb">Ctrl+S</span> Simpan <span class="kb">Ctrl+M</span> Muat <span class="kb">Ctrl+P</span> PDF <span class="kb">D</span> Gelap</p>
+                    </div>
+                </div>
+                <div class="stat-bar flex-shrink-0">
+                    <div class="stat-dot idle" id="stDot"></div><span id="stText">Siap</span>
+                    <span id="stAuto" style="display:none;color:#0d9488;font-weight:600"><i class="fa-solid fa-cloud-arrow-up" style="font-size:7px"></i> Auto</span>
+                    <span style="margin-left:auto" id="stTime"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-7">
+            <div class="pv-outer sticky top-[64px]">
+                <div class="flex items-center justify-between mb-2 px-0.5 no-print">
+                    <h3 class="text-[12px] font-semibold text-[var(--muted)] flex items-center gap-1.5"><i class="fa-solid fa-eye text-teal-600 text-[10px]"></i>Pratinjau CV</h3>
+                    <div class="flex items-center gap-1.5">
+                        <span id="pageInfo" class="text-[8px] bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full font-bold tracking-wide">A4 — 1 Hal</span>
+                        <button id="btnZoomOut" class="w-6 h-6 rounded-md bg-[var(--card)] hover:bg-slate-100 border border-[var(--border)] flex items-center justify-center text-[10px] text-[var(--muted)] transition"><i class="fa-solid fa-minus"></i></button>
+                        <span class="text-[9px] text-[var(--muted)] font-mono w-7 text-center" id="zLv">100%</span>
+                        <button id="btnZoomIn" class="w-6 h-6 rounded-md bg-[var(--card)] hover:bg-slate-100 border border-[var(--border)] flex items-center justify-center text-[10px] text-[var(--muted)] transition"><i class="fa-solid fa-plus"></i></button>
+                        <button id="btnZoomReset" class="w-6 h-6 rounded-md bg-[var(--card)] hover:bg-slate-100 border border-[var(--border)] flex items-center justify-center text-[10px] text-[var(--muted)] transition"><i class="fa-solid fa-expand"></i></button>
+                    </div>
+                </div>
+                <div class="pv-wrap bg-slate-200/40 border border-[var(--border)] rounded-2xl p-4 overflow-auto" style="max-height:calc(100vh - 120px);">
+                    <div id="sWrp" style="transform-origin:top center;transition:transform .2s;">
+                        <div id="surat" class="a4-cv cv-inter">
+                            <div class="a4-page-guide preview-only"></div>
+                            <div id="sC" style="position:relative;z-index:2;"></div>
+                            <div class="overflow-badge preview-only" id="overflowBadge"><i class="fa-solid fa-layer-group" style="margin-right:4px"></i>Konten melebihi 1 halaman A4</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function v(id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }
+function kap(s) { return s ? s.replace(/\b\w/g, function (c) { return c.toUpperCase(); }) : ''; }
+
+var curFont = 'cv-inter', curQuality = 'mid', autoSaveOn = true, autoSaveTimer = null, _printing = false, lvTimer = null, checkTimer = null;
+
+// Photo state
+var currentPhotoData = null; // Stores Base64 string
+
+var TPL = {
+    fresh: { f_summary: 'Lulusan SMK Teknik Jaringan Komputer dengan pemahaman kuat dalam instalasi jaringan, troubleshooting perangkat keras dan lunak, serta administrasi sistem. Berpengalaman melalui Praktik Kerja Lapangan selama 3 bulan. Bertekad untuk berkontribusi di bidang IT Support.', f_exp: 'Praktik Kerja Lapangan (PKL)\nPT. Teknologi Nusantara, Pekalongan\nJan 2026 \u2013 Mar 2026\nMelakukan instalasi dan konfigurasi jaringan LAN untuk 50+ perangkat\nMendokumentasikan prosedur troubleshooting untuk tim IT', f_skills: 'Jaringan Komputer \u2014 TCP/IP, LAN/WAN, troubleshooting\nSistem Operasi \u2014 Windows 10/11, Linux dasar\nPerangkat Keras \u2014 Instalasi, maintenance komputer\nMicrosoft Office \u2014 Word, Excel, PowerPoint mahir', f_certs: '', f_langs: 'Bahasa Indonesia \u2014 Native\nBahasa Inggris \u2014 Intermediate' },
+    exp: { f_summary: 'IT Support dengan pengalaman 2 tahun dalam mengelola infrastruktur jaringan dan memberikan dukungan teknis end-user. Terampil dalam troubleshooting perangkat keras dan lunak, manajemen Active Directory, serta pemeliharaan server.', f_exp: 'IT Support\nPT. Solusi Digital Prima, Jakarta\nJun 2024 \u2013 Sekarang\nMengelola infrastruktur jaringan untuk 200+ pengguna di 3 lantai\nMemberikan dukungan teknis level 2 untuk perangkat keras dan lunak\nMelakukan manajemen Active Directory untuk 300+ akun pengguna\nIT Support Intern\nPT. Teknologi Nusantara, Pekalongan\nJan 2024 \u2013 Mei 2024\nMelakukan instalasi dan konfigurasi jaringan LAN untuk 50+ perangkat', f_skills: 'Jaringan \u2014 TCP/IP, DNS, DHCP, VLAN, VPN, firewall\nSistem Operasi \u2014 Windows Server 2019, Windows 10/11, Ubuntu\nHelpdesk \u2014 Ticketing system (Jira), remote support\nSkrip \u2014 PowerShell dasar, batch scripting\nKeamanan \u2014 Antivirus management, patch management', f_certs: 'CompTIA A+ \u2014 CompTIA (2024)\nMicrosoft Certified: Windows Server Fundamentals \u2014 Microsoft (2024)', f_langs: 'Bahasa Indonesia \u2014 Native\nBahasa Inggris \u2014 Upper Intermediate' },
+    senior: { f_summary: 'Senior IT Infrastructure dengan pengalaman 5+ tahun dalam merancang dan mengelola sistem jaringan enterprise. Memimpin tim IT beranggotakan 8 orang. Berpengalaman dalam migrasi cloud dan virtualisasi.', f_exp: 'IT Infrastructure Manager\nPT. Global Teknologi Indonesia, Jakarta\nMar 2021 \u2013 Sekarang\nMemimpin tim IT beranggotakan 8 orang untuk mendukung 500+ pengguna\nMerancang arsitektur jaringan baru termasuk migrasi ke cloud\nMengelola budget IT tahunan sebesar Rp 2,5 miliar\nSenior IT Support\nPT. Solusi Digital Prima, Jakarta\nJan 2019 \u2013 Feb 2021\nMengelola infrastruktur jaringan untuk 200+ pengguna\nMelakukan perencanaan kapasitas dan upgrade infrastruktur', f_skills: 'Jaringan Enterprise \u2014 BGP, OSPF, MPLS, SD-WAN, load balancing\nCloud \u2014 AWS (EC2, VPC, S3), Azure, Google Cloud\nVirtualisasi \u2014 VMware vSphere, Hyper-V, Docker dasar\nKeamanan \u2014 SIEM, penetration testing dasar, ISO 27001\nManajemen \u2014 ITIL v4, Agile/Scrum, budget planning', f_certs: 'AWS Certified Solutions Architect \u2014 AWS (2023)\nCCNA \u2014 Cisco (2020)\nITIL v4 Foundation \u2014 PeopleCert (2020)', f_langs: 'Bahasa Indonesia \u2014 Native\nBahasa Inggris \u2014 Advanced\nBahasa Jepang \u2014 Basic' },
+    magang: { f_summary: 'Mahasiswa semester akhir program Teknik Jaringan Komputer yang mencari kesempatan magang untuk mengaplikasikan teori di lingkungan kerja profesional. Memiliki dasar kuat dalam konsep jaringan dan antusias belajar teknologi baru.', f_exp: '', f_skills: 'Jaringan Dasar \u2014 Konsep TCP/IP, subnetting, topologi\nSistem Operasi \u2014 Windows, Linux dasar\nMicrosoft Office \u2014 Word, Excel, PowerPoint\nProduktivitas \u2014 Canva, Google Workspace', f_certs: '', f_langs: 'Bahasa Indonesia \u2014 Native\nBahasa Inggris \u2014 Basic' }
+};
+
+function toast(msg, type) { try { if (_printing) return; var ic = { ok: 'fa-circle-check', nf: 'fa-circle-info', wr: 'fa-triangle-exclamation', bd: 'fa-circle-xmark' }; var d = document.createElement('div'); d.className = 't-i ' + (type || 'nf'); d.innerHTML = '<i class="fa-solid ' + (ic[type] || ic.nf) + '"></i><span>' + msg + '</span>'; var box = document.getElementById('tBox'); if (box) box.appendChild(d); setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, 3500); } catch (e) { } }
+function togSec(el) { try { el.classList.toggle('op'); var b = el.nextElementSibling; if (b) b.classList.toggle('op'); } catch (e) { } }
+var zm = 100;
+function doZoom(d) { try { if (d === 0) zm = 100; else zm = Math.max(40, Math.min(160, zm + d * 10)); var w = document.getElementById('sWrp'); if (w) w.style.transform = 'scale(' + (zm / 100) + ')'; var l = document.getElementById('zLv'); if (l) l.textContent = zm + '%'; } catch (e) { } }
+function setFont(cls, el) { try { curFont = cls; var s = document.getElementById('surat'); if (!s) return; s.className = s.className.replace(/cv-\w+/g, '').trim() + ' ' + cls; var r = el.parentElement; if (!r) return; var it = r.querySelectorAll('.tp-c'); for (var i = 0; i < it.length; i++) it[i].classList.remove('on'); el.classList.add('on'); lv(); } catch (e) { } }
+function setQuality(q, el) { try { curQuality = q; var r = el.parentElement; if (!r) return; var it = r.querySelectorAll('.tp-c'); for (var i = 0; i < it.length; i++) it[i].classList.remove('on'); el.classList.add('on'); } catch (e) { } }
+function toggleAutoSave() { try { autoSaveOn = !autoSaveOn; var t = document.getElementById('tgAutoSave'); if (t) { if (autoSaveOn) t.classList.add('on'); else t.classList.remove('on'); } var s = document.getElementById('stAuto'); if (s) s.style.display = autoSaveOn ? 'inline' : 'none'; if (autoSaveOn) startAutoSave(); else stopAutoSave(); toast(autoSaveOn ? 'Auto-save aktif' : 'Auto-save nonaktif', 'nf'); } catch (e) { } }
+function startAutoSave() { stopAutoSave(); autoSaveTimer = setInterval(function () { if (!autoSaveOn || _printing) return; try { saveDraftSilent(); } catch (e) { } }, 30000); }
+function stopAutoSave() { if (autoSaveTimer) { clearInterval(autoSaveTimer); autoSaveTimer = null; } }
+function toggleDark() { try { document.body.classList.toggle('dark-mode'); var d = document.body.classList.contains('dark-mode'); var b = document.getElementById('btnDark'); if (b) b.innerHTML = d ? '<i class="fa-solid fa-sun text-xs"></i>' : '<i class="fa-solid fa-moon text-xs"></i>'; toast(d ? 'Mode gelap' : 'Mode terang', 'nf'); } catch (e) { } }
+
+function validate() {
+    try {
+        var ok = true;
+        var w = [
+            { id: 'f_nama', err: 'e_nama' }, { id: 'f_title', err: 'e_title' },
+            { id: 'f_email', err: 'e_email' }, { id: 'f_phone' },
+            { id: 'f_linkedin', err: 'e_linkedin' },
+            { id: 'f_summary', err: 'e_summary' }, { id: 'f_edu', err: 'e_edu' },
+            { id: 'f_skills', err: 'e_skills' }
+        ];
+        for (var i = 0; i < w.length; i++) {
+            var r = w[i], el = document.getElementById(r.id);
+            if (!el) continue;
+            if (!el.value.trim()) { el.classList.add('err'); if (r.err) { var fe = document.getElementById(r.err); if (fe) fe.classList.add('sh'); } ok = false; }
+            else { el.classList.remove('err'); if (r.err) { var fe2 = document.getElementById(r.err); if (fe2) fe2.classList.remove('sh'); } }
+        }
+        /* Validasi format email */
+        var em = document.getElementById('f_email');
+        if (em && em.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim())) { em.classList.add('err'); var fe3 = document.getElementById('e_email'); if (fe3) fe3.classList.add('sh'); ok = false; }
+        /* Validasi format URL LinkedIn: harus diawali https://linkedin.com/in/ */
+        var li = document.getElementById('f_linkedin');
+        if (li && li.value.trim() && !/^https:\/\/(www\.)?linkedin\.com\/in\//.test(li.value.trim())) { li.classList.add('err'); var fe4 = document.getElementById('e_linkedin'); if (fe4) fe4.classList.add('sh'); ok = false; }
+        return ok;
+    } catch (e) { return false; }
+}
+
+function setStatus(t, idle) { try { var d = document.getElementById('stDot'), x = document.getElementById('stText'); if (d) d.className = 'stat-dot' + (idle ? ' idle' : ''); if (x) x.textContent = t; } catch (e) { } }
+function updateClock() { try { var e = document.getElementById('stTime'); if (e) e.textContent = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); } catch (e) { } }
+setInterval(updateClock, 1000); updateClock();
+
+function checkPageOverflow() { try { var s = document.getElementById('surat'), g = s ? s.querySelector('.a4-page-guide') : null; if (!s || !g) return; var gh = g.offsetHeight; if (gh < 100) return; var ch = s.scrollHeight; var b = document.getElementById('overflowBadge'), info = document.getElementById('pageInfo'); if (ch > gh + 2) { if (b) b.classList.add('show'); var p = Math.ceil(ch / gh); if (info) { info.textContent = 'A4 \u2014 ' + p + ' Hal'; info.style.background = '#fef2f2'; info.style.color = '#dc2626'; } } else { if (b) b.classList.remove('show'); if (info) { info.textContent = 'A4 \u2014 1 Hal'; info.style.background = ''; info.style.color = ''; } } } catch (e) { } }
+
+function parseExp(n) { var raw = v('f_exp' + (n > 1 ? n : '')); if (!raw) return null; var lines = raw.trim().split('\n').filter(function (l) { return l.trim(); }); if (lines.length < 1) return null; return { title: lines[0] || '', sub: lines[1] || '', date: lines[2] || '', bullets: lines.slice(3) }; }
+function parseEdu(n) { var raw = v('f_edu' + (n > 1 ? n : '')); if (!raw) return null; var lines = raw.trim().split('\n').filter(function (l) { return l.trim(); }); if (lines.length < 1) return null; return { school: lines[0] || '', detail: lines[1] || '', date: lines[2] || '' }; }
+
+/* ==============================================
+   RENDER CV — LINKEDIN FORMAT ATS + PHOTO
+   ============================================== */
+function lv() { try { renderCV(); if (checkTimer) clearTimeout(checkTimer); checkTimer = setTimeout(checkPageOverflow, 80); } catch (e) { var sc = document.getElementById('sC'); if (sc) sc.innerHTML = '<div style="padding:40px;color:#dc2626;font-size:13px;"><strong>Error:</strong> ' + e.message + '</div>'; console.error(e); } }
+
+function renderCV() {
+    var nama = kap(v('f_nama')) || 'Nama Lengkap';
+    var title = v('f_title') || 'Judul Profesional';
+    var email = v('f_email') || 'email@contoh.com';
+    var phone = v('f_phone') || '08xx-xxxx-xxxx';
+    var loc = v('f_loc');
+    var linkedin = v('f_linkedin');
+    var portfolio = v('f_portfolio');
+    var summary = v('f_summary') || '';
+    var fs = parseFloat(v('f_fs')) || 0.92;
+    var lh = parseFloat(v('f_lh')) || 1.55;
+
+    /* Statistik */
+    var allText = [nama, title, summary, v('f_exp'), v('f_exp2'), v('f_exp3'), v('f_edu'), v('f_edu2'), v('f_skills'), v('f_certs'), v('f_langs')].join(' ');
+    var wcEl = document.querySelector('#wcB span'), ccEl = document.querySelector('#ccB span');
+    if (wcEl) wcEl.textContent = allText.trim().split(/\s+/).filter(function (w) { return w.length > 0; }).length + ' kata';
+    if (ccEl) ccEl.textContent = allText.trim().length + ' karakter';
+
+    /* ===== HEADER PHOTO & INFO ===== */
+    var h = '';
+    
+    // Start Layout Container
+    h += '<div class="cv-header-layout">';
+    
+    // Left Side: Info
+    h += '<div class="cv-main-info">';
+    h += '<div class="cv-name">' + nama + '</div>';
+    h += '<div class="cv-title">' + title + '</div>';
+    
+    /* ===== BARIS KONTAK — FORMAT ATS STANDAR ===== */
+    var cp = [];
+    cp.push('<span>' + email + '</span>');
+    cp.push('<span>' + phone + '</span>');
+    if (loc) cp.push('<span>' + loc + '</span>');
+    if (linkedin) cp.push('<span>' + linkedin + '</span>');
+    if (portfolio) cp.push('<span>' + portfolio + '</span>');
+    
+    h += '<div class="cv-contact">' + cp.join('') + '</div>';
+    h += '</div>'; // End cv-main-info
+
+    // Right Side: Photo
+    if (currentPhotoData) {
+        h += '<div class="cv-photo-container visible">';
+        h += '<img src="' + currentPhotoData + '" alt="Foto Profil">';
+        h += '</div>';
+    } else {
+        h += '<div class="cv-photo-container"></div>';
+    }
+
+    h += '</div>'; // End cv-header-layout
+    
+    h += '<hr class="cv-sep">';
+
+    if (summary) { h += '<div class="cv-heading">Profil Profesional</div><div class="cv-summary">' + summary + '</div>'; }
+
+    var hasExp = false; for (var ei = 1; ei <= 3; ei++) { if (parseExp(ei)) { hasExp = true; break; } }
+    if (hasExp) {
+        h += '<div class="cv-heading">Pengalaman Kerja</div>';
+        for (var ej = 1; ej <= 3; ej++) { var ex = parseExp(ej); if (ex) { h += '<div class="cv-exp-item"><div class="cv-exp-header"><span class="cv-exp-role">' + ex.title + '</span><span class="cv-exp-date">' + ex.date + '</span></div><div class="cv-exp-company">' + ex.sub + '</div>'; for (var bi = 0; bi < ex.bullets.length; bi++) h += '<div class="cv-bullet">' + ex.bullets[bi].trim() + '</div>'; h += '</div>'; } }
+    }
+
+    var hasEdu = false; for (var edi = 1; edi <= 2; edi++) { if (parseEdu(edi)) { hasEdu = true; break; } }
+    if (hasEdu) {
+        h += '<div class="cv-heading">Pendidikan</div>';
+        for (var edj = 1; edj <= 2; edj++) { var ed = parseEdu(edj); if (ed) { h += '<div class="cv-edu-item"><div class="cv-edu-header"><span class="cv-edu-school">' + ed.school + '</span><span class="cv-edu-date">' + ed.date + '</span></div><div class="cv-edu-detail">' + ed.detail + '</div></div>'; } }
+    }
+
+    var skills = v('f_skills');
+    if (skills) {
+        h += '<div class="cv-heading">Keahlian</div>';
+        var sL = skills.split('\n').filter(function (l) { return l.trim(); });
+        for (var si = 0; si < sL.length; si++) { var pts = sL[si].split('\u2014'); if (pts.length >= 2) h += '<div class="cv-skill-item"><span class="cv-skill-name">' + pts[0].trim() + '</span><span class="cv-skill-desc">' + pts.slice(1).join('\u2014').trim() + '</span></div>'; else h += '<div class="cv-bullet">' + sL[si].trim() + '</div>'; }
+    }
+
+    var certs = v('f_certs');
+    if (certs) { h += '<div class="cv-heading">Sertifikasi</div>'; var cL = certs.split('\n').filter(function (l) { return l.trim(); }); for (var ci = 0; ci < cL.length; ci++) h += '<div class="cv-cert-item">' + cL[ci].trim() + '</div>'; }
+
+    var langs = v('f_langs');
+    if (langs) { h += '<div class="cv-heading">Bahasa</div>'; var lL = langs.split('\n').filter(function (l) { return l.trim(); }); for (var li = 0; li < lL.length; li++) { var lp = lL[li].split('\u2014'); if (lp.length >= 2) h += '<div class="cv-lang-item"><span class="cv-lang-name">' + lp[0].trim() + '</span><span class="cv-lang-level">' + lp.slice(1).join('\u2014').trim() + '</span></div>'; else h += '<div class="cv-cert-item">' + lL[li].trim() + '</div>'; } }
+
+    var sc = document.getElementById('sC'); if (sc) sc.innerHTML = h;
+    var suratEl = document.getElementById('surat'); if (suratEl) { suratEl.style.fontSize = fs + 'em'; suratEl.style.lineHeight = lh; }
+    setStatus('Diperbarui', false);
+    if (lvTimer) clearTimeout(lvTimer);
+    lvTimer = setTimeout(function () { setStatus('Siap', true); }, 1500);
+}
+
+/* ==============================================
+   PHOTO HANDLING FUNCTIONS
+   ============================================== */
+function handlePhotoUpload(file) {
+    if (!file) return;
+    
+    // Validate type
+    if (
+!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)
+) {
+        toast('Format harus JPG atau PNG', 'wr');
+        return;
+    }
+    
+    // Validate size (Max 2MB to prevent LocalStorage quota issues)
+    if (file.size > 2 * 1024 * 1024) {
+        toast('Ukuran foto max 2MB', 'wr');
+        return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        currentPhotoData = e.target.result;
+        updatePhotoUI(true);
+        lv(); // Re-render CV
+        toast('Foto berhasil diunggah', 'ok');
+    };
+    reader.onerror = function() {
+        toast('Gagal membaca foto', 'bd');
+    };
+    reader.readAsDataURL(file);
+}
+
+function removePhoto() {
+    currentPhotoData = null;
+    document.getElementById('f_photo').value = ''; // Reset input
+    updatePhotoUI(false);
+    lv();
+    toast('Foto dihapus', 'nf');
+}
+
+function updatePhotoUI(hasPhoto) {
+    var preview = document.getElementById('photoPreviewMini');
+    var placeholder = document.getElementById('uploadPlaceholder');
+    var removeBtn = document.getElementById('btnRemovePhoto');
+    
+    if (hasPhoto && currentPhotoData) {
+        preview.src = currentPhotoData;
+        preview.classList.add('show');
+        placeholder.style.display = 'none';
+        removeBtn.style.display = 'inline-block';
+    } else {
+        preview.classList.remove('show');
+        placeholder.style.display = 'block';
+        removeBtn.style.display = 'none';
+    }
+}
+
+function hidePreviewElements() { try { var els = document.querySelectorAll('.preview-only'); for (var i = 0; i < els.length; i++) els[i].style.display = 'none'; } catch (e) { } }
+function showPreviewElements() { try { var els = document.querySelectorAll('.preview-only'); for (var i = 0; i < els.length; i++) els[i].style.display = ''; checkPageOverflow(); } catch (e) { } }
+function showPrintInd(t, s) { try { var e = document.getElementById('printInd'); if (!e) return; e.querySelector('.pi-text').textContent = t; e.querySelector('.pi-sub').textContent = s; e.classList.add('show'); } catch (e) { } }
+function hidePrintInd() { try { var e = document.getElementById('printInd'); if (e) e.classList.remove('show'); } catch (e) { } }
+
+function doPrint() { try { if (!validate()) { toast('Lengkapi kolom wajib', 'wr'); return; } _printing = true; lv(); showPrintInd('Menyiapkan cetak...', ''); setTimeout(function () { hidePrintInd(); window.print(); setTimeout(function () { _printing = false; }, 500); }, 400); } catch (e) { _printing = false; } }
+function expPDF() { try { if (!validate()) { toast('Lengkapi kolom wajib', 'wr'); return; } _printing = true; lv(); showPrintInd('Membuka dialog PDF...', 'Margins: None'); setTimeout(function () { hidePrintInd(); window.print(); setTimeout(function () { _printing = false; }, 500); }, 600); } catch (e) { _printing = false; } }
+
+function expImg() { try { if (!validate()) { toast('Lengkapi kolom wajib', 'wr'); return; } toast('Memproses gambar...', 'nf'); setStatus('Membuat PNG...', false); var wrp = document.getElementById('sWrp'), origT = wrp ? wrp.style.transform : ''; if (wrp) wrp.style.transform = 'scale(1)'; hidePreviewElements(); setTimeout(function () { html2canvas(document.getElementById('surat'), { scale: 3, backgroundColor: '#ffffff', useCORS: true, logging: false }).then(function (canvas) { if (wrp) wrp.style.transform = origT; showPreviewElements(); var a = document.createElement('a'); a.download = 'CV_' + (v('f_nama') || 'draft').replace(/[^a-zA-Z0-9]/g, '_') + '.png'; a.href = canvas.toDataURL('image/png', 1.0); a.click(); toast('PNG berhasil diunduh', 'ok'); setStatus('Siap', true); }).catch(function (err) { if (wrp) wrp.style.transform = origT; showPreviewElements(); toast('Gagal membuat gambar', 'bd'); setStatus('Gagal', true); }); }, 200); } catch (e) { _printing = false; showPreviewElements(); } }
+
+function copyText() { try { var s = document.getElementById('sC'); if (!s) return; var t = s.innerText || s.textContent; if (!t.trim()) { toast('Tidak ada teks', 'wr'); return; } if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(function () { toast('Teks disalin', 'ok'); }).catch(function () { fCopy(t); }); } else fCopy(t); } catch (e) { } }
+function fCopy(t) { try { var ta = document.createElement('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;left:-9999px;'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); if (ta.parentNode) document.body.removeChild(ta); toast('Teks disalin', 'ok'); } catch (e) { } }
+
+var SK = 'cvats_draft_v13'; // Updated version key
+var FIDS = ['f_nama', 'f_title', 'f_email', 'f_phone', 'f_loc', 'f_linkedin', 'f_portfolio', 'f_summary', 'f_exp', 'f_exp2', 'f_exp3', 'f_edu', 'f_edu2', 'f_skills', 'f_certs', 'f_langs', 'f_fs', 'f_lh'];
+
+function saveDraft() { try { var d = {}; for (var i = 0; i < FIDS.length; i++) { var e = document.getElementById(FIDS[i]); if (e) d[FIDS[i]] = e.value; } d._t = new Date().toISOString(); d._font = curFont; d._dark = document.body.classList.contains('dark-mode'); d._photo = currentPhotoData; // Save photo
+    try { localStorage.setItem(SK, JSON.stringify(d)); } catch(e) { toast('Penyimpanan penuh (Foto besar)', 'wr'); return; } toast('Draft disimpan', 'ok'); } catch (e) { toast('Gagal menyimpan', 'bd'); } }
+function saveDraftSilent() { try { var d = {}; for (var i = 0; i < FIDS.length; i++) { var e = document.getElementById(FIDS[i]); if (e) d[FIDS[i]] = e.value; } d._t = new Date().toISOString(); d._font = curFont; d._dark = document.body.classList.contains('dark-mode'); d._photo = currentPhotoData; 
+    try { localStorage.setItem(SK, JSON.stringify(d)); } catch(e) { /* Silently fail storage full */ } setStatus('Auto-saved', false); setTimeout(function () { setStatus('Siap', true); }, 1500); } catch (e) { } }
+
+function loadDraft() { try { var r = localStorage.getItem(SK); if (!r) { toast('Tidak ada draft', 'wr'); return; } var d = JSON.parse(r); for (var i = 0; i < FIDS.length; i++) { if (d[FIDS[i]] !== undefined) { var e = document.getElementById(FIDS[i]); if (e) e.value = d[FIDS[i]]; } } if (d._font) { curFont = d._font; var s = document.getElementById('surat'); if (s) s.className = s.className.replace(/cv-\w+/g, '').trim() + ' ' + curFont; var fb = document.querySelectorAll('#fontRow .tp-c'); for (var fi = 0; fi < fb.length; fi++) { if (fb[fi].getAttribute('data-font') === curFont) { for (var r2 = 0; r2 < fb.length; r2++) fb[r2].classList.remove('on'); fb[fi].classList.add('on'); break; } } } if (d._dark) { document.body.classList.add('dark-mode'); var b = document.getElementById('btnDark'); if (b) b.innerHTML = '<i class="fa-solid fa-sun text-xs"></i>'; } 
+        // Load Photo
+        if (d._photo) {
+            currentPhotoData = d._photo;
+            updatePhotoUI(true);
+        } else {
+            currentPhotoData = null;
+            updatePhotoUI(false);
+        }
+        lv(); toast('Draft dimuat', 'ok'); } catch (e) { toast('Gagal memuat draft', 'bd'); } }
+
+function confirmReset() { try { var ov = document.createElement('div'); ov.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9998;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);animation:tIn .2s ease-out;'; var bx = document.createElement('div'); bx.style.cssText = 'background:#fff;border-radius:18px;padding:24px 26px;max-width:340px;width:92%;box-shadow:0 20px 50px rgba(0,0,0,.2);text-align:center;'; bx.innerHTML = '<div style="width:44px;height:44px;border-radius:12px;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><i class="fa-solid fa-rotate-left" style="color:#dc2626;font-size:18px;"></i></div><h3 style="font-size:14px;font-weight:700;color:#1e293b;margin:0 0 4px;">Reset Semua Data?</h3><p style="font-size:11px;color:#64748b;margin:0 0 16px;">Data yang diisi akan dihapus.</p><div style="display:flex;gap:8px;"><button id="_rc" style="flex:1;padding:8px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;font-size:11px;font-weight:600;color:#64748b;cursor:pointer;font-family:inherit;">Batal</button><button id="_ro" style="flex:1;padding:8px;border-radius:10px;border:none;background:#dc2626;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">Ya, Reset</button></div>'; ov.appendChild(bx); document.body.appendChild(ov); ov.addEventListener('click', function (e) { if (e.target === ov && ov.parentNode) ov.parentNode.removeChild(ov); }); bx.querySelector('#_rc').onclick = function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }; bx.querySelector('#_ro').onclick = function () { if (ov.parentNode) ov.parentNode.removeChild(ov); 
+    // Reset logic
+    for (var i = 0; i < FIDS.length; i++) { var el = document.getElementById(FIDS[i]); if (el) el.value = ''; } 
+    currentPhotoData = null; updatePhotoUI(false);
+    lv(); toast('Dikosongkan', 'nf'); }; } catch (e) { } }
+
+/* ==============================================
+   INISIALISASI & EVENT BINDING
+   ============================================== */
+document.addEventListener('DOMContentLoaded', function () {
+    try {
+        document.getElementById('btnDark').addEventListener('click', toggleDark);
+        document.getElementById('btnLoad').addEventListener('click', loadDraft);
+        document.getElementById('btnSave').addEventListener('click', saveDraft);
+        document.getElementById('btnCopy').addEventListener('click', copyText);
+        document.getElementById('btnPng').addEventListener('click', expImg);
+        document.getElementById('btnPdf').addEventListener('click', expPDF);
+        document.getElementById('btnPrint').addEventListener('click', doPrint);
+        document.getElementById('btnReset').addEventListener('click', confirmReset);
+        document.getElementById('btnZoomIn').addEventListener('click', function () { doZoom(1); });
+        document.getElementById('btnZoomOut').addEventListener('click', function () { doZoom(-1); });
+        document.getElementById('btnZoomReset').addEventListener('click', function () { doZoom(0); });
+
+        /* Template cards */
+        var tplItems = document.querySelectorAll('#tplRow .tp-c');
+        for (var ti = 0; ti < tplItems.length; ti++) { (function (el) { el.addEventListener('click', function () { var k = el.getAttribute('data-tpl'); var row = el.parentElement; if (!row) return; var items = row.querySelectorAll('.tp-c'); for (var i = 0; i < items.length; i++) items[i].classList.remove('on'); el.classList.add('on'); var t = TPL[k]; if (!t) return; if (t.f_summary !== undefined) { var e1 = document.getElementById('f_summary'); if (e1) e1.value = t.f_summary; } if (t.f_exp !== undefined) { var e2 = document.getElementById('f_exp'); if (e2) e2.value = t.f_exp; } if (t.f_skills !== undefined) { var e3 = document.getElementById('f_skills'); if (e3) e3.value = t.f_skills; } if (t.f_certs !== undefined) { var e4 = document.getElementById('f_certs'); if (e4) e4.value = t.f_certs; } if (t.f_langs !== undefined) { var e5 = document.getElementById('f_langs'); if (e5) e5.value = t.f_langs; } lv(); toast('Template diterapkan', 'ok'); }); })(tplItems[ti]); }
+
+        /* Font cards */
+        var fontItems = document.querySelectorAll('#fontRow .tp-c');
+        for (var fi = 0; fi < fontItems.length; fi++) { (function (el) { el.addEventListener('click', function () { setFont(el.getAttribute('data-font'), el); }); })(fontItems[fi]); }
+
+        /* Quality cards */
+        var qualItems = document.querySelectorAll('#qualRow .tp-c');
+        for (var qi = 0; qi < qualItems.length; qi++) { (function (el) { el.addEventListener('click', function () { setQuality(el.getAttribute('data-qual'), el); }); })(qualItems[qi]); }
+
+        /* Section toggles */
+        var secHds = document.querySelectorAll('[data-sec]');
+        for (var si = 0; si < secHds.length; si++) { secHds[si].addEventListener('click', function () { togSec(this); }); }
+
+        /* Auto-save toggle */
+        document.getElementById('tgAutoWrap').addEventListener('click', toggleAutoSave);
+
+        /* Form inputs — render on change + hapus error saat mengetik */
+        var allInputs = document.querySelectorAll('.cv-input');
+        for (var ii = 0; ii < allInputs.length; ii++) {
+            (function (el) {
+                el.addEventListener('input', function () {
+                    try { el.classList.remove('err'); var fe = el.parentElement.querySelector('.fe'); if (fe) fe.classList.remove('sh'); } catch (e) { }
+                    lv();
+                });
+            })(allInputs[ii]);
+        }
+
+        /* Photo Upload Events */
+        var photoInput = document.getElementById('f_photo');
+        var photoDropZone = document.getElementById('photoDropZone');
+        
+        photoInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                handlePhotoUpload(e.target.files[0]);
+            }
+        });
+
+        // Drag and Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            photoDropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            photoDropZone.addEventListener(eventName, function() { photoDropZone.style.borderColor = 'var(--accent)'; photoDropZone.style.background = 'var(--accent-lt)'; }, false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            photoDropZone.addEventListener(eventName, function() { photoDropZone.style.borderColor = 'var(--border)'; photoDropZone.style.background = 'var(--surface)'; }, false);
+        });
+        
+        photoDropZone.addEventListener('drop', function(e) {
+            var dt = e.dataTransfer;
+            var files = dt.files;
+            if (files && files[0]) {
+                handlePhotoUpload(files[0]);
+            }
+        }, false);
+
+        document.getElementById('btnRemovePhoto').addEventListener('click', removePhoto);
+
+        /* Keyboard shortcuts */
+        document.addEventListener('keydown', function (e) {
+            try {
+                var tag = e.target.tagName, isI = tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA';
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveDraft(); }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'm') { e.preventDefault(); loadDraft(); }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); expPDF(); }
+                if (e.key === 'd' && !isI && !e.ctrlKey && !e.metaKey && !e.altKey) toggleDark();
+                if (e.key === 'Escape') { var m = document.querySelector('div[style*="z-index:9998"]'); if (m && m.parentNode) m.parentNode.removeChild(m); hidePrintInd(); }
+            } catch (e) { }
+        });
+
+        /* Render pertama */
+        lv();
+
+        /* Deteksi draft */
+        try { if (localStorage.getItem(SK)) setTimeout(function () { toast('Draft ditemukan. Klik Muat.', 'nf'); }, 1200); } catch (e) { }
+
+        /* Auto-save */
+        if (autoSaveOn) { var st = document.getElementById('stAuto'); if (st) st.display = 'inline'; startAutoSave(); }
+
+    } catch (e) { console.error('Init error:', e); try { renderCV(); } catch (e2) { } }
+});
+
+window.addEventListener('beforeunload', function () { stopAutoSave(); });
+</script>
+</body>
+</html>
