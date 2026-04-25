@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Writehub System (Optimized Photo)</title>
+    <title>Writehub System (Square Photo)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
@@ -79,21 +79,21 @@
             pointer-events: none; z-index: 1;
         }
 
-        /* ===== STYLING CV ATS (OPTIMIZED PHOTO SUPPORT) ===== */
+        /* ===== STYLING CV ATS (SQUARE PHOTO FRAME) ===== */
         
         /* Layout Container untuk Header Foto */
         .cv-header-layout {
             display: flex;
             justify-content: space-between;
-            align-items: center; /* Center vertical alignment */
+            align-items: flex-start; /* Align top because square is taller than circle visually */
             margin-bottom: 12px;
-            gap: 20px; /* More gap between photo and text */
+            gap: 20px; 
         }
 
         .cv-main-info {
             flex: 1;
-            /* Ensure text doesn't get squashed when photo is present */
-            min-width: 0; 
+            min-width: 0;
+            padding-top: 4px; /* Slight offset to center visually with square photo */
         }
 
         .cv-name { font-size: 22pt; font-weight: 700; color: #111; margin-bottom: 2px; letter-spacing: -0.3px; line-height: 1.15; }
@@ -101,21 +101,20 @@
         .cv-contact { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 8.5pt; color: #444; margin-bottom: 14px; line-height: 1.6; }
         .cv-contact span { white-space: nowrap; }
         
-        /* Styling Foto CV ATS - OPTIMIZED SIZE */
+        /* Styling Foto CV ATS - SQUARE FRAME */
         .cv-photo-container {
-            width: 90px; /* Increased from 70px to 90px for better visibility */
-            height: 90px;
+            width: 85px; /* Adjusted for square */
+            height: 105px; /* Slightly rectangular to mimic ID photo ratio */
             flex-shrink: 0;
-            border-radius: 50%; 
+            border-radius: 8px; /* Square with slightly rounded corners */
             overflow: hidden;
             background: #f1f5f9;
-            border: 2px solid #e2e8f0; /* Slightly thicker border */
+            border: 2px solid #e2e8f0;
             display: none; /* Hidden by default */
         }
         .cv-photo-container.visible { display: block; }
         .cv-photo-container img {
             width: 100%; height: 100%; object-fit: cover;
-            /* Ensures sharpness on high DPI displays and when zoomed */
             image-rendering: -webkit-optimize-contrast;
         }
 
@@ -199,8 +198,8 @@
             cursor: pointer;
         }
         .photo-preview-mini {
-            width: 80px; height: 80px; /* Larger preview to match CV size */
-            border-radius: 50%;
+            width: 60px; height: 75px; /* Rectangular ID photo ratio for preview */
+            border-radius: 8px; /* Square/Rectangular with rounded corners */
             object-fit: cover;
             border: 2px solid var(--accent);
             margin: 0 auto 8px auto;
@@ -315,8 +314,8 @@
         <div class="flex items-center gap-2.5 min-w-0">
             <div class="w-9 h-9 rounded-lg bg-teal-500/15 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-file-lines text-teal-400 text-sm"></i></div>
             <div class="min-w-0">
-                <h1 class="text-[15px] font-bold tracking-tight truncate">Writehub v13.0 (Big Photo)</h1>
-                <p class="text-[8px] text-slate-500 -mt-0.5 tracking-widest uppercase">ATS Optimized • High Res Photo</p>
+                <h1 class="text-[15px] font-bold tracking-tight truncate">Writehub v13.1 (Square Photo)</h1>
+                <p class="text-[8px] text-slate-500 -mt-0.5 tracking-widest uppercase">ATS Optimized • Square Frame</p>
             </div>
         </div>
         <div class="flex items-center gap-1.5 flex-shrink-0">
@@ -360,7 +359,7 @@
                         <div class="sh-hd op" data-sec><span class="text-[12px] font-bold text-[var(--text)]"><i class="fa-solid fa-user mr-1.5 text-teal-600 text-[10px]"></i>Data Diri</span><i class="fa-solid fa-chevron-down cv2"></i></div>
                         <div class="sh-bd op"><div class="pt-3 space-y-2.5">
                             
-                            <!-- OPTIMIZED PHOTO UPLOADER -->
+                            <!-- SQUARE PHOTO UPLOADER -->
                             <div class="photo-upload-wrapper">
                                 <label class="fl">Foto Profil (Opsional)</label>
                                 <div class="photo-upload-box" id="photoDropZone">
@@ -574,7 +573,7 @@ function parseExp(n) { var raw = v('f_exp' + (n > 1 ? n : '')); if (!raw) return
 function parseEdu(n) { var raw = v('f_edu' + (n > 1 ? n : '')); if (!raw) return null; var lines = raw.trim().split('\n').filter(function (l) { return l.trim(); }); if (lines.length < 1) return null; return { school: lines[0] || '', detail: lines[1] || '', date: lines[2] || '' }; }
 
 /* ==============================================
-   RENDER CV — LINKEDIN FORMAT ATS + BIG PHOTO
+   RENDER CV — LINKEDIN FORMAT ATS + SQUARE PHOTO
    ============================================== */
 function lv() { try { renderCV(); if (checkTimer) clearTimeout(checkTimer); checkTimer = setTimeout(checkPageOverflow, 80); } catch (e) { var sc = document.getElementById('sC'); if (sc) sc.innerHTML = '<div style="padding:40px;color:#dc2626;font-size:13px;"><strong>Error:</strong> ' + e.message + '</div>'; console.error(e); } }
 
@@ -772,7 +771,7 @@ function expImg() { try { if (!validate()) { toast('Lengkapi kolom wajib', 'wr')
 function copyText() { try { var s = document.getElementById('sC'); if (!s) return; var t = s.innerText || s.textContent; if (!t.trim()) { toast('Tidak ada teks', 'wr'); return; } if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(function () { toast('Teks disalin', 'ok'); }).catch(function () { fCopy(t); }); } else fCopy(t); } catch (e) { } }
 function fCopy(t) { try { var ta = document.createElement('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;left:-9999px;'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); if (ta.parentNode) document.body.removeChild(ta); toast('Teks disalin', 'ok'); } catch (e) { } }
 
-var SK = 'cvats_draft_v13_bigphoto'; // Updated version key
+var SK = 'cvats_draft_v13_squarephoto'; // Updated version key
 var FIDS = ['f_nama', 'f_title', 'f_email', 'f_phone', 'f_loc', 'f_linkedin', 'f_portfolio', 'f_summary', 'f_exp', 'f_exp2', 'f_exp3', 'f_edu', 'f_edu2', 'f_skills', 'f_certs', 'f_langs', 'f_fs', 'f_lh'];
 
 function saveDraft() { try { var d = {}; for (var i = 0; i < FIDS.length; i++) { var e = document.getElementById(FIDS[i]); if (e) d[FIDS[i]] = e.value; } d._t = new Date().toISOString(); d._font = curFont; d._dark = document.body.classList.contains('dark-mode'); d._photo = currentPhotoData; // Save photo
